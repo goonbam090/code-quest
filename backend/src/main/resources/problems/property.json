@@ -1,0 +1,785 @@
+{
+  "id": "property",
+  "name": "2단계 · CSS 속성",
+  "description": "색상, 박스 모델, 위치, 효과를 다루는 45문제",
+  "problems": [
+    {
+      "id": 1,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "글자색",
+      "question": "글자 색상을 red로 지정하세요.",
+      "html": "<div class=\"demo\" data-preview>CSS 대상 요소</div>",
+      "answer": "color: red;",
+      "hints": [
+        "글자 색상 표기를 연습합니다.",
+        "비슷한 코드 예시: .sample { color: royalblue; }",
+        "color는 글자와 currentColor를 사용하는 장식의 기준 색상을 정합니다."
+      ]
+    },
+    {
+      "id": 2,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "배경색",
+      "question": "배경 색상을 black로 지정하세요.",
+      "html": "<div class=\"demo\" data-preview>CSS 대상 요소</div>",
+      "answer": "background-color: black;",
+      "hints": [
+        "요소 배경의 단색을 지정해 보세요.",
+        "비슷한 코드 예시: .sample { background-color: lavender; }",
+        "background-color는 배경 이미지 아래에 칠해지는 색상입니다."
+      ]
+    },
+    {
+      "id": 3,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "글자 크기",
+      "question": "글자 크기를 16px로 지정하세요.",
+      "html": "<div class=\"demo\" data-preview>CSS 대상 요소</div>",
+      "answer": "font-size: 16px;",
+      "hints": [
+        "글자의 기준 크기와 단위를 구분하세요.",
+        "비슷한 코드 예시: .sample { font-size: 1.25rem; }",
+        "font-size는 글자 크기뿐 아니라 em 기반 자식 크기의 기준이 됩니다."
+      ]
+    },
+    {
+      "id": 4,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "글자 굵기",
+      "question": "글자 굵기를 700로 지정하세요.",
+      "html": "<p class=\"demo\" data-preview style=\"font-size:36px;font-family:Arial,sans-serif\">Bold weight 700</p>",
+      "answer": "font-weight: 700;",
+      "hints": [
+        "숫자 굵기와 폰트가 지원하는 굵기를 연결해 보세요.",
+        "비슷한 코드 예시: .sample { font-weight: 600; }",
+        "font-weight는 숫자 또는 키워드로 글자 굵기를 지정합니다."
+      ]
+    },
+    {
+      "id": 5,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "균일한 바깥 여백",
+      "question": "바깥 여백을 20px로 지정하세요.",
+      "html": "<div class=\"demo\" data-preview>CSS 대상 요소</div>",
+      "answer": "margin: 20px;",
+      "hints": [
+        "요소 바깥 여백의 축약 순서를 확인하세요.",
+        "비슷한 코드 예시: .sample { margin: 8px 16px; }",
+        "margin의 두 값은 블록 방향과 인라인 방향 순서입니다."
+      ]
+    },
+    {
+      "id": 6,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "축별 안쪽 여백",
+      "question": "안쪽 여백을 16px로 지정하세요.",
+      "html": "<div class=\"demo\" data-preview>CSS 대상 요소</div>",
+      "answer": "padding: 16px;",
+      "hints": [
+        "콘텐츠와 테두리 사이의 안쪽 여백을 정하세요.",
+        "비슷한 코드 예시: .sample { padding: 12px 20px; }",
+        "padding은 요소의 클릭 영역과 실제 상자 크기에도 영향을 줍니다."
+      ]
+    },
+    {
+      "id": 7,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "실선 테두리",
+      "question": "테두리를 1px solid #ddd로 지정하세요.",
+      "html": "<div class=\"demo\" data-preview>CSS 대상 요소</div>",
+      "answer": "border: 1px solid #ddd;",
+      "hints": [
+        "테두리의 두께·스타일·색상을 한 번에 지정할 수 있습니다.",
+        "비슷한 코드 예시: .sample { border: 2px solid navy; }",
+        "border 축약형은 width, style, color를 함께 설정합니다."
+      ]
+    },
+    {
+      "id": 8,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "블록 표시",
+      "question": "display 값을 block로 지정하세요.",
+      "html": "<div style=\"width:360px\"><button data-preview>전체 행을 차지할 버튼</button><span>다음 요소</span></div>",
+      "answer": "display: block;",
+      "hints": [
+        "요소가 레이아웃에 참여하는 방식을 선택하세요.",
+        "비슷한 코드 예시: .sample { display: inline-flex; }",
+        "display는 바깥쪽 흐름과 내부 레이아웃 문맥을 결정합니다."
+      ]
+    },
+    {
+      "id": 9,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "너비",
+      "question": "너비를 100%로 지정하세요.",
+      "html": "<div style=\"width:360px\"><button data-preview>부모 너비를 채우기</button></div>",
+      "answer": "width: 100%;",
+      "hints": [
+        "요소의 가로 크기 단위와 부모 기준을 확인하세요.",
+        "비슷한 코드 예시: .sample { width: 50%; }",
+        "width의 백분율은 일반적으로 포함 블록의 너비를 기준으로 계산됩니다."
+      ]
+    },
+    {
+      "id": 10,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "고정 높이",
+      "question": "높이를 100px로 지정하세요.",
+      "html": "<div class=\"demo\" data-preview>CSS 대상 요소</div>",
+      "answer": "height: 100px;",
+      "hints": [
+        "고정 크기와 뷰포트·콘텐츠 기반 크기를 구분하세요.",
+        "비슷한 코드 예시: .sample { height: 50vh; }",
+        "height는 지정값에 따라 콘텐츠보다 작아질 수 있으므로 overflow와 함께 고려합니다."
+      ]
+    },
+    {
+      "id": 11,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "숨김 넘침 처리",
+      "question": "넘치는 내용을 hidden로 처리하세요.",
+      "html": "<div class=\"demo\" data-preview style=\"width:220px;height:70px\"><div style=\"width:360px;height:120px;background:#7c3aed\">상자보다 큰 콘텐츠</div></div>",
+      "answer": "overflow: hidden;",
+      "hints": [
+        "상자 밖으로 넘친 콘텐츠의 처리 방식을 결정하세요.",
+        "비슷한 코드 예시: .sample { overflow: clip; }",
+        "overflow는 잘라내기와 스크롤 컨테이너 생성 여부에 영향을 줍니다."
+      ]
+    },
+    {
+      "id": 12,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "절반 투명",
+      "question": "투명도를 0.5로 지정하세요.",
+      "html": "<div class=\"demo\" data-preview>CSS 대상 요소</div>",
+      "answer": "opacity: 0.5;",
+      "hints": [
+        "요소와 모든 자식의 투명도를 함께 조절합니다.",
+        "비슷한 코드 예시: .sample { opacity: .75; }",
+        "opacity는 요소 전체를 합성한 결과에 적용됩니다."
+      ]
+    },
+    {
+      "id": 13,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "쌓임 순서",
+      "question": "z-index를 10로 지정하세요.",
+      "html": "<div style=\"position:relative;height:110px\"><div data-preview style=\"position:absolute;inset:10px 80px 20px 10px;background:#ef4444\">대상</div><div style=\"position:absolute;inset:35px 20px 5px 70px;background:#2563eb\">비교</div></div>",
+      "answer": "z-index: 10;",
+      "hints": [
+        "겹치는 요소의 쌓임 순서를 정하세요.",
+        "비슷한 코드 예시: .sample { z-index: 20; }",
+        "z-index는 같은 쌓임 맥락 안에서 비교되며 위치·격리 조건의 영향을 받습니다."
+      ]
+    },
+    {
+      "id": 14,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "둥근 모서리",
+      "question": "모서리 둥글기를 8px로 지정하세요.",
+      "html": "<div class=\"demo\" data-preview>CSS 대상 요소</div>",
+      "answer": "border-radius: 8px;",
+      "hints": [
+        "상자의 모서리 곡률을 지정하세요.",
+        "비슷한 코드 예시: .sample { border-radius: 16px; }",
+        "백분율 radius는 요소 크기를 기준으로 계산됩니다."
+      ]
+    },
+    {
+      "id": 15,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "그림자",
+      "question": "그림자를 0 4px 12px rgba(0,0,0,.15)로 지정하세요.",
+      "html": "<div class=\"demo\" data-preview>CSS 대상 요소</div>",
+      "answer": "box-shadow: 0 4px 12px rgba(0,0,0,.15);",
+      "hints": [
+        "그림자의 이동·흐림·퍼짐과 색상을 구분하세요.",
+        "비슷한 코드 예시: .sample { box-shadow: 0 8px 24px rgb(0 0 0 / .2); }",
+        "box-shadow는 레이아웃 크기를 바꾸지 않고 상자 바깥에 그려집니다."
+      ]
+    },
+    {
+      "id": 16,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "가운데 텍스트 정렬",
+      "question": "텍스트를 center 정렬하세요.",
+      "html": "<div class=\"demo\" data-preview>CSS 대상 요소</div>",
+      "answer": "text-align: center;",
+      "hints": [
+        "인라인 콘텐츠의 가로 정렬을 지정하세요.",
+        "비슷한 코드 예시: .sample { text-align: start; }",
+        "text-align은 블록 자체가 아니라 블록 안의 인라인 콘텐츠를 정렬합니다."
+      ]
+    },
+    {
+      "id": 17,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "고정 줄높이",
+      "question": "줄 높이를 글자 크기의 2배로 지정하세요.",
+      "html": "<p class=\"demo\" data-preview style=\"width:220px\">Line height changes<br>the vertical rhythm<br>of multiple lines.</p>",
+      "answer": "line-height: 2;",
+      "hints": [
+        "글자 크기에 대한 비율을 단위 없는 숫자로 지정하세요.",
+        "비슷한 코드 예시: .sample { line-height: 1.75; }",
+        "단위 없는 line-height는 자식에게 계산값이 아닌 비율로 상속됩니다."
+      ]
+    },
+    {
+      "id": 18,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "포인터 커서",
+      "question": "커서 모양을 pointer로 지정하세요.",
+      "html": "<div class=\"demo\" data-preview>CSS 대상 요소</div>",
+      "answer": "cursor: pointer;",
+      "hints": [
+        "마우스 포인터가 전달할 상호작용 의미를 정하세요.",
+        "비슷한 코드 예시: .sample { cursor: grab; }",
+        "cursor는 동작을 구현하지 않으므로 실제 이벤트·상태와 일치해야 합니다."
+      ]
+    },
+    {
+      "id": 19,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "상대 위치 방식",
+      "question": "position 값을 relative로 지정하세요.",
+      "html": "<section class=\"demo\" data-preview style=\"margin-left:140px;width:220px;height:100px\"><span style=\"position:absolute;top:0;left:0;background:#7c3aed;padding:8px\">절대 위치 자식</span></section>",
+      "answer": "position: relative;",
+      "hints": [
+        "요소가 위치 기준과 문서 흐름에 참여하는 방식을 선택하세요.",
+        "비슷한 코드 예시: .sample { position: sticky; }",
+        "position 값에 따라 inset 속성이 참조하는 기준이 달라집니다."
+      ]
+    },
+    {
+      "id": 20,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "가로 이동 변형",
+      "question": "요소에 translateX(20px) 변형을 적용하세요.",
+      "html": "<div class=\"demo\" data-preview>CSS 대상 요소</div>",
+      "answer": "transform: translateX(20px);",
+      "hints": [
+        "레이아웃 공간은 유지한 채 요소를 시각적으로 변형하세요.",
+        "비슷한 코드 예시: .sample { transform: translateY(8px); }",
+        "transform 함수는 오른쪽부터 왼쪽 순서의 행렬로 합성됩니다."
+      ]
+    },
+    {
+      "id": 21,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "바깥 여백",
+      "question": "바깥 여백을 0 auto로 지정하세요.",
+      "html": "<div style=\"width:520px;border:1px solid #5c5668\"><div class=\"demo\" data-preview style=\"width:220px\">가운데 배치할 고정 폭 상자</div></div>",
+      "answer": "margin: 0 auto;",
+      "hints": [
+        "요소 바깥 여백의 축약 순서를 확인하세요.",
+        "비슷한 코드 예시: .sample { margin: 8px 16px; }",
+        "margin의 두 값은 블록 방향과 인라인 방향 순서입니다."
+      ]
+    },
+    {
+      "id": 22,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "바깥 포커스 선",
+      "question": "레이아웃 크기를 바꾸지 않는 3px 보라색 외곽선을 그리고 요소에서 4px 떨어뜨리세요.",
+      "html": "<button data-preview>포커스 대상</button>",
+      "answer": "outline: 3px solid #7c3aed; outline-offset: 4px;",
+      "hints": [
+        "border 대신 상자 크기에 포함되지 않는 외곽선과 간격 속성을 조합하세요.",
+        "비슷한 코드 예시: .sample { outline: 2px solid royalblue; outline-offset: 2px; }",
+        "outline은 레이아웃 공간을 차지하지 않고 outline-offset으로 요소와의 거리를 조절합니다."
+      ]
+    },
+    {
+      "id": 23,
+      "mode": "declaration",
+      "stage": "기초 속성",
+      "title": "절대 위치 방식",
+      "question": "position 값을 absolute로 지정하세요.",
+      "html": "<div class=\"demo\" data-preview>CSS 대상 요소</div>",
+      "answer": "position: absolute;",
+      "hints": [
+        "요소가 위치 기준과 문서 흐름에 참여하는 방식을 선택하세요.",
+        "비슷한 코드 예시: .sample { position: sticky; }",
+        "position 값에 따라 inset 속성이 참조하는 기준이 달라집니다."
+      ]
+    },
+    {
+      "id": 24,
+      "mode": "declaration",
+      "stage": "핵심 원리",
+      "title": "예측 가능한 박스 크기",
+      "question": "width에 padding과 border가 포함되도록 box-sizing을 지정하세요.",
+      "html": "<div data-preview style=\"width:240px;padding:24px;border:8px solid #7c3aed\">240px 상자</div>",
+      "answer": "box-sizing: border-box;",
+      "required": {
+        "box-sizing": "border-box"
+      },
+      "hints": [
+        "기본 content-box에서는 padding과 border가 width 바깥에 더해집니다.",
+        "비슷한 코드 예시: .sample { box-sizing: content-box; }",
+        "width 계산 기준을 바꾸면 콘텐츠·padding·border를 선언한 폭 안에서 함께 계산할 수 있습니다."
+      ],
+      "solution": {
+        "summary": "border-box는 지정한 너비 안에서 padding과 border를 계산해 실제 상자 크기를 예측하기 쉽게 만듭니다.",
+        "keyPoints": [
+          "content-box는 width가 콘텐츠 영역만 의미합니다.",
+          "전역 스타일에서 *, *::before, *::after에 적용하는 경우가 많습니다."
+        ],
+        "alternative": "calc로 padding과 border를 직접 빼는 방법보다 box-sizing으로 계산 규칙을 통일하는 편이 안전합니다.",
+        "complexity": "렌더링 비용 차이보다 레이아웃 크기 계산의 일관성이 핵심입니다."
+      }
+    },
+    {
+      "id": 25,
+      "mode": "declaration",
+      "stage": "핵심 원리",
+      "title": "상속값 사용",
+      "question": "자식 링크의 color가 부모의 글자색을 명시적으로 상속받도록 지정하세요.",
+      "html": "<div style=\"color:#a78bfa\"><a data-preview href=\"#\">부모 색을 따르는 링크</a></div>",
+      "answer": "color: inherit;",
+      "required": {
+        "color": "inherit"
+      },
+      "hints": [
+        "부모의 계산된 값을 그대로 사용하게 만드는 전역 키워드가 있습니다.",
+        "비슷한 코드 예시: .sample { font-family: inherit; }",
+        "inherit는 원래 상속되지 않는 속성에도 부모 값을 강제로 적용할 수 있습니다."
+      ],
+      "solution": {
+        "summary": "inherit는 부모 요소의 계산된 color 값을 현재 요소의 값으로 사용합니다.",
+        "keyPoints": [
+          "color는 기본적으로 상속되지만 링크의 사용자 에이전트 스타일을 명시적으로 덮을 때 유용합니다.",
+          "상속과 캐스케이드는 서로 다른 개념입니다."
+        ],
+        "alternative": "color: currentColor는 현재 요소의 color 자체를 참조하므로 부모값을 강제하는 inherit와 목적이 다릅니다.",
+        "complexity": "상속 관계를 명확히 해 중복 색상 선언을 줄이는 문제입니다."
+      }
+    },
+    {
+      "id": 26,
+      "mode": "declaration",
+      "stage": "핵심 원리",
+      "title": "공간을 유지한 숨김",
+      "question": "요소의 레이아웃 공간은 유지하면서 화면에서 보이지 않게 하세요.",
+      "html": "<div><span>앞</span><span data-preview>숨길 배지</span><span>뒤</span></div>",
+      "answer": "visibility: hidden;",
+      "required": {
+        "visibility": "hidden"
+      },
+      "hints": [
+        "display:none은 공간까지 제거합니다.",
+        "비슷한 코드 예시: .sample { visibility: visible; }",
+        "공간을 남기는 숨김 방식은 페인팅만 생략하고 레이아웃 박스는 유지합니다."
+      ],
+      "solution": {
+        "summary": "visibility:hidden은 페인팅과 상호작용에서 요소를 숨기되 레이아웃 박스는 유지합니다.",
+        "keyPoints": [
+          "display:none은 레이아웃 트리에서 요소의 공간도 제거합니다.",
+          "단순 투명도 0은 요소가 포인터·포커스 대상이 될 수 있어 숨김 의미와 다릅니다."
+        ],
+        "alternative": "공간까지 없애야 한다면 display:none이 더 적절합니다.",
+        "complexity": "화면 상태 전환에서 레이아웃 이동을 피할지 여부를 선택하는 문제입니다."
+      }
+    },
+    {
+      "id": 27,
+      "mode": "declaration",
+      "stage": "핵심 원리",
+      "title": "목록 기본 장식 제거",
+      "question": "목록의 불릿과 기본 들여쓰기를 함께 제거하세요.",
+      "html": "<ul data-preview><li>HTML</li><li>CSS</li></ul>",
+      "answer": "list-style: none; padding: 0;",
+      "required": {
+        "list-style": "none",
+        "padding": "0"
+      },
+      "hints": [
+        "불릿과 브라우저 기본 들여쓰기는 서로 다른 CSS 속성에서 옵니다.",
+        "비슷한 코드 예시: .sample { list-style: square; padding-inline-start: 1.5rem; }",
+        "불릿만 제거해도 ul의 기본 padding은 남을 수 있습니다."
+      ],
+      "solution": {
+        "summary": "목록 의미는 유지하면서 브라우저의 불릿과 기본 안쪽 여백만 제거합니다.",
+        "keyPoints": [
+          "시각적 불릿을 제거해도 li의 목록 구조는 유지됩니다.",
+          "브라우저 기본 스타일은 속성별로 나누어 초기화해야 합니다."
+        ],
+        "alternative": "list-style-position이나 커스텀 ::marker를 사용해 기본 장식을 조정할 수도 있습니다.",
+        "complexity": "DOM 의미를 바꾸지 않고 표현만 재설정하는 문제입니다."
+      }
+    },
+    {
+      "id": 28,
+      "mode": "declaration",
+      "stage": "핵심 원리",
+      "title": "반응형 이미지 기본값",
+      "question": "이미지가 부모보다 넓어지지 않으면서 원본 비율을 유지하도록 지정하세요.",
+      "html": "<div style=\"width:260px\"><img data-preview alt=\"예시\" style=\"width:480px\" src=\"data:image/gif;base64,R0lGODlhAQABAAAAACw=\"></div>",
+      "answer": "max-width: 100%; height: auto;",
+      "required": {
+        "max-width": "100%",
+        "height": "auto"
+      },
+      "hints": [
+        "최대 너비는 부모를 넘지 않게 하고 높이는 자동 계산하게 하세요.",
+        "비슷한 코드 예시: .sample { width: 75%; max-width: 40rem; }",
+        "높이를 브라우저가 계산하게 하면 너비 변화에도 이미지 고유 비율을 유지할 수 있습니다."
+      ],
+      "solution": {
+        "summary": "max-width:100%는 작은 이미지를 억지로 키우지 않으면서 큰 이미지만 부모 너비 안으로 제한합니다.",
+        "keyPoints": [
+          "width:100%는 원본보다 작은 이미지도 항상 늘릴 수 있습니다.",
+          "height:auto는 너비에 따른 비율 계산을 브라우저에 맡깁니다."
+        ],
+        "alternative": "고정 프레임을 채우는 썸네일에는 aspect-ratio와 object-fit이 더 적합합니다.",
+        "complexity": "뷰포트 변화에 따른 이미지 넘침을 선언 두 개로 방지합니다."
+      }
+    },
+    {
+      "id": 29,
+      "mode": "declaration",
+      "stage": "핵심 원리",
+      "title": "유동적 최대 너비",
+      "question": "콘텐츠가 부모 너비를 사용하되 640px보다 넓어지지 않도록 지정하세요.",
+      "html": "<main data-preview>읽기 영역</main>",
+      "answer": "width: 100%; max-width: 640px;",
+      "required": {
+        "width": "100%",
+        "max-width": "640px"
+      },
+      "hints": [
+        "기본 너비와 상한을 별도 속성으로 지정하세요.",
+        "비슷한 코드 예시: .sample { width: 100%; max-width: 48rem; }",
+        "max-width는 계산된 width가 지정값보다 커지는 것을 막습니다."
+      ],
+      "solution": {
+        "summary": "width:100%로 좁은 부모를 채우고 max-width로 넓은 화면에서 읽기 폭을 제한합니다.",
+        "keyPoints": [
+          "width와 max-width가 함께 적용되면 더 엄격한 최대 조건이 이깁니다.",
+          "고정 width만 사용하면 작은 화면에서 가로 스크롤이 생길 수 있습니다."
+        ],
+        "alternative": "width:min(100%, 640px) 함수형 표기로 같은 의도를 표현할 수 있습니다.",
+        "complexity": "컨테이너 크기에 따라 유동적으로 계산되는 반응형 크기 규칙입니다."
+      }
+    },
+    {
+      "id": 30,
+      "mode": "declaration",
+      "stage": "핵심 원리",
+      "title": "콘텐츠 줄바꿈 보존",
+      "question": "연속 공백과 줄바꿈을 보존하면서 긴 줄은 컨테이너 안에서 줄바꿈되게 하세요.",
+      "html": "<p data-preview style=\"width:220px\">첫 줄\n  들여쓴 둘째 줄과아주긴텍스트가이어집니다</p>",
+      "answer": "white-space: pre-wrap;",
+      "required": {
+        "white-space": "pre-wrap"
+      },
+      "hints": [
+        "pre의 보존 특성과 일반 문단의 자동 줄바꿈을 함께 사용하세요.",
+        "비슷한 코드 예시: .sample { white-space: pre; }",
+        "공백을 보존하는 값마다 컨테이너 경계의 자동 줄바꿈 허용 여부가 다릅니다."
+      ],
+      "solution": {
+        "summary": "pre-wrap은 작성된 공백과 개행을 유지하면서 컨테이너 경계에서 자동 줄바꿈도 허용합니다.",
+        "keyPoints": [
+          "pre는 긴 줄의 자동 줄바꿈을 허용하지 않습니다.",
+          "normal은 연속 공백과 작성된 개행을 하나의 공백처럼 합칩니다."
+        ],
+        "alternative": "공백 보존이 필요 없고 긴 단어만 처리하려면 overflow-wrap:anywhere가 더 적절합니다.",
+        "complexity": "텍스트의 원본 서식과 반응형 줄바꿈을 동시에 보존합니다."
+      }
+    },
+    {
+      "id": 31,
+      "mode": "declaration",
+      "stage": "핵심 원리",
+      "title": "최소 높이",
+      "question": "콘텐츠가 적어도 120px 높이의 영역을 확보하도록 지정하세요.",
+      "html": "<section class=\"demo\" data-preview>짧은 콘텐츠</section>",
+      "answer": "min-height: 120px;",
+      "hints": [
+        "콘텐츠가 늘어나는 것은 허용하면서 최소 세로 크기만 보장하세요.",
+        "비슷한 코드 예시: .sample { min-height: 10rem; }",
+        "min-height는 실제 height가 지정값보다 작아지는 것을 막습니다."
+      ]
+    },
+    {
+      "id": 32,
+      "mode": "declaration",
+      "stage": "핵심 원리",
+      "title": "포인터 통과",
+      "question": "장식 레이어가 마우스·터치 이벤트의 대상이 되지 않도록 지정하세요.",
+      "html": "<div style=\"position:relative\"><button>실제 버튼</button><span data-preview style=\"position:absolute;inset:0;background:#7c3aed55\">장식</span></div>",
+      "answer": "pointer-events: none;",
+      "required": {
+        "pointer-events": "none"
+      },
+      "hints": [
+        "장식 요소가 아래의 실제 컨트롤 클릭을 가로채지 않게 하세요.",
+        "비슷한 코드 예시: .sample::before { pointer-events: auto; }",
+        "포인터 hit testing에서 제외하는 값은 클릭을 아래 요소로 통과시킵니다."
+      ],
+      "solution": {
+        "summary": "pointer-events:none은 장식 레이어를 포인터 대상에서 제외해 아래의 실제 버튼이 입력을 받게 합니다.",
+        "keyPoints": [
+          "투명도 0만으로는 포인터 이벤트가 사라지지 않습니다.",
+          "키보드 포커스와 포인터 이벤트는 별개의 상호작용 경로입니다."
+        ],
+        "alternative": "장식을 ::before 같은 가상 요소로 만들고 그 가상 요소에만 적용할 수 있습니다.",
+        "complexity": "겹친 레이어의 입력 대상 판정을 명확히 하는 문제입니다."
+      }
+    },
+    {
+      "id": 33,
+      "mode": "declaration",
+      "stage": "박스 모델",
+      "title": "고정 위치 방식",
+      "question": "position 값을 fixed로 지정하세요.",
+      "html": "<div class=\"demo\" data-preview>CSS 대상 요소</div>",
+      "answer": "position: fixed;",
+      "hints": [
+        "요소가 위치 기준과 문서 흐름에 참여하는 방식을 선택하세요.",
+        "비슷한 코드 예시: .sample { position: sticky; }",
+        "position 값에 따라 inset 속성이 참조하는 기준이 달라집니다."
+      ]
+    },
+    {
+      "id": 34,
+      "mode": "declaration",
+      "stage": "복합 스타일",
+      "title": "한 줄 말줄임",
+      "question": "긴 텍스트를 한 줄로 유지하고 넘친 부분을 말줄임표로 표시하세요.",
+      "html": "<p class=\"demo\" data-preview style=\"width:220px\">아주 긴 제목이 컨테이너 너비를 넘어가므로 말줄임 처리가 필요합니다.</p>",
+      "answer": "overflow: hidden; text-overflow: ellipsis; white-space: nowrap;",
+      "required": {
+        "overflow": "hidden",
+        "text-overflow": "ellipsis",
+        "white-space": "nowrap"
+      },
+      "hints": [
+        "텍스트가 넘치는 조건과 표시 방식을 나누어 생각해 보세요.",
+        "비슷한 코드 예시: .sample { overflow: hidden; white-space: nowrap; text-overflow: clip; }",
+        "text-overflow가 보이려면 보통 넘침 처리와 줄바꿈 조건도 함께 필요합니다."
+      ]
+    },
+    {
+      "id": 35,
+      "mode": "declaration",
+      "stage": "복합 스타일",
+      "title": "두 줄 말줄임",
+      "question": "텍스트를 최대 두 줄까지만 표시하세요.",
+      "html": "<p class=\"demo\" data-preview style=\"width:240px\">카드 설명은 여러 줄로 이어지지만 목록에서는 두 줄까지만 보여 주고 나머지 내용은 숨겨야 합니다.</p>",
+      "answer": "display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;",
+      "required": {
+        "display": "-webkit-box",
+        "-webkit-line-clamp": "2",
+        "-webkit-box-orient": "vertical",
+        "overflow": "hidden"
+      },
+      "hints": [
+        "여러 줄을 제한할 때는 줄 수, 박스 방향, 넘침 처리가 함께 필요합니다.",
+        "비슷한 코드 예시: .sample { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }",
+        "-webkit-line-clamp 값은 화면에 남길 최대 줄 수를 뜻합니다."
+      ]
+    },
+    {
+      "id": 36,
+      "mode": "declaration",
+      "stage": "복합 스타일",
+      "title": "반응형 글자 크기",
+      "question": "글자 크기를 최소 18px, 선호 4vw, 최대 36px로 제한하세요.",
+      "html": "<h2 class=\"demo\" data-preview>반응형 제목</h2>",
+      "answer": "font-size: clamp(18px, 4vw, 36px);",
+      "required": {
+        "font-size": "clamp(18px, 4vw, 36px)"
+      },
+      "hints": [
+        "고정값 하나 대신 최소·선호·최대 크기를 순서대로 정해 보세요.",
+        "비슷한 코드 예시: .sample { font-size: clamp(1rem, 3vw, 2rem); }",
+        "clamp(최소값, 선호값, 최대값)은 반응형 값의 범위를 제한합니다."
+      ]
+    },
+    {
+      "id": 37,
+      "mode": "declaration",
+      "stage": "복합 스타일",
+      "title": "계산된 너비",
+      "question": "요소 너비를 전체에서 32px을 뺀 값으로 만들고 최대 720px로 제한하세요.",
+      "html": "<section class=\"demo\" data-preview>콘텐츠</section>",
+      "answer": "width: calc(100% - 32px); max-width: 720px;",
+      "required": {
+        "width": "calc(100% - 32px)",
+        "max-width": "720px"
+      },
+      "hints": [
+        "컨테이너가 부모보다 넓어지지 않도록 최대 크기와 넘침 축을 함께 확인하세요.",
+        "비슷한 코드 예시: .sample { max-width: 90vw; overflow-x: scroll; }",
+        "max-width는 크기 상한을 정하고 overflow-x는 실제 넘침의 처리 방식을 정합니다."
+      ]
+    },
+    {
+      "id": 38,
+      "mode": "declaration",
+      "stage": "복합 스타일",
+      "title": "정사각형 미디어",
+      "question": "이미지를 1:1 비율로 표시하고 이미지 영역을 잘라 채우세요.",
+      "html": "<img data-preview style=\"width:240px\" src=\"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22600%22 height=%22300%22%3E%3Crect width=%22600%22 height=%22300%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%22300%22 cy=%22150%22 r=%22100%22 fill=%22%23fbbf24%22/%3E%3C/svg%3E\" alt=\"가로로 긴 샘플 이미지\">",
+      "answer": "aspect-ratio: 1 / 1; object-fit: cover;",
+      "required": {
+        "aspect-ratio": "1 / 1",
+        "object-fit": "cover"
+      },
+      "hints": [
+        "바깥 상자의 비율과 내부 콘텐츠가 채워지는 방식을 따로 설정하세요.",
+        "비슷한 코드 예시: .sample { aspect-ratio: 16 / 9; object-fit: contain; }",
+        "aspect-ratio는 상자 비율을, object-fit은 이미지가 그 상자를 채우는 방식을 제어합니다."
+      ]
+    },
+    {
+      "id": 39,
+      "mode": "declaration",
+      "stage": "복합 스타일",
+      "title": "논리적 여백",
+      "question": "인라인 방향 24px, 블록 방향 16px의 논리적 안쪽 여백을 적용하세요.",
+      "html": "<article class=\"demo\" data-preview>다국어 카드</article>",
+      "answer": "padding-inline: 24px; padding-block: 16px;",
+      "required": {
+        "padding-inline": "24px",
+        "padding-block": "16px"
+      },
+      "hints": [
+        "좌우 대신 글쓰기 방향을 따르는 논리적 여백 속성을 사용해 보세요.",
+        "비슷한 코드 예시: .sample { padding-inline: 1rem; padding-block: .75rem; }",
+        "inline은 글줄 방향, block은 문단이 쌓이는 방향을 뜻합니다."
+      ]
+    },
+    {
+      "id": 40,
+      "mode": "declaration",
+      "stage": "복합 스타일",
+      "title": "스크롤 영역",
+      "question": "최대 높이를 240px로 제한하고 세로로만 스크롤되게 하세요.",
+      "html": "<div class=\"demo\" data-preview><p>스크롤 항목 1</p><p>스크롤 항목 2</p><p>스크롤 항목 3</p><p>스크롤 항목 4</p><p>스크롤 항목 5</p><p>스크롤 항목 6</p></div>",
+      "answer": "max-height: 240px; overflow-y: auto; overflow-x: hidden;",
+      "required": {
+        "max-height": "240px",
+        "overflow-y": "auto",
+        "overflow-x": "hidden"
+      },
+      "hints": [
+        "크기 제한과 실제 넘침 처리 방향을 함께 지정해 보세요.",
+        "비슷한 코드 예시: .sample { max-height: 20rem; overflow-y: scroll; }",
+        "max-height만 지정하면 스크롤이 생기지 않으므로 overflow 축 설정이 필요합니다."
+      ]
+    },
+    {
+      "id": 41,
+      "mode": "declaration",
+      "stage": "복합 스타일",
+      "title": "상호작용 전환",
+      "question": "transform과 opacity가 200ms ease로 전환되게 하세요.",
+      "html": "<button class=\"demo\" data-preview>Hover me</button>",
+      "answer": "transition: transform 200ms ease, opacity 200ms ease;",
+      "required": {
+        "transition": "transform 200ms ease, opacity 200ms ease"
+      },
+      "hints": [
+        "변화시킬 속성마다 지속 시간과 타이밍 함수를 묶어 작성하세요.",
+        "비슷한 코드 예시: .sample { transition: color 150ms linear, background-color 150ms linear; }",
+        "쉼표를 사용하면 여러 속성의 전환 규칙을 한 번에 지정할 수 있습니다."
+      ]
+    },
+    {
+      "id": 42,
+      "mode": "declaration",
+      "stage": "고난도 속성",
+      "title": "강제 줄바꿈",
+      "question": "긴 단어도 영역을 넘지 않도록 어디서든 줄바꿈하세요.",
+      "html": "<p class=\"demo\" data-preview style=\"width:180px\">averyveryveryveryverylongunbreakableword</p>",
+      "answer": "overflow-wrap: anywhere;",
+      "required": {
+        "overflow-wrap": "anywhere"
+      },
+      "hints": [
+        "긴 문자열이 상자보다 클 때 어디에서 나눌지 지정하세요.",
+        "비슷한 코드 예시: .sample { overflow-wrap: break-word; word-break: normal; }",
+        "overflow-wrap은 넘침 방지용 줄바꿈을, word-break는 단어 분할 규칙을 제어합니다."
+      ]
+    },
+    {
+      "id": 43,
+      "mode": "declaration",
+      "stage": "고난도 속성",
+      "title": "스크롤 스냅",
+      "question": "가로 스크롤과 필수 스냅을 사용하는 컨테이너로 만드세요.",
+      "html": "<div class=\"demo\" data-preview style=\"display:flex;width:280px\"><article style=\"flex:0 0 240px;scroll-snap-align:start\">첫 슬라이드</article><article style=\"flex:0 0 240px;scroll-snap-align:start\">둘째 슬라이드</article></div>",
+      "answer": "overflow-x: auto; scroll-snap-type: x mandatory;",
+      "required": {
+        "overflow-x": "auto",
+        "scroll-snap-type": "x mandatory"
+      },
+      "hints": [
+        "스크롤 축과 스냅 강도를 한 속성에 함께 지정하세요.",
+        "비슷한 코드 예시: .sample { overflow-x: auto; scroll-snap-type: x proximity; }",
+        "mandatory는 반드시 가까운 스냅 지점에 멈추고 proximity는 가까울 때만 스냅합니다."
+      ]
+    },
+    {
+      "id": 44,
+      "mode": "declaration",
+      "stage": "고난도 속성",
+      "title": "최소 터치 영역",
+      "question": "최소 너비와 높이를 각각 44px로 보장하세요.",
+      "html": "<button data-preview style=\"padding:0\">×</button>",
+      "answer": "min-width: 44px; min-height: 44px;",
+      "required": {
+        "min-width": "44px",
+        "min-height": "44px"
+      },
+      "hints": [
+        "클릭 영역이 작아지지 않도록 최소 가로·세로 크기를 함께 보장하세요.",
+        "비슷한 코드 예시: .sample { min-width: 3rem; min-height: 3rem; }",
+        "min-width와 min-height는 콘텐츠가 적어도 지정 크기 아래로 줄지 않게 합니다."
+      ]
+    },
+    {
+      "id": 45,
+      "mode": "declaration",
+      "stage": "고난도 속성",
+      "title": "CSS 변수 활용",
+      "question": "--space를 20px로 선언하고 padding에 사용하세요.",
+      "html": "<article class=\"demo\" data-preview>토큰 기반 카드</article>",
+      "answer": "--space: 20px; padding: var(--space);",
+      "required": {
+        "--space": "20px",
+        "padding": "var(--space)"
+      },
+      "hints": [
+        "사용자 정의 속성을 먼저 선언하고 var()로 다시 참조하세요.",
+        "비슷한 코드 예시: .sample { --gap: 1rem; margin: var(--gap); }",
+        "CSS 변수 이름은 --로 시작하며 var(--이름) 형태로 사용합니다."
+      ]
+    }
+  ]
+}

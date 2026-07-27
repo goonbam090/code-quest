@@ -1,0 +1,15 @@
+{
+  "name": "code-quest-renderer",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test",
+    "audit": "node scripts/audit-catalog.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.61.0"
+  }
+}

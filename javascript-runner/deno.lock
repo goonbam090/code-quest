@@ -1,0 +1,17 @@
+{
+  "version": "5",
+  "specifiers": {
+    "npm:acorn@8.17.0": "8.17.0"
+  },
+  "npm": {
+    "acorn@8.17.0": {
+      "integrity": "sha512-xRQbDb9BnwDafYNn6Vwl839DYVjqXYb1XVGtWAZ1kcDc6iwAL4hg3B1dZlRiuENFeO2H53gFG3in621AdERVAg==",
+      "bin": true
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "npm:acorn@8.17.0"
+    ]
+  }
+}

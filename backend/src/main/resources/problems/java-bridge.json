@@ -1,0 +1,1225 @@
+{
+  "id": "java-bridge",
+  "name": "Java Bridge",
+  "description": "기본 문법을 객체지향과 실무 문법으로 연결하는 17문제",
+  "problems": [
+    {
+      "id": 1,
+      "mode": "java",
+      "stage": "타입·메서드 연결",
+      "title": "정수 평균과 형변환",
+      "question": "total과 count의 실수 평균에서 소수점 이하를 버린 int 값을 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int total, int count) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int total, int count) {\n        double average = (double) total / count;\n        return (int) average;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "total=17, count=5",
+          "output": "3",
+          "trace": [
+            {
+              "label": "형변환",
+              "state": "(double) 17 / 5 = 3.4",
+              "detail": "나눗셈 전에 한 피연산자를 double로 바꿉니다."
+            },
+            {
+              "label": "반환",
+              "state": "(int) 3.4 = 3",
+              "detail": "int 형변환은 소수점 이하를 버립니다."
+            }
+          ]
+        }
+      ],
+      "constraints": [
+        "1 ≤ count ≤ 1,000",
+        "0 ≤ total ≤ 1,000,000",
+        "반올림하지 않고 소수점 이하를 버립니다."
+      ],
+      "hints": [
+        "정수끼리 나누기 전에 한 값을 double로 바꾸세요.",
+        "비슷한 예시: double ratio = (double) part / whole; int result = (int) ratio;",
+        "마지막에 평균값을 int로 명시적 형변환합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "arguments": [
+              "17",
+              "5"
+            ],
+            "expected": "3",
+            "label": "나누어떨어지지 않는 평균"
+          },
+          {
+            "id": "case-2",
+            "arguments": [
+              "20",
+              "4"
+            ],
+            "expected": "5",
+            "label": "정수 평균"
+          },
+          {
+            "id": "case-3",
+            "arguments": [
+              "1",
+              "2"
+            ],
+            "expected": "0",
+            "label": "1보다 작은 평균"
+          },
+          {
+            "id": "case-4",
+            "arguments": [
+              "999999",
+              "1000"
+            ],
+            "expected": "999",
+            "label": "큰 입력"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "정수 나눗셈이 먼저 일어나지 않도록 피연산자 하나를 double로 바꾼 뒤 결과를 int로 변환합니다.",
+        "keyPoints": [
+          "(double) total이 나눗셈 전체를 실수 연산으로 만듭니다.",
+          "double을 int로 바꾸면 반올림이 아니라 0 방향으로 소수점이 제거됩니다."
+        ],
+        "alternative": "모든 입력이 0 이상이고 버림만 필요하면 total / count 정수 나눗셈으로도 같은 결과를 얻지만, 이 문제는 형변환 흐름을 연습합니다.",
+        "complexity": "시간 O(1), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 2,
+      "mode": "java",
+      "stage": "타입·메서드 연결",
+      "title": "메서드 오버로딩",
+      "question": "format(int)는 \"#숫자\", format(String)은 대문자 문자열을 반환하도록 두 메서드를 오버로딩하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static String format(int value) {\n        return \"\";\n    }\n\n    public static String format(String value) {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {\n    public static String format(int value) {\n        return \"#\" + value;\n    }\n\n    public static String format(String value) {\n        return value.toUpperCase();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "format(7)",
+          "output": "\"#7\"",
+          "trace": []
+        },
+        {
+          "testId": "case-2",
+          "input": "format(\"java\")",
+          "output": "\"JAVA\"",
+          "trace": []
+        }
+      ],
+      "constraints": [
+        "문자열 인자는 null이 아닙니다.",
+        "메서드 이름은 둘 다 format을 사용합니다."
+      ],
+      "hints": [
+        "메서드 이름은 같고 매개변수 타입을 다르게 선언합니다.",
+        "비슷한 예시: static String show(int value) { return String.valueOf(value); } static String show(boolean value) { return value ? \"Y\" : \"N\"; }",
+        "컴파일러가 전달된 인자의 타입으로 호출할 메서드를 결정합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "expression": "Solution.format(7)",
+            "expected": "\"#7\"",
+            "label": "정수 오버로드"
+          },
+          {
+            "id": "case-2",
+            "expression": "Solution.format(\"java\")",
+            "expected": "\"JAVA\"",
+            "label": "문자열 오버로드"
+          },
+          {
+            "id": "case-3",
+            "expression": "Solution.format(0)",
+            "expected": "\"#0\"",
+            "label": "0 포맷"
+          },
+          {
+            "id": "case-4",
+            "expression": "Solution.format(\"Code Quest\")",
+            "expected": "\"CODE QUEST\"",
+            "label": "공백 포함 문자열"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "오버로딩은 같은 역할의 메서드를 매개변수 개수나 타입이 다른 여러 시그니처로 제공합니다.",
+        "keyPoints": [
+          "반환 타입만 달리해서는 오버로딩할 수 없습니다.",
+          "호출 시점에 컴파일러가 인자 타입과 가장 잘 맞는 시그니처를 선택합니다."
+        ],
+        "alternative": "formatNumber와 formatText처럼 이름을 분리할 수도 있지만 같은 개념의 변환에는 오버로딩이 자연스럽습니다.",
+        "complexity": "정수 포맷은 O(자릿수), 문자열 대문자 변환은 문자열 길이 n에 대해 시간 O(n)"
+      }
+    },
+    {
+      "id": 3,
+      "mode": "java",
+      "stage": "타입·메서드 연결",
+      "title": "2차원 배열 대각선 합",
+      "question": "정사각형 int[][] matrix의 주대각선 원소 합을 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int[][] matrix) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int[][] matrix) {\n        int sum = 0;\n        for (int row = 0; row < matrix.length; row++) {\n            sum += matrix[row][row];\n        }\n        return sum;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "matrix=[[1,2],[3,4]]",
+          "output": "5",
+          "trace": [
+            {
+              "label": "0행",
+              "state": "sum = matrix[0][0] = 1",
+              "detail": "행 인덱스와 열 인덱스가 같습니다."
+            },
+            {
+              "label": "1행",
+              "state": "sum = 1 + matrix[1][1] = 5",
+              "detail": "주대각선 원소만 더합니다."
+            }
+          ]
+        }
+      ],
+      "constraints": [
+        "1 ≤ matrix.length ≤ 100",
+        "모든 행의 길이는 matrix.length와 같습니다.",
+        "원소는 -1,000 이상 1,000 이하입니다."
+      ],
+      "hints": [
+        "주대각선은 행 인덱스와 열 인덱스가 같습니다.",
+        "비슷한 예시: for (int i = 0; i < board.length; i++) sum += board[i][i];",
+        "모든 칸을 순회하는 이중 반복문은 필요하지 않습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "arguments": [
+              "new int[][]{{1,2},{3,4}}"
+            ],
+            "expected": "5",
+            "label": "2x2 행렬"
+          },
+          {
+            "id": "case-2",
+            "arguments": [
+              "new int[][]{{7}}"
+            ],
+            "expected": "7",
+            "label": "1x1 행렬"
+          },
+          {
+            "id": "case-3",
+            "arguments": [
+              "new int[][]{{1,2,3},{4,5,6},{7,8,9}}"
+            ],
+            "expected": "15",
+            "label": "3x3 행렬"
+          },
+          {
+            "id": "case-4",
+            "arguments": [
+              "new int[][]{{-1,2},{3,-4}}"
+            ],
+            "expected": "-5",
+            "label": "음수 원소"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "matrix[i][i]만 방문하면 주대각선을 정확히 한 번씩 순회할 수 있습니다.",
+        "keyPoints": [
+          "matrix[row]는 한 행이고 두 번째 인덱스가 열입니다.",
+          "정사각형이라는 제한 덕분에 같은 인덱스를 안전하게 사용합니다."
+        ],
+        "alternative": "이중 반복문에서 row == column일 때만 더할 수도 있지만 불필요하게 모든 칸을 확인합니다.",
+        "complexity": "행렬 한 변의 길이를 n이라 할 때 시간 O(n), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 4,
+      "mode": "java",
+      "stage": "타입·메서드 연결",
+      "title": "가변 인자 합계",
+      "question": "0개 이상의 int 인자를 받는 sum(int... values)을 작성해 합계를 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int sum(int... values) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int sum(int... values) {\n        int total = 0;\n        for (int value : values) {\n            total += value;\n        }\n        return total;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "sum(1, 2, 3)",
+          "output": "6",
+          "trace": []
+        }
+      ],
+      "constraints": [
+        "인자 개수는 0개 이상 100개 이하입니다.",
+        "합계는 int 범위를 넘지 않습니다."
+      ],
+      "hints": [
+        "int... values는 메서드 안에서 int[]처럼 다룹니다.",
+        "비슷한 예시: static int max(int... values) { int result = values[0]; for (int value : values) result = Math.max(result, value); return result; }",
+        "인자가 0개이면 반복문이 실행되지 않아 0을 반환합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "expression": "Solution.sum(1, 2, 3)",
+            "expected": "6",
+            "label": "세 인자"
+          },
+          {
+            "id": "case-2",
+            "expression": "Solution.sum()",
+            "expected": "0",
+            "label": "빈 가변 인자"
+          },
+          {
+            "id": "case-3",
+            "expression": "Solution.sum(-3, 5, -2)",
+            "expected": "0",
+            "label": "음수 포함"
+          },
+          {
+            "id": "case-4",
+            "expression": "Solution.sum(100)",
+            "expected": "100",
+            "label": "한 인자"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "가변 인자는 호출부의 여러 인자를 메서드 내부에서 하나의 배열로 제공합니다.",
+        "keyPoints": [
+          "가변 인자는 매개변수 목록의 마지막에 하나만 선언할 수 있습니다.",
+          "빈 호출에서는 길이 0인 배열처럼 동작합니다."
+        ],
+        "alternative": "호출자가 이미 배열을 가지고 있다면 int[] 매개변수를 명시하는 API가 더 분명할 수 있습니다.",
+        "complexity": "인자 수 n에 대해 시간 O(n), 가변 인자 배열 공간 O(n)"
+      }
+    },
+    {
+      "id": 5,
+      "mode": "java",
+      "stage": "타입·메서드 연결",
+      "title": "enum 상태 변환",
+      "question": "BASIC, PRACTICE, APPLIED를 가진 Level enum을 만들고 문자열을 대문자로 바꿔 Level로 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static Level solve(String text) {\n        return null;\n    }\n}\n\nenum Level {\n    // 상수를 작성하세요.\n}",
+      "answer": "public class Solution {\n    public static Level solve(String text) {\n        return Level.valueOf(text.toUpperCase());\n    }\n}\n\nenum Level {\n    BASIC, PRACTICE, APPLIED\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "text=\"practice\"",
+          "output": "PRACTICE",
+          "trace": []
+        }
+      ],
+      "constraints": [
+        "text는 basic, practice, applied 중 하나이며 대소문자는 섞일 수 있습니다.",
+        "null은 입력되지 않습니다."
+      ],
+      "hints": [
+        "enum 상수는 쉼표로 나열합니다.",
+        "비슷한 예시: enum Role { USER, ADMIN } Role role = Role.valueOf(text.toUpperCase());",
+        "String.toUpperCase() 결과를 Level.valueOf에 전달하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "arguments": [
+              "\"practice\""
+            ],
+            "expected": "Level.PRACTICE",
+            "label": "소문자 변환"
+          },
+          {
+            "id": "case-2",
+            "arguments": [
+              "\"BASIC\""
+            ],
+            "expected": "Level.BASIC",
+            "label": "대문자 입력"
+          },
+          {
+            "id": "case-3",
+            "arguments": [
+              "\"Applied\""
+            ],
+            "expected": "Level.APPLIED",
+            "label": "혼합 대소문자"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "enum은 허용 가능한 상태 집합을 타입으로 제한하고 valueOf는 이름과 일치하는 상수를 찾습니다.",
+        "keyPoints": [
+          "문자열 상수 대신 enum을 사용하면 잘못된 상태를 컴파일 단계에서 줄일 수 있습니다.",
+          "valueOf는 일치하는 상수가 없으면 IllegalArgumentException을 던집니다."
+        ],
+        "alternative": "입력 별칭이나 친절한 오류 처리가 필요하면 반복문이나 switch로 문자열을 enum에 매핑할 수 있습니다.",
+        "complexity": "상수 수가 고정된 현재 문제에서 시간과 공간 모두 O(1)"
+      }
+    },
+    {
+      "id": 6,
+      "mode": "java",
+      "stage": "객체 입문",
+      "title": "생성자와 상태",
+      "question": "이름과 나이를 생성자로 저장하고 displayName()에서 \"이름(나이)\"를 반환하는 User를 작성하세요.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\nfinal class User {\n    // 필드, 생성자, 메서드를 작성하세요.\n}",
+      "answer": "public class Solution {}\n\nfinal class User {\n    private final String name;\n    private final int age;\n\n    User(String name, int age) {\n        this.name = name;\n        this.age = age;\n    }\n\n    String displayName() {\n        return name + \"(\" + age + \")\";\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new User(\"민수\", 20).displayName()",
+          "output": "\"민수(20)\"",
+          "trace": []
+        }
+      ],
+      "constraints": [
+        "name은 null이 아니며 age는 0 이상입니다.",
+        "필드는 private final로 선언합니다."
+      ],
+      "hints": [
+        "생성자의 매개변수를 this.필드에 저장하세요.",
+        "비슷한 예시: final class Item { private final String name; Item(String name) { this.name = name; } String label() { return name; } }",
+        "displayName은 저장된 두 필드를 조합합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "expression": "new User(\"민수\", 20).displayName()",
+            "expected": "\"민수(20)\"",
+            "label": "일반 사용자"
+          },
+          {
+            "id": "case-2",
+            "expression": "new User(\"Ada\", 0).displayName()",
+            "expected": "\"Ada(0)\"",
+            "label": "0세"
+          },
+          {
+            "id": "case-3",
+            "expression": "new User(\"Code Quest\", 7).displayName()",
+            "expected": "\"Code Quest(7)\"",
+            "label": "공백 포함 이름"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "생성자는 객체가 필요한 상태를 처음부터 완전하게 가지도록 초기화합니다.",
+        "keyPoints": [
+          "this.name은 필드, name은 생성자 매개변수입니다.",
+          "final 필드는 생성 이후 다른 값으로 재할당할 수 없습니다."
+        ],
+        "alternative": "데이터 보관만 필요하다면 다음 문제처럼 record로 더 간결하게 표현할 수 있습니다.",
+        "complexity": "객체 생성과 displayName 조합은 이름 길이 n에 대해 시간·공간 O(n)"
+      }
+    },
+    {
+      "id": 7,
+      "mode": "java",
+      "stage": "객체 입문",
+      "title": "record 값 객체",
+      "question": "x와 y를 저장하는 Point record를 만들고 원점까지의 맨해튼 거리를 반환하는 distance()를 작성하세요.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\nrecord Point(int x, int y) {\n    int distance() {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {}\n\nrecord Point(int x, int y) {\n    int distance() {\n        return Math.abs(x) + Math.abs(y);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new Point(3, -4).distance()",
+          "output": "7",
+          "trace": []
+        }
+      ],
+      "constraints": [
+        "-10,000 ≤ x, y ≤ 10,000",
+        "맨해튼 거리는 |x| + |y|입니다."
+      ],
+      "hints": [
+        "record 헤더가 필드와 생성자, 접근자를 자동으로 만듭니다.",
+        "비슷한 예시: record Size(int width, int height) { int area() { return width * height; } }",
+        "두 좌표의 절댓값을 Math.abs로 더하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "expression": "new Point(3, -4).distance()",
+            "expected": "7",
+            "label": "서로 다른 부호"
+          },
+          {
+            "id": "case-2",
+            "expression": "new Point(0, 0).distance()",
+            "expected": "0",
+            "label": "원점"
+          },
+          {
+            "id": "case-3",
+            "expression": "new Point(-5, -2).distance()",
+            "expected": "7",
+            "label": "음수 좌표"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "record는 값 중심 객체의 상태, 생성자, 접근자, equals와 hashCode를 간결하게 제공합니다.",
+        "keyPoints": [
+          "record 구성 요소 x와 y는 자동 생성된 접근자와 내부 필드로 사용할 수 있습니다.",
+          "값 객체에 계산 메서드를 추가할 수 있습니다."
+        ],
+        "alternative": "일반 final class로 같은 불변 객체를 만들 수 있지만 반복 코드가 늘어납니다.",
+        "complexity": "시간 O(1), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 8,
+      "mode": "java",
+      "stage": "객체 입문",
+      "title": "캡슐화된 카운터",
+      "question": "add(int)가 자기 자신을 반환하고 value()가 누적값을 반환하는 Counter를 작성하세요.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\nfinal class Counter {\n    private int value;\n\n    Counter add(int amount) {\n        return this;\n    }\n\n    int value() {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {}\n\nfinal class Counter {\n    private int value;\n\n    Counter add(int amount) {\n        value += amount;\n        return this;\n    }\n\n    int value() {\n        return value;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new Counter().add(3).add(2).value()",
+          "output": "5",
+          "trace": []
+        }
+      ],
+      "constraints": [
+        "누적 결과는 int 범위 안입니다.",
+        "value 필드는 외부에 공개하지 않습니다."
+      ],
+      "hints": [
+        "add에서 필드를 변경한 뒤 this를 반환하면 호출을 이어갈 수 있습니다.",
+        "비슷한 예시: Builder append(String text) { value += text; return this; }",
+        "value()는 현재 필드를 그대로 반환합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "expression": "new Counter().add(3).add(2).value()",
+            "expected": "5",
+            "label": "연속 호출"
+          },
+          {
+            "id": "case-2",
+            "expression": "new Counter().value()",
+            "expected": "0",
+            "label": "초기값"
+          },
+          {
+            "id": "case-3",
+            "expression": "new Counter().add(-2).add(5).value()",
+            "expected": "3",
+            "label": "음수 포함"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "상태를 private으로 숨기고 메서드로만 변경하면 객체가 허용하는 동작을 통제할 수 있습니다.",
+        "keyPoints": [
+          "return this는 같은 객체를 반환해 메서드 체이닝을 가능하게 합니다.",
+          "외부 코드는 필드를 직접 바꾸지 않고 add 계약을 사용합니다."
+        ],
+        "alternative": "불변 Counter라면 add마다 새로운 Counter를 반환하는 방식도 가능합니다.",
+        "complexity": "각 add와 value 호출은 시간 O(1), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 9,
+      "mode": "java",
+      "stage": "객체 입문",
+      "title": "주문 값 객체",
+      "question": "상품명, 수량, 단가를 저장하고 total()에서 수량×단가를 반환하는 Order를 작성하세요.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\nrecord Order(String product, int quantity, int unitPrice) {\n    int total() {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {}\n\nrecord Order(String product, int quantity, int unitPrice) {\n    int total() {\n        return quantity * unitPrice;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new Order(\"Keyboard\", 2, 30000).total()",
+          "output": "60000",
+          "trace": []
+        }
+      ],
+      "constraints": [
+        "1 ≤ quantity ≤ 100",
+        "0 ≤ unitPrice ≤ 1,000,000",
+        "합계는 int 범위를 넘지 않습니다."
+      ],
+      "hints": [
+        "record 구성 요소는 메서드 안에서 이름 그대로 참조할 수 있습니다.",
+        "비슷한 예시: record Line(int count, int price) { int amount() { return count * price; } }",
+        "total은 저장된 수량과 단가의 곱입니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "expression": "new Order(\"Keyboard\", 2, 30000).total()",
+            "expected": "60000",
+            "label": "두 개 주문"
+          },
+          {
+            "id": "case-2",
+            "expression": "new Order(\"Book\", 1, 15000).total()",
+            "expected": "15000",
+            "label": "한 개 주문"
+          },
+          {
+            "id": "case-3",
+            "expression": "new Order(\"Free\", 5, 0).total()",
+            "expected": "0",
+            "label": "무료 상품"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "관련된 데이터와 그 데이터로 수행하는 계산을 하나의 값 객체에 함께 둡니다.",
+        "keyPoints": [
+          "수량과 단가의 관계가 Order 내부에 응집됩니다.",
+          "record는 값 비교가 필요한 주문 행 같은 모델에 적합합니다."
+        ],
+        "alternative": "할인이나 상태 변경이 복잡해지면 일반 class와 별도 가격 정책 객체로 확장할 수 있습니다.",
+        "complexity": "시간 O(1), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 10,
+      "mode": "java",
+      "stage": "객체 입문",
+      "title": "인터페이스 계약",
+      "question": "Priced 인터페이스의 price()를 구현하고 10% 세금 포함 가격을 반환하는 Product를 작성하세요.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\ninterface Priced {\n    int price();\n}\n\nfinal class Product implements Priced {\n    // 필드, 생성자, 메서드를 작성하세요.\n}",
+      "answer": "public class Solution {}\n\ninterface Priced {\n    int price();\n}\n\nfinal class Product implements Priced {\n    private final int price;\n\n    Product(int price) {\n        this.price = price;\n    }\n\n    @Override\n    public int price() {\n        return price;\n    }\n\n    int priceWithTax() {\n        return price + price / 10;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-2",
+          "input": "new Product(1000).priceWithTax()",
+          "output": "1100",
+          "trace": []
+        }
+      ],
+      "constraints": [
+        "price는 0 이상이며 10의 배수입니다.",
+        "Product는 Priced를 implements합니다."
+      ],
+      "hints": [
+        "implements 뒤 인터페이스의 추상 메서드를 public으로 구현합니다.",
+        "비슷한 예시: interface Named { String name(); } final class User implements Named { public String name() { return \"Ada\"; } }",
+        "세금 포함 가격은 price + price / 10입니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "expression": "new Product(1000).price()",
+            "expected": "1000",
+            "label": "인터페이스 메서드"
+          },
+          {
+            "id": "case-2",
+            "expression": "new Product(1000).priceWithTax()",
+            "expected": "1100",
+            "label": "세금 포함 가격"
+          },
+          {
+            "id": "case-3",
+            "expression": "new Product(0).priceWithTax()",
+            "expected": "0",
+            "label": "무료 상품"
+          },
+          {
+            "id": "case-4",
+            "expression": "((Priced) new Product(2500)).price()",
+            "expected": "2500",
+            "label": "인터페이스 타입 호출"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "인터페이스는 구현 클래스와 분리된 기능 계약을 만들고 Product는 그 계약을 구체화합니다.",
+        "keyPoints": [
+          "인터페이스 메서드를 구현할 때 접근 범위를 줄일 수 없어 public이 필요합니다.",
+          "호출자는 Product 대신 Priced 타입에 의존할 수 있습니다."
+        ],
+        "alternative": "가격 계산 정책 자체가 자주 바뀐다면 세금 계산을 별도 인터페이스로 분리할 수 있습니다.",
+        "complexity": "각 가격 계산은 시간 O(1), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 11,
+      "mode": "java",
+      "stage": "컬렉션·검증",
+      "title": "행별 합계",
+      "question": "int[][] matrix의 각 행 합계를 int[]로 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int[] solve(int[][] matrix) {\n        return new int[0];\n    }\n}",
+      "answer": "public class Solution {\n    public static int[] solve(int[][] matrix) {\n        int[] sums = new int[matrix.length];\n        for (int row = 0; row < matrix.length; row++) {\n            for (int value : matrix[row]) {\n                sums[row] += value;\n            }\n        }\n        return sums;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "matrix=[[1,2],[3,4,5]]",
+          "output": "[3, 12]",
+          "trace": []
+        }
+      ],
+      "constraints": [
+        "0 ≤ matrix.length ≤ 100",
+        "각 행의 길이는 0 이상 100 이하입니다.",
+        "합계는 int 범위를 넘지 않습니다."
+      ],
+      "hints": [
+        "결과 배열의 길이는 행의 개수와 같습니다.",
+        "비슷한 예시: int[] result = new int[rows.length]; for (int r = 0; r < rows.length; r++) for (int value : rows[r]) result[r] += value;",
+        "바깥 반복문은 행, 안쪽 반복문은 그 행의 원소를 순회합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "arguments": [
+              "new int[][]{{1,2},{3,4,5}}"
+            ],
+            "expected": "new int[]{3,12}",
+            "label": "서로 다른 행 길이"
+          },
+          {
+            "id": "case-2",
+            "arguments": [
+              "new int[][]{}"
+            ],
+            "expected": "new int[]{}",
+            "label": "빈 행렬"
+          },
+          {
+            "id": "case-3",
+            "arguments": [
+              "new int[][]{{},{7}}"
+            ],
+            "expected": "new int[]{0,7}",
+            "label": "빈 행 포함"
+          },
+          {
+            "id": "case-4",
+            "arguments": [
+              "new int[][]{{-1,-2},{5,-5}}"
+            ],
+            "expected": "new int[]{-3,0}",
+            "label": "음수 포함"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "바깥 반복문으로 행을 선택하고 안쪽 반복문으로 현재 행의 값을 누적합니다.",
+        "keyPoints": [
+          "2차원 배열의 각 행 길이는 서로 다를 수 있습니다.",
+          "결과 인덱스와 현재 행 인덱스를 일치시킵니다."
+        ],
+        "alternative": "Arrays.stream(row).sum()을 각 행에 적용할 수 있지만 중첩 구조를 이해하는 것이 먼저입니다.",
+        "complexity": "전체 원소 수를 n이라 할 때 시간 O(n), 결과 배열 공간 O(행 수)"
+      }
+    },
+    {
+      "id": 12,
+      "mode": "java",
+      "stage": "컬렉션·검증",
+      "title": "문자 빈도 Map",
+      "question": "문자열의 각 문자 빈도를 처음 등장한 순서대로 Map<Character, Integer>에 담아 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static Map<Character, Integer> solve(String text) {\n        return Map.of();\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static Map<Character, Integer> solve(String text) {\n        Map<Character, Integer> counts = new LinkedHashMap<>();\n        for (char letter : text.toCharArray()) {\n            counts.merge(letter, 1, Integer::sum);\n        }\n        return counts;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "text=\"banana\"",
+          "output": "{b=1, a=3, n=2}",
+          "trace": []
+        }
+      ],
+      "constraints": [
+        "0 ≤ text.length() ≤ 1,000",
+        "text는 영문 소문자로만 구성됩니다.",
+        "처음 등장 순서를 유지합니다."
+      ],
+      "hints": [
+        "삽입 순서를 유지하는 LinkedHashMap을 사용하세요.",
+        "비슷한 예시: counts.merge(key, 1, Integer::sum);",
+        "문자열을 char 배열로 순회하며 빈도를 누적합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "arguments": [
+              "\"banana\""
+            ],
+            "expected": "new java.util.LinkedHashMap<>(java.util.Map.of(\"b\".charAt(0),1,\"a\".charAt(0),3,\"n\".charAt(0),2))",
+            "label": "반복 문자"
+          },
+          {
+            "id": "case-2",
+            "arguments": [
+              "\"\""
+            ],
+            "expected": "java.util.Map.of()",
+            "label": "빈 문자열"
+          },
+          {
+            "id": "case-3",
+            "arguments": [
+              "\"abc\""
+            ],
+            "expected": "new java.util.LinkedHashMap<>(java.util.Map.of('a',1,'b',1,'c',1))",
+            "label": "모두 한 번"
+          },
+          {
+            "id": "case-4",
+            "arguments": [
+              "\"aaaa\""
+            ],
+            "expected": "java.util.Map.of('a',4)",
+            "label": "한 문자 반복"
+          },
+          {
+            "id": "case-5",
+            "expression": "new java.util.ArrayList<>(Solution.solve(\"banana\").keySet())",
+            "expected": "java.util.List.of('b','a','n')",
+            "label": "첫 등장 순서"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "LinkedHashMap은 key별 빈도를 저장하면서 첫 삽입 순서도 유지합니다.",
+        "keyPoints": [
+          "merge는 key가 없으면 1을 넣고 있으면 기존 값과 1을 더합니다.",
+          "Map은 빈도 계산에서 각 key를 빠르게 찾게 합니다."
+        ],
+        "alternative": "알파벳 소문자만 다룬다면 길이 26의 int[]가 더 단순하고 빠를 수 있습니다.",
+        "complexity": "문자열 길이 n에 대해 평균 시간 O(n), 서로 다른 문자 수 k에 대해 공간 O(k)"
+      }
+    },
+    {
+      "id": 13,
+      "mode": "java",
+      "stage": "컬렉션·검증",
+      "title": "방어적 복사",
+      "question": "입력 List<String>의 수정 불가능한 복사본을 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static List<String> solve(List<String> names) {\n        return names;\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static List<String> solve(List<String> names) {\n        return List.copyOf(names);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "names=[\"Ada\", \"James\"]",
+          "output": "[\"Ada\", \"James\"]",
+          "trace": []
+        }
+      ],
+      "constraints": [
+        "names와 원소는 null이 아닙니다.",
+        "반환 목록은 입력 목록과 별도이며 수정할 수 없어야 합니다."
+      ],
+      "hints": [
+        "List.copyOf는 원소를 복사한 불변 목록을 만듭니다.",
+        "비슷한 예시: Set<String> safe = Set.copyOf(source);",
+        "입력 List 참조를 그대로 반환하지 마세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "arguments": [
+              "java.util.List.of(\"Ada\",\"James\")"
+            ],
+            "expected": "java.util.List.of(\"Ada\",\"James\")",
+            "label": "두 이름"
+          },
+          {
+            "id": "case-2",
+            "arguments": [
+              "java.util.List.of()"
+            ],
+            "expected": "java.util.List.of()",
+            "label": "빈 목록"
+          },
+          {
+            "id": "case-3",
+            "expression": "Solution.solve(new java.util.ArrayList<>(java.util.List.of(\"A\"))).getClass() == java.util.ArrayList.class",
+            "expected": "false",
+            "label": "원본 구현과 분리"
+          },
+          {
+            "id": "case-4",
+            "expression": "Solution.solve(java.util.List.of(\"A\")).add(\"B\")",
+            "expectedException": "UnsupportedOperationException",
+            "label": "수정 차단"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "List.copyOf는 호출자가 가진 변경 가능한 컬렉션과 내부 결과를 분리하고 수정도 막습니다.",
+        "keyPoints": [
+          "참조를 그대로 반환하면 외부 변경이 객체 내부 상태에 전파될 수 있습니다.",
+          "불변 뷰와 실제 복사는 다르며 copyOf는 안전한 스냅샷을 제공합니다."
+        ],
+        "alternative": "new ArrayList<>(names)로 방어적 복사만 하고 수정은 허용하는 계약도 가능합니다.",
+        "complexity": "원소 수 n에 대해 복사 시간 O(n), 공간 O(n)"
+      }
+    },
+    {
+      "id": 14,
+      "mode": "java",
+      "stage": "컬렉션·검증",
+      "title": "생성자 검증과 예외",
+      "question": "재고가 음수면 IllegalArgumentException을 던지고 아니면 stock()으로 값을 반환하는 ProductStock을 작성하세요.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\nfinal class ProductStock {\n    private final int stock;\n\n    ProductStock(int stock) {\n        this.stock = stock;\n    }\n\n    int stock() {\n        return stock;\n    }\n}",
+      "answer": "public class Solution {}\n\nfinal class ProductStock {\n    private final int stock;\n\n    ProductStock(int stock) {\n        if (stock < 0) {\n            throw new IllegalArgumentException(\"재고는 0 이상이어야 합니다.\");\n        }\n        this.stock = stock;\n    }\n\n    int stock() {\n        return stock;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new ProductStock(3).stock()",
+          "output": "3",
+          "trace": []
+        }
+      ],
+      "constraints": [
+        "stock은 int 범위입니다.",
+        "음수 상태의 객체는 생성되면 안 됩니다."
+      ],
+      "hints": [
+        "필드에 저장하기 전에 생성자 인자를 검증하세요.",
+        "비슷한 예시: if (age < 0) throw new IllegalArgumentException(\"나이는 0 이상\");",
+        "잘못된 값이면 생성자를 정상 종료하지 않습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "expression": "new ProductStock(3).stock()",
+            "expected": "3",
+            "label": "양수 재고"
+          },
+          {
+            "id": "case-2",
+            "expression": "new ProductStock(0).stock()",
+            "expected": "0",
+            "label": "재고 없음"
+          },
+          {
+            "id": "case-3",
+            "expression": "new ProductStock(-1)",
+            "expectedException": "IllegalArgumentException",
+            "label": "음수 거부"
+          },
+          {
+            "id": "case-4",
+            "expression": "new ProductStock(Integer.MIN_VALUE)",
+            "expectedException": "IllegalArgumentException",
+            "label": "최솟값 거부"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "생성자에서 불변 조건을 검증하면 존재하는 모든 ProductStock 객체가 유효하다고 믿을 수 있습니다.",
+        "keyPoints": [
+          "검증은 필드 대입보다 먼저 수행합니다.",
+          "호출자의 잘못된 인자에는 IllegalArgumentException이 적절합니다."
+        ],
+        "alternative": "예외 대신 Optional<ProductStock>을 반환하는 정적 팩터리도 가능하지만 생성자 계약과 사용법이 달라집니다.",
+        "complexity": "시간 O(1), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 15,
+      "mode": "java",
+      "stage": "컬렉션·검증",
+      "title": "Optional로 null 정규화",
+      "question": "email이 null이거나 공백이면 Optional.empty(), 아니면 strip 후 소문자로 변환한 Optional을 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static Optional<String> solve(String email) {\n        return Optional.empty();\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static Optional<String> solve(String email) {\n        return Optional.ofNullable(email)\n                .map(String::strip)\n                .filter(value -> !value.isEmpty())\n                .map(String::toLowerCase);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "email=\"  USER@EXAMPLE.COM \"",
+          "output": "Optional[user@example.com]",
+          "trace": []
+        }
+      ],
+      "constraints": [
+        "email 길이는 0 이상 200 이하입니다.",
+        "형식 검증이 아니라 null·공백 제거와 소문자 변환만 수행합니다."
+      ],
+      "hints": [
+        "Optional.ofNullable은 null을 empty로 바꿉니다.",
+        "비슷한 예시: Optional.ofNullable(text).map(String::strip).filter(s -> !s.isEmpty());",
+        "map으로 strip과 소문자 변환을 연결하고 filter로 빈 문자열을 제거하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "arguments": [
+              "\"  USER@EXAMPLE.COM \""
+            ],
+            "expected": "java.util.Optional.of(\"user@example.com\")",
+            "label": "공백과 대문자"
+          },
+          {
+            "id": "case-2",
+            "arguments": [
+              "null"
+            ],
+            "expected": "java.util.Optional.empty()",
+            "label": "null 입력"
+          },
+          {
+            "id": "case-3",
+            "arguments": [
+              "\"   \""
+            ],
+            "expected": "java.util.Optional.empty()",
+            "label": "공백 문자열"
+          },
+          {
+            "id": "case-4",
+            "arguments": [
+              "\"a@b.com\""
+            ],
+            "expected": "java.util.Optional.of(\"a@b.com\")",
+            "label": "이미 정규화됨"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "Optional 파이프라인은 null 처리, 정규화, 빈 값 제거를 단계별로 표현합니다.",
+        "keyPoints": [
+          "map은 값이 있을 때만 변환을 실행합니다.",
+          "filter 조건을 통과하지 못한 값은 Optional.empty가 됩니다."
+        ],
+        "alternative": "if 문으로 null과 isBlank를 먼저 검사해도 명확한 풀이가 됩니다.",
+        "complexity": "문자열 길이 n에 대해 시간 O(n), 정규화된 문자열 공간 O(n)"
+      }
+    },
+    {
+      "id": 16,
+      "mode": "java",
+      "stage": "객체 입문",
+      "title": "이용 횟수별 교통비",
+      "question": "모든 RidePass가 공유하는 1회 요금 FARE_PER_RIDE를 static final 상수 1,250으로 선언하고, 객체마다 저장한 rides를 이용해 totalFare()를 계산하세요. farePerRide()는 객체 없이 공통 요금을 반환합니다.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\nfinal class RidePass {\n    static final int FARE_PER_RIDE = 0;\n    private final int rides;\n\n    RidePass(int rides) {\n        this.rides = rides;\n    }\n\n    int totalFare() {\n        return 0;\n    }\n\n    static int farePerRide() {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {}\n\nfinal class RidePass {\n    static final int FARE_PER_RIDE = 1250;\n    private final int rides;\n\n    RidePass(int rides) {\n        this.rides = rides;\n    }\n\n    int totalFare() {\n        return FARE_PER_RIDE * rides;\n    }\n\n    static int farePerRide() {\n        return FARE_PER_RIDE;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new RidePass(3).totalFare()",
+          "output": "3750"
+        }
+      ],
+      "constraints": [
+        "0 ≤ rides ≤ 1,000",
+        "1회 요금은 모든 객체에서 같은 1,250이며 실행 중 바뀌지 않습니다.",
+        "rides는 객체마다 독립적으로 보관하는 인스턴스 필드입니다."
+      ],
+      "hints": [
+        "클래스 전체가 공유하고 바뀌지 않는 값에는 static과 final을 함께 사용합니다.",
+        "비슷한 예시: static final int DAYS_PER_WEEK = 7;",
+        "static 메서드는 인스턴스 필드가 아니라 클래스 상수를 직접 사용할 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "세 번 이용",
+            "expression": "new RidePass(3).totalFare()",
+            "expected": "3750"
+          },
+          {
+            "id": "case-2",
+            "label": "이용 없음",
+            "expression": "new RidePass(0).totalFare()",
+            "expected": "0"
+          },
+          {
+            "id": "case-3",
+            "label": "한 번 이용",
+            "expression": "new RidePass(1).totalFare()",
+            "expected": "1250"
+          },
+          {
+            "id": "case-4",
+            "label": "클래스 메서드로 공통 요금 조회",
+            "expression": "RidePass.farePerRide()",
+            "expected": "1250"
+          },
+          {
+            "id": "case-5",
+            "label": "클래스 상수 직접 조회",
+            "expression": "RidePass.FARE_PER_RIDE",
+            "expected": "1250"
+          },
+          {
+            "id": "case-6",
+            "label": "서로 다른 인스턴스",
+            "expression": "new RidePass(2).totalFare() + new RidePass(4).totalFare()",
+            "expected": "7500"
+          },
+          {
+            "id": "case-7",
+            "label": "최대 이용 횟수",
+            "expression": "new RidePass(1000).totalFare()",
+            "expected": "1250000"
+          },
+          {
+            "id": "case-8",
+            "label": "먼저 만든 객체의 이용 횟수 보존",
+            "expression": "((java.util.function.BooleanSupplier) () -> { RidePass first = new RidePass(2); RidePass second = new RidePass(4); return first.totalFare() == 2500 && second.totalFare() == 5000; }).getAsBoolean()",
+            "expected": "true"
+          },
+          {
+            "id": "case-9",
+            "label": "공유 상수와 인스턴스 필드 수식자",
+            "expression": "java.lang.reflect.Modifier.isStatic(RidePass.class.getDeclaredField(\"FARE_PER_RIDE\").getModifiers()) && java.lang.reflect.Modifier.isFinal(RidePass.class.getDeclaredField(\"FARE_PER_RIDE\").getModifiers()) && java.lang.reflect.Modifier.isPrivate(RidePass.class.getDeclaredField(\"rides\").getModifiers()) && java.lang.reflect.Modifier.isFinal(RidePass.class.getDeclaredField(\"rides\").getModifiers()) && !java.lang.reflect.Modifier.isStatic(RidePass.class.getDeclaredField(\"rides\").getModifiers())",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "공통 요금은 클래스에 하나만 존재하는 static final 상수로, 이용 횟수는 객체마다 다른 final 인스턴스 필드로 모델링합니다.",
+        "keyPoints": [
+          "static 멤버는 특정 객체가 아니라 클래스에 속합니다.",
+          "final 필드는 생성 또는 선언 시 정해진 뒤 다른 값으로 다시 대입할 수 없습니다."
+        ],
+        "alternative": "요금을 생성자 인자로 받아 객체별 정책을 만들 수도 있지만, 문제 조건처럼 모두 같은 고정값이면 클래스 상수가 적합합니다.",
+        "complexity": "각 메서드는 시간 O(1), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 17,
+      "mode": "java",
+      "stage": "객체 입문",
+      "title": "기본 등급이 있는 회원 표식",
+      "question": "owner만 받는 MemberBadge 생성자와 owner, grade를 모두 받는 생성자를 오버로딩하세요. owner만 주어지면 grade는 '일반'이며, 한 인자 생성자는 this(...)로 두 인자 생성자에 초기화를 위임합니다.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\nfinal class MemberBadge {\n    private final String owner;\n    private final String grade;\n\n    MemberBadge(String owner) {\n        this.owner = owner;\n        this.grade = \"\";\n    }\n\n    MemberBadge(String owner, String grade) {\n        this.owner = owner;\n        this.grade = grade;\n    }\n\n    String label() {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {}\n\nfinal class MemberBadge {\n    private final String owner;\n    private final String grade;\n\n    MemberBadge(String owner) {\n        this(owner, \"일반\");\n    }\n\n    MemberBadge(String owner, String grade) {\n        this.owner = owner;\n        this.grade = grade;\n    }\n\n    String label() {\n        return owner + \"[\" + grade + \"]\";\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new MemberBadge(\"민지\").label()",
+          "output": "민지[일반]"
+        }
+      ],
+      "constraints": [
+        "owner와 grade는 null이 아닌 비어 있지 않은 문자열입니다.",
+        "한 인자 생성자의 기본 grade는 정확히 '일반'입니다.",
+        "필드는 private final로 유지하고 두 인자 생성자에서 초기화합니다."
+      ],
+      "hints": [
+        "생성자도 매개변수 목록이 다르면 같은 클래스 안에서 오버로딩할 수 있습니다.",
+        "비슷한 예시: Ticket(String code) { this(code, 1); }",
+        "this(...) 생성자 호출은 생성자 본문의 첫 문장이어야 합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "sourceContract": "member-badge-constructor-delegation",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "기본 등급",
+            "expression": "new MemberBadge(\"민지\").label()",
+            "expected": "\"민지[일반]\""
+          },
+          {
+            "id": "case-2",
+            "label": "사용자 지정 등급",
+            "expression": "new MemberBadge(\"준호\", \"VIP\").label()",
+            "expected": "\"준호[VIP]\""
+          },
+          {
+            "id": "case-3",
+            "label": "한 글자 이름",
+            "expression": "new MemberBadge(\"A\").label()",
+            "expected": "\"A[일반]\""
+          },
+          {
+            "id": "case-4",
+            "label": "다른 사용자 지정 등급",
+            "expression": "new MemberBadge(\"수아\", \"새싹\").label()",
+            "expected": "\"수아[새싹]\""
+          },
+          {
+            "id": "case-5",
+            "label": "두 생성자의 독립 객체",
+            "expression": "new MemberBadge(\"가온\").label() + \",\" + new MemberBadge(\"나래\", \"관리자\").label()",
+            "expected": "\"가온[일반],나래[관리자]\""
+          },
+          {
+            "id": "case-6",
+            "label": "먼저 만든 회원 정보 보존",
+            "expression": "((java.util.function.BooleanSupplier) () -> { MemberBadge standard = new MemberBadge(\"가온\"); MemberBadge admin = new MemberBadge(\"나래\", \"관리자\"); return standard.label().equals(\"가온[일반]\") && admin.label().equals(\"나래[관리자]\"); }).getAsBoolean()",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "매개변수가 다른 두 생성자를 제공하고, 기본값을 정하는 생성자가 this(...)를 통해 실제 필드 초기화를 한곳에 위임합니다.",
+        "keyPoints": [
+          "생성자 오버로딩은 객체 생성에 필요한 여러 입력 방식을 제공합니다.",
+          "this(...) 위임은 중복 초기화 코드를 줄이고 필드 설정 규칙을 한곳에 모읍니다."
+        ],
+        "alternative": "두 생성자에서 필드를 각각 대입할 수도 있지만 초기화 규칙이 늘어나면 중복과 불일치 위험이 커집니다.",
+        "complexity": "문자열 길이를 n이라 할 때 label 시간과 결과 공간은 O(n)"
+      }
+    }
+  ]
+}

@@ -1,0 +1,195 @@
+name: code-quest
+
+services:
+  postgres:
+    image: postgres:16-alpine@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-codequest}
+      POSTGRES_USER: ${POSTGRES_USER:-codequest}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-codequest-local}
+    volumes:
+      - codequest-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - data
+
+  backend:
+    build: ./backend
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777,nosuid,nodev
+    mem_limit: 512m
+    cpus: 1.5
+    pids_limit: 128
+    ulimits:
+      nofile:
+        soft: 1024
+        hard: 1024
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-codequest}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-codequest}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-codequest-local}
+      CSS_RENDERER_URL: http://renderer:3001
+      JAVA_RUNNER_URL: http://java-runner:3002
+      JAVA_RUNNER_TOKEN: ${JAVA_RUNNER_TOKEN:?Copy .env.example to .env and set JAVA_RUNNER_TOKEN}
+      JAVASCRIPT_RUNNER_URL: http://javascript-runner:3003
+      JAVASCRIPT_RUNNER_TOKEN: ${JAVASCRIPT_RUNNER_TOKEN:?Copy .env.example to .env and set JAVASCRIPT_RUNNER_TOKEN}
+    ports:
+      - "127.0.0.1:8080:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/api/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    depends_on:
+      postgres:
+        condition: service_healthy
+      renderer:
+        condition: service_healthy
+      java-runner:
+        condition: service_healthy
+      javascript-runner:
+        condition: service_healthy
+    networks:
+      - edge
+      - data
+      - renderer-judge
+      - java-judge
+      - javascript-judge
+
+  renderer:
+    build: ./renderer
+    init: true
+    shm_size: "1gb"
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777,noexec,nosuid,nodev
+    mem_limit: 768m
+    cpus: 1.5
+    pids_limit: 128
+    ulimits:
+      nofile:
+        soft: 1024
+        hard: 1024
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    expose:
+      - "3001"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - renderer-judge
+
+  java-runner:
+    build: ./java-runner
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777,noexec,nosuid,nodev
+    mem_limit: 256m
+    cpus: 1.5
+    pids_limit: 64
+    ulimits:
+      nofile:
+        soft: 1024
+        hard: 1024
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      JAVA_RUNNER_TOKEN: ${JAVA_RUNNER_TOKEN:?Copy .env.example to .env and set JAVA_RUNNER_TOKEN}
+    expose:
+      - "3002"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:3002/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - java-judge
+
+  javascript-runner:
+    build: ./javascript-runner
+    init: true
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777,noexec,nosuid,nodev
+    mem_limit: 256m
+    cpus: 1.5
+    pids_limit: 64
+    ulimits:
+      nofile:
+        soft: 1024
+        hard: 1024
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      JAVASCRIPT_RUNNER_TOKEN: ${JAVASCRIPT_RUNNER_TOKEN:?Copy .env.example to .env and set JAVASCRIPT_RUNNER_TOKEN}
+    expose:
+      - "3003"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:3003/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - javascript-judge
+
+  frontend:
+    build: ./frontend
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777,noexec,nosuid,nodev
+    mem_limit: 128m
+    cpus: 0.5
+    pids_limit: 32
+    ulimits:
+      nofile:
+        soft: 512
+        hard: 512
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "127.0.0.1:3000:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:8080/"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - edge
+
+volumes:
+  codequest-data:
+
+networks:
+  edge:
+  data:
+    internal: true
+  renderer-judge:
+    internal: true
+  java-judge:
+    internal: true
+  javascript-judge:
+    internal: true

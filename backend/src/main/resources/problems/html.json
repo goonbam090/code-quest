@@ -1,0 +1,411 @@
+{
+  "id": "html",
+  "name": "HTML Quest",
+  "description": "시맨틱 구조, 폼, 접근성을 직접 작성하는 15문제",
+  "problems": [
+    {
+      "id": 1,
+      "mode": "html",
+      "stage": "문서 구조",
+      "title": "페이지의 주 콘텐츠",
+      "question": "main 안에 페이지 제목 h1과 설명 문단 p를 작성하세요.",
+      "html": "",
+      "starterCode": "<main>\n  \n</main>",
+      "answer": "<main>\n  <h1>Code Quest</h1>\n  <p>코드를 직접 작성하며 배우는 학습 공간입니다.</p>\n</main>",
+      "constraints": ["main은 페이지에서 한 번만 사용합니다.", "제목 단계는 h1부터 시작합니다."],
+      "hints": ["페이지의 핵심 콘텐츠는 main으로 묶습니다.", "비슷한 코드 예시: <main><h1>문서 제목</h1><p>설명</p></main>", "h1과 p를 main의 직계 자식으로 배치해 보세요."],
+      "required": {
+        "rules": [
+          {"selector": "main", "min": 1, "max": 1, "message": "페이지의 주 콘텐츠를 나타내는 main이 하나 필요합니다."},
+          {"selector": "main > h1", "min": 1, "max": 1, "message": "main의 직계 자식으로 h1 제목을 작성하세요."},
+          {"selector": "main > p", "min": 1, "message": "main의 직계 자식으로 설명 문단 p를 작성하세요."}
+        ]
+      },
+      "solution": {
+        "summary": "main은 페이지의 핵심 콘텐츠 영역이고 h1은 그 페이지의 최상위 제목입니다.",
+        "keyPoints": ["제목은 시각적 크기가 아니라 문서의 계층을 표현합니다.", "설명 문장은 의미 없는 div보다 p로 표현합니다."],
+        "alternative": "main 내부에 section을 추가할 수 있지만 페이지를 대표하는 h1의 계층은 유지해야 합니다.",
+        "complexity": "HTML 문제는 실행 복잡도보다 문서 윤곽과 보조기기 탐색 구조가 핵심입니다."
+      }
+    },
+    {
+      "id": 2,
+      "mode": "html",
+      "stage": "문서 구조",
+      "title": "페이지 랜드마크",
+      "question": "header, nav, main, footer를 각각 한 번 사용해 기본 페이지 구조를 작성하세요.",
+      "html": "",
+      "starterCode": "<header></header>\n\n\n<footer></footer>",
+      "answer": "<header>Code Quest</header>\n<nav aria-label=\"주 메뉴\"><a href=\"/\">홈</a></nav>\n<main><h1>학습하기</h1></main>\n<footer>© Code Quest</footer>",
+      "constraints": ["nav에는 용도를 설명하는 aria-label을 지정합니다.", "main은 하나만 사용합니다."],
+      "hints": ["랜드마크 태그는 페이지 영역의 역할을 전달합니다.", "비슷한 코드 예시: <header>...</header><nav aria-label=\"주 메뉴\">...</nav><main>...</main><footer>...</footer>", "header와 footer 사이에 nav와 main을 배치해 보세요."],
+      "required": {
+        "rules": [
+          {"selector": "header", "min": 1, "max": 1, "message": "페이지 머리말 header가 하나 필요합니다."},
+          {"selector": "nav[aria-label]", "min": 1, "max": 1, "message": "용도를 가진 nav[aria-label]을 작성하세요."},
+          {"selector": "main", "min": 1, "max": 1, "message": "페이지 주 콘텐츠 main이 하나 필요합니다."},
+          {"selector": "footer", "min": 1, "max": 1, "message": "페이지 바닥글 footer가 하나 필요합니다."}
+        ]
+      },
+      "solution": {
+        "summary": "랜드마크 태그는 화면을 보지 않아도 페이지의 큰 영역을 빠르게 탐색하게 합니다.",
+        "keyPoints": ["nav가 여러 개일 수 있으므로 aria-label로 목적을 구분합니다.", "main은 반복되는 메뉴나 바닥글이 아닌 핵심 콘텐츠만 포함합니다."],
+        "alternative": "header 안에 nav를 넣어도 되지만 네 랜드마크의 역할은 그대로 유지해야 합니다.",
+        "complexity": "랜드마크 수보다 역할이 분명하고 중복 main이 없는지가 중요합니다."
+      }
+    },
+    {
+      "id": 3,
+      "mode": "html",
+      "stage": "문서 구조",
+      "title": "목록형 내비게이션",
+      "question": "접근 가능한 nav 안에 ul을 만들고 세 개의 li 각각에 링크를 작성하세요.",
+      "html": "",
+      "starterCode": "<nav aria-label=\"주 메뉴\">\n  \n</nav>",
+      "answer": "<nav aria-label=\"주 메뉴\">\n  <ul>\n    <li><a href=\"/\">홈</a></li>\n    <li><a href=\"/courses\">강의</a></li>\n    <li><a href=\"/practice\">실습</a></li>\n  </ul>\n</nav>",
+      "constraints": ["링크 세 개는 목록 항목으로 표현합니다.", "각 a에는 href가 있어야 합니다."],
+      "hints": ["서로 같은 종류의 메뉴는 ul과 li로 묶습니다.", "비슷한 코드 예시: <nav aria-label=\"보조 메뉴\"><ul><li><a href=\"/help\">도움말</a></li></ul></nav>", "nav > ul > li > a 계층을 만들어 보세요."],
+      "required": {
+        "rules": [
+          {"selector": "nav[aria-label] > ul", "min": 1, "max": 1, "message": "nav의 직계 자식으로 ul을 작성하세요."},
+          {"selector": "nav > ul > li", "min": 3, "max": 3, "message": "메뉴를 정확히 세 개의 li로 표현하세요."},
+          {"selector": "nav > ul > li > a[href]", "min": 3, "max": 3, "message": "각 li 안에 href가 있는 링크를 작성하세요."}
+        ]
+      },
+      "solution": {
+        "summary": "내비게이션 항목은 순서 없는 목록으로 묶으면 항목의 개수와 관계가 함께 전달됩니다.",
+        "keyPoints": ["nav는 이동 링크 묶음의 역할을 나타냅니다.", "href가 없는 a는 실제 탐색 링크가 아닙니다."],
+        "alternative": "메뉴의 순서가 절차적으로 중요하다면 ol을 고려할 수 있지만 일반 메뉴에는 ul이 자연스럽습니다.",
+        "complexity": "DOM 깊이는 얕게 유지하되 nav·목록·링크의 의미 관계를 보존합니다."
+      }
+    },
+    {
+      "id": 4,
+      "mode": "html",
+      "stage": "문서 구조",
+      "title": "독립적인 게시글",
+      "question": "article 안에 header, h2, datetime을 가진 time, 본문 p를 작성하세요.",
+      "html": "",
+      "starterCode": "<article>\n  \n</article>",
+      "answer": "<article>\n  <header>\n    <h2>첫 번째 학습 기록</h2>\n    <time datetime=\"2026-07-26\">2026년 7월 26일</time>\n  </header>\n  <p>선택자 문제를 모두 풀었습니다.</p>\n</article>",
+      "constraints": ["날짜의 기계 판독 값은 YYYY-MM-DD 형식입니다.", "게시글 제목은 h2를 사용합니다."],
+      "hints": ["article은 문맥에서 떼어내도 독립적으로 이해되는 콘텐츠입니다.", "비슷한 코드 예시: <article><header><h2>제목</h2><time datetime=\"2026-01-01\">새해</time></header><p>본문</p></article>", "time의 화면 텍스트와 datetime 속성은 서로 다를 수 있습니다."],
+      "required": {
+        "rules": [
+          {"selector": "article > header > h2", "min": 1, "max": 1, "message": "article의 header 안에 h2 제목을 작성하세요."},
+          {"selector": "article > header time[datetime]", "min": 1, "max": 1, "message": "datetime 속성을 가진 time을 작성하세요."},
+          {"selector": "article > p", "min": 1, "message": "article의 직계 자식으로 본문 문단을 작성하세요."}
+        ],
+        "attributeFormats": [
+          {"selector": "article > header time[datetime]", "attribute": "datetime", "format": "iso-local-date", "message": "datetime은 실제로 존재하는 날짜를 YYYY-MM-DD 형식으로 작성하세요."}
+        ]
+      },
+      "solution": {
+        "summary": "article은 독립 콘텐츠를, time의 datetime은 사람이 보는 표현과 별개인 표준 날짜값을 제공합니다.",
+        "keyPoints": ["article 내부 header는 해당 글의 머리말입니다.", "datetime은 검색 엔진과 보조 기술이 날짜를 해석하는 데 도움을 줍니다."],
+        "alternative": "본문이 여러 주제로 나뉘면 article 안에 section을 추가할 수 있습니다.",
+        "complexity": "콘텐츠의 독립성과 제목·날짜·본문의 의미 계층이 핵심입니다."
+      }
+    },
+    {
+      "id": 5,
+      "mode": "html",
+      "stage": "문서 구조",
+      "title": "제목 계층",
+      "question": "main에 h1 하나와 두 개의 section을 만들고 각 section에 h2를 작성하세요.",
+      "html": "",
+      "starterCode": "<main>\n  <h1>프론트엔드 로드맵</h1>\n  \n</main>",
+      "answer": "<main>\n  <h1>프론트엔드 로드맵</h1>\n  <section><h2>HTML</h2><p>구조를 배웁니다.</p></section>\n  <section><h2>CSS</h2><p>표현을 배웁니다.</p></section>\n</main>",
+      "constraints": ["h1은 하나만 사용합니다.", "h2를 건너뛰어 h3부터 시작하지 않습니다."],
+      "hints": ["section은 보통 해당 영역을 설명하는 제목과 함께 사용합니다.", "비슷한 코드 예시: <main><h1>문서</h1><section><h2>주제 A</h2></section></main>", "두 section 모두 직계 h2를 가져야 합니다."],
+      "required": {
+        "rules": [
+          {"selector": "main > h1", "min": 1, "max": 1, "message": "main의 최상위 h1이 하나 필요합니다."},
+          {"selector": "main > section", "min": 2, "max": 2, "message": "main 안에 section을 정확히 두 개 작성하세요."},
+          {"selector": "main > section > h2", "min": 2, "max": 2, "message": "각 section의 직계 자식으로 h2를 작성하세요."}
+        ],
+        "forbidden": [
+          {"selector": "main > section:not(:has(> h2))", "message": "각 section에는 직계 h2 제목이 하나씩 필요합니다."},
+          {"selector": "main > section > h3:first-child", "message": "section 제목은 h2 단계부터 시작하세요."}
+        ]
+      },
+      "solution": {
+        "summary": "제목 단계는 글자 크기가 아니라 문서의 포함 관계를 설명합니다.",
+        "keyPoints": ["페이지 제목 h1 아래의 주요 영역은 h2로 시작합니다.", "section은 제목이 있는 주제별 영역에 사용합니다."],
+        "alternative": "내용이 독립 배포 가능한 글이라면 section 대신 article이 더 적절할 수 있습니다.",
+        "complexity": "제목 단계를 건너뛰지 않아 문서 윤곽을 예측 가능하게 만드는 것이 목표입니다."
+      }
+    },
+    {
+      "id": 6,
+      "mode": "html",
+      "stage": "폼·접근성",
+      "title": "레이블과 입력 연결",
+      "question": "email 입력과 label을 for와 id로 연결하고 name과 required를 지정하세요.",
+      "html": "",
+      "starterCode": "<form>\n  <label>이메일</label>\n  <input>\n</form>",
+      "answer": "<form>\n  <label for=\"email\">이메일</label>\n  <input id=\"email\" name=\"email\" type=\"email\" required>\n</form>",
+      "constraints": ["label의 for와 input의 id는 같은 값을 사용합니다.", "이메일 입력은 type=email을 사용합니다."],
+      "hints": ["label의 for는 연결할 입력의 id를 가리킵니다.", "비슷한 코드 예시: <label for=\"name\">이름</label><input id=\"name\" name=\"name\" required>", "input에 id, name, type, required가 모두 있는지 확인하세요."],
+      "required": {
+        "rules": [
+          {"selector": "label[for=email]", "min": 1, "max": 1, "message": "email 입력을 가리키는 label[for=email]이 필요합니다."},
+          {"selector": "input#email[name=email][type=email][required]", "min": 1, "max": 1, "message": "id·name·type·required를 가진 email input을 작성하세요."}
+        ]
+      },
+      "solution": {
+        "summary": "for와 id의 명시적 연결은 레이블 클릭 영역을 넓히고 입력 목적을 보조기기에 전달합니다.",
+        "keyPoints": ["name은 제출 데이터의 키가 됩니다.", "type=email과 required는 기본 검증과 모바일 키보드 최적화에 도움을 줍니다."],
+        "alternative": "input을 label 안에 포함하는 암시적 연결도 가능하지만 명시적 for/id 연결이 재사용하기 쉽습니다.",
+        "complexity": "폼에서는 DOM 비용보다 이름·레이블·검증 속성의 정확한 연결이 중요합니다."
+      }
+    },
+    {
+      "id": 7,
+      "mode": "html",
+      "stage": "폼·접근성",
+      "title": "라디오 그룹",
+      "question": "fieldset과 legend로 학습 난이도를 묶고 같은 name을 가진 라디오 버튼 세 개를 작성하세요.",
+      "html": "",
+      "starterCode": "<form>\n  \n</form>",
+      "answer": "<form>\n  <fieldset>\n    <legend>학습 난이도</legend>\n    <label><input type=\"radio\" name=\"level\" value=\"basic\"> 기초</label>\n    <label><input type=\"radio\" name=\"level\" value=\"practice\"> 실전</label>\n    <label><input type=\"radio\" name=\"level\" value=\"advanced\"> 응용</label>\n  </fieldset>\n</form>",
+      "constraints": ["세 라디오 입력의 name은 level로 통일합니다.", "그룹의 설명은 legend로 작성합니다."],
+      "hints": ["fieldset은 관련된 폼 컨트롤을 하나의 그룹으로 묶습니다.", "비슷한 코드 예시: <fieldset><legend>색상</legend><label><input type=\"radio\" name=\"color\"> 빨강</label></fieldset>", "같은 name을 사용해야 한 항목만 선택됩니다."],
+      "required": {
+        "rules": [
+          {"selector": "form > fieldset > legend", "min": 1, "max": 1, "message": "fieldset의 첫 그룹 설명으로 legend를 작성하세요."},
+          {"selector": "fieldset input[type=radio][name=level]", "min": 3, "max": 3, "message": "name=level인 라디오 버튼을 정확히 세 개 작성하세요."},
+          {"selector": "fieldset label > input[type=radio]", "min": 3, "max": 3, "message": "각 라디오 버튼을 label과 연결하세요."}
+        ]
+      },
+      "solution": {
+        "summary": "fieldset과 legend는 여러 컨트롤에 공통 질문을 제공하고 같은 name은 단일 선택 그룹을 만듭니다.",
+        "keyPoints": ["legend는 라디오 그룹 전체의 접근 가능한 이름입니다.", "각 선택지는 개별 label을 가져야 합니다."],
+        "alternative": "for/id 방식으로 각 라디오와 label을 명시적으로 연결해도 같은 의미를 만들 수 있습니다.",
+        "complexity": "그룹 안 항목 수와 관계없이 공통 legend와 개별 label을 모두 제공해야 합니다."
+      }
+    },
+    {
+      "id": 8,
+      "mode": "html",
+      "stage": "폼·접근성",
+      "title": "제출 버튼의 타입",
+      "question": "검색 form 안에 name=q인 search 입력과 type=submit 버튼을 작성하세요.",
+      "html": "",
+      "starterCode": "<form role=\"search\">\n  \n</form>",
+      "answer": "<form role=\"search\">\n  <label for=\"query\">검색어</label>\n  <input id=\"query\" name=\"q\" type=\"search\">\n  <button type=\"submit\">검색</button>\n</form>",
+      "constraints": ["버튼의 기본 동작을 추측하지 않고 type을 명시합니다.", "검색 입력에는 label을 연결합니다."],
+      "hints": ["form 안 button의 기본 타입은 submit이지만 명시하면 의도가 분명합니다.", "비슷한 코드 예시: <form><label for=\"keyword\">검색</label><input id=\"keyword\" name=\"q\" type=\"search\"><button type=\"submit\">찾기</button></form>", "role=search form 안에 label, input, button을 배치하세요."],
+      "required": {
+        "rules": [
+          {"selector": "form[role=search] input[type=search][name=q]", "min": 1, "max": 1, "message": "검색 form 안에 name=q인 search 입력을 작성하세요."},
+          {"selector": "form[role=search] label[for]", "min": 1, "message": "검색 입력과 연결할 label을 작성하세요."},
+          {"selector": "form[role=search] button[type=submit]", "min": 1, "max": 1, "message": "type=submit인 검색 버튼을 작성하세요."}
+        ],
+        "attributeMatches": [
+          {
+            "sourceSelector": "form[role=search] label[for]",
+            "sourceAttribute": "for",
+            "targetSelector": "form[role=search] input[type=search][name=q][id]",
+            "targetAttribute": "id",
+            "message": "label의 for와 검색 input의 id를 같은 값으로 연결하세요."
+          }
+        ]
+      },
+      "solution": {
+        "summary": "입력 목적과 버튼 동작을 명시하면 브라우저 기본 기능을 안전하게 활용할 수 있습니다.",
+        "keyPoints": ["search 타입은 검색 입력의 의미와 지우기 UI를 제공할 수 있습니다.", "button type을 명시하면 이후 버튼 추가 시 의도치 않은 제출을 예방합니다."],
+        "alternative": "검색 영역을 nav로 감싸는 것보다 검색 동작 자체는 role=search가 있는 form으로 표현하는 편이 명확합니다.",
+        "complexity": "폼 제출은 올바른 name과 type 계약이 핵심입니다."
+      }
+    },
+    {
+      "id": 9,
+      "mode": "html",
+      "stage": "폼·접근성",
+      "title": "의미 있는 이미지",
+      "question": "상품 이미지를 img로 작성하고 src, 구체적인 alt, width, height를 지정하세요.",
+      "html": "",
+      "starterCode": "<figure>\n  <img>\n</figure>",
+      "answer": "<figure>\n  <img src=\"data:image/gif;base64,R0lGODlhAQABAAAAACw=\" alt=\"보라색 Code Quest 학습 카드\" width=\"320\" height=\"180\">\n  <figcaption>CSS 선택자 학습 카드</figcaption>\n</figure>",
+      "constraints": ["alt를 비워두지 않습니다.", "레이아웃 이동을 줄이도록 고유 크기를 지정합니다."],
+      "hints": ["alt는 파일명이 아니라 이미지가 전달하는 정보를 설명합니다.", "비슷한 코드 예시: <img src=\"cover.png\" alt=\"Java 입문 강의 표지\" width=\"640\" height=\"360\">", "img에 src, alt, width, height 네 속성을 확인하세요."],
+      "required": {
+        "rules": [
+          {"selector": "figure > img[src][alt][width][height]", "min": 1, "max": 1, "message": "src·alt·width·height를 가진 img를 figure 안에 작성하세요."},
+          {"selector": "figure > figcaption", "min": 1, "max": 1, "message": "이미지 묶음의 설명을 figcaption으로 작성하세요."}
+        ],
+        "forbidden": [
+          {"selector": "img[alt=\"\"]", "message": "이 이미지는 정보를 전달하므로 alt를 비워두면 안 됩니다."}
+        ]
+      },
+      "solution": {
+        "summary": "alt는 이미지를 볼 수 없을 때의 대체 정보이고 width·height는 이미지 로딩 전 공간을 예약합니다.",
+        "keyPoints": ["장식 이미지만 alt=\"\"를 사용합니다.", "figure와 figcaption은 이미지와 캡션의 관계를 표현합니다."],
+        "alternative": "이미지가 장식 목적이라면 alt=\"\"가 맞지만 이 문제처럼 상품 정보를 전달하면 구체적인 대체 텍스트가 필요합니다.",
+        "complexity": "네트워크 성능과 접근성을 함께 고려하는 마크업입니다."
+      }
+    },
+    {
+      "id": 10,
+      "mode": "html",
+      "stage": "폼·접근성",
+      "title": "기본 제공 아코디언",
+      "question": "details와 summary를 사용해 자주 묻는 질문 한 항목을 작성하세요.",
+      "html": "",
+      "starterCode": "<section>\n  <h2>자주 묻는 질문</h2>\n  \n</section>",
+      "answer": "<section>\n  <h2>자주 묻는 질문</h2>\n  <details>\n    <summary>힌트는 몇 번 볼 수 있나요?</summary>\n    <p>필요할 때마다 단계적으로 확인할 수 있습니다.</p>\n  </details>\n</section>",
+      "constraints": ["클릭 동작을 위한 JavaScript를 작성하지 않습니다.", "summary 뒤에 답변 문단을 작성합니다."],
+      "hints": ["details는 펼치고 접는 동작을 브라우저가 제공합니다.", "비슷한 코드 예시: <details><summary>배송 안내</summary><p>이틀 안에 발송됩니다.</p></details>", "summary는 details의 첫 번째 설명 요소로 배치하세요."],
+      "required": {
+        "rules": [
+          {"selector": "section > h2", "min": 1, "max": 1, "message": "FAQ 영역의 h2 제목이 필요합니다."},
+          {"selector": "section > details > summary", "min": 1, "max": 1, "message": "details 안에 질문을 나타내는 summary를 작성하세요."},
+          {"selector": "section > details > p", "min": 1, "message": "details 안에 답변 문단을 작성하세요."}
+        ]
+      },
+      "solution": {
+        "summary": "details와 summary는 키보드 조작과 펼침 상태를 포함한 공개·접기 기능을 기본 제공합니다.",
+        "keyPoints": ["기본 HTML 컨트롤은 직접 만든 div 클릭 UI보다 접근성이 안정적입니다.", "summary는 사용자가 클릭하는 질문 제목입니다."],
+        "alternative": "복잡한 애니메이션이 필요해도 details의 의미와 상태를 유지한 채 CSS를 추가하는 방법을 우선 고려합니다.",
+        "complexity": "JavaScript 없이 브라우저의 기본 상호작용을 재사용합니다."
+      }
+    },
+    {
+      "id": 11,
+      "mode": "html",
+      "stage": "콘텐츠 모델",
+      "title": "학습 목표 목록",
+      "question": "section 안에 h2와 정확히 세 개의 학습 목표를 ul과 li로 작성하세요.",
+      "html": "",
+      "starterCode": "<section>\n  <h2>오늘의 목표</h2>\n  \n</section>",
+      "answer": "<section>\n  <h2>오늘의 목표</h2>\n  <ul>\n    <li>시맨틱 태그 구분하기</li>\n    <li>폼 레이블 연결하기</li>\n    <li>표 구조 작성하기</li>\n  </ul>\n</section>",
+      "constraints": ["순서가 중요하지 않은 목표이므로 ul을 사용합니다.", "li는 정확히 세 개 작성합니다."],
+      "hints": ["동등한 항목의 묶음은 ul로 표현합니다.", "비슷한 코드 예시: <ul><li>HTML</li><li>CSS</li></ul>", "section > ul > li 구조와 li 개수를 확인하세요."],
+      "required": {
+        "rules": [
+          {"selector": "section > h2", "min": 1, "max": 1, "message": "목록 영역의 h2 제목이 필요합니다."},
+          {"selector": "section > ul", "min": 1, "max": 1, "message": "section 안에 ul을 작성하세요."},
+          {"selector": "section > ul > li", "min": 3, "max": 3, "message": "학습 목표를 정확히 세 개의 li로 작성하세요."}
+        ]
+      },
+      "solution": {
+        "summary": "ul은 순서가 바뀌어도 의미가 유지되는 동등한 항목의 묶음입니다.",
+        "keyPoints": ["목록 항목은 임의의 줄바꿈보다 구조화된 li로 표현합니다.", "영역 제목은 목록의 목적을 설명합니다."],
+        "alternative": "단계나 순위처럼 순서가 의미를 가지면 ol을 사용해야 합니다.",
+        "complexity": "목록의 의미에 따라 ul과 ol을 구분하는 것이 핵심입니다."
+      }
+    },
+    {
+      "id": 12,
+      "mode": "html",
+      "stage": "콘텐츠 모델",
+      "title": "접근 가능한 데이터 표",
+      "question": "caption, thead, tbody와 scope=col인 열 제목을 가진 2열 표를 작성하세요.",
+      "html": "",
+      "starterCode": "<table>\n  \n</table>",
+      "answer": "<table>\n  <caption>트랙별 문제 수</caption>\n  <thead><tr><th scope=\"col\">트랙</th><th scope=\"col\">문제 수</th></tr></thead>\n  <tbody><tr><td>HTML</td><td>15</td></tr><tr><td>CSS</td><td>155</td></tr></tbody>\n</table>",
+      "constraints": ["레이아웃 목적으로 table을 사용하지 않습니다.", "열 제목에는 scope=col을 지정합니다."],
+      "hints": ["caption은 표 전체의 제목입니다.", "비슷한 코드 예시: <table><caption>점수</caption><thead><tr><th scope=\"col\">이름</th></tr></thead><tbody><tr><td>민수</td></tr></tbody></table>", "thead의 th 개수와 tbody의 td 열 수를 맞춰 보세요."],
+      "required": {
+        "rules": [
+          {"selector": "table > caption", "min": 1, "max": 1, "message": "표의 목적을 설명하는 caption이 필요합니다."},
+          {"selector": "table > thead th[scope=col]", "min": 2, "max": 2, "message": "thead에 scope=col인 열 제목 th를 두 개 작성하세요."},
+          {"selector": "table > tbody", "min": 1, "max": 1, "message": "데이터 행을 tbody 안에 작성하세요."},
+          {"selector": "table > tbody tr > td", "min": 2, "message": "tbody에 데이터 셀 td를 작성하세요."}
+        ]
+      },
+      "solution": {
+        "summary": "caption과 scope가 있는 th는 데이터 셀이 어떤 표와 열에 속하는지 설명합니다.",
+        "keyPoints": ["thead와 tbody는 제목 행과 데이터 행을 구분합니다.", "th의 scope=col은 세로 방향 열 제목 관계를 명시합니다."],
+        "alternative": "행 제목이 있는 표라면 첫 셀을 th scope=\"row\"로 표현할 수 있습니다.",
+        "complexity": "표가 커질수록 헤더 관계를 명시하는 것이 탐색 효율에 중요합니다."
+      }
+    },
+    {
+      "id": 13,
+      "mode": "html",
+      "stage": "콘텐츠 모델",
+      "title": "이미지와 캡션",
+      "question": "figure 안에 대체 텍스트가 있는 img와 figcaption을 작성하세요.",
+      "html": "",
+      "starterCode": "<figure>\n  \n</figure>",
+      "answer": "<figure>\n  <img src=\"data:image/gif;base64,R0lGODlhAQABAAAAACw=\" alt=\"Grid로 구성한 대시보드 예시\">\n  <figcaption>CSS Grid 대시보드 완성 화면</figcaption>\n</figure>",
+      "constraints": ["figcaption은 figure 안에 작성합니다.", "정보 이미지의 alt를 비워두지 않습니다."],
+      "hints": ["figure는 본문에서 참조되는 독립 미디어와 설명을 묶습니다.", "비슷한 코드 예시: <figure><img src=\"chart.png\" alt=\"월별 매출 그래프\"><figcaption>상반기 매출</figcaption></figure>", "img와 figcaption을 figure의 직계 자식으로 배치하세요."],
+      "required": {
+        "rules": [
+          {"selector": "figure > img[src][alt]", "min": 1, "max": 1, "message": "figure 안에 src와 alt를 가진 img를 작성하세요."},
+          {"selector": "figure > figcaption", "min": 1, "max": 1, "message": "figure 안에 figcaption을 작성하세요."}
+        ],
+        "forbidden": [
+          {"selector": "figure > img[alt=\"\"]", "message": "정보를 전달하는 이미지이므로 alt를 비워두지 마세요."}
+        ]
+      },
+      "solution": {
+        "summary": "figure와 figcaption은 미디어와 캡션이 하나의 독립 단위임을 나타냅니다.",
+        "keyPoints": ["alt는 이미지 자체의 대체 정보입니다.", "figcaption은 이미지가 문서에서 갖는 맥락을 설명합니다."],
+        "alternative": "캡션이 필요 없는 단순 콘텐츠 이미지는 figure 없이 img만 사용할 수 있습니다.",
+        "complexity": "alt와 캡션이 같은 문장을 불필요하게 반복하지 않도록 역할을 나눕니다."
+      }
+    },
+    {
+      "id": 14,
+      "mode": "html",
+      "stage": "콘텐츠 모델",
+      "title": "용어 설명 목록",
+      "question": "dl을 사용해 HTML과 CSS 두 용어를 각각 dt와 dd로 설명하세요.",
+      "html": "",
+      "starterCode": "<section>\n  <h2>용어 사전</h2>\n  \n</section>",
+      "answer": "<section>\n  <h2>용어 사전</h2>\n  <dl>\n    <dt>HTML</dt><dd>문서의 구조와 의미를 표현하는 언어</dd>\n    <dt>CSS</dt><dd>문서의 모양과 배치를 표현하는 언어</dd>\n  </dl>\n</section>",
+      "constraints": ["용어와 설명의 관계를 div로만 나열하지 않습니다.", "dt와 dd 쌍을 두 개 작성합니다."],
+      "hints": ["dl은 이름과 값 또는 용어와 설명의 묶음입니다.", "비슷한 코드 예시: <dl><dt>API</dt><dd>프로그램 간 인터페이스</dd></dl>", "dl 안에 dt 두 개와 dd 두 개가 있는지 확인하세요."],
+      "required": {
+        "rules": [
+          {"selector": "section > dl", "min": 1, "max": 1, "message": "용어 목록을 dl로 작성하세요."},
+          {"selector": "dl > dt", "min": 2, "max": 2, "message": "용어 dt를 정확히 두 개 작성하세요."},
+          {"selector": "dl > dd", "min": 2, "max": 2, "message": "설명 dd를 정확히 두 개 작성하세요."}
+        ]
+      },
+      "solution": {
+        "summary": "dl·dt·dd는 이름과 설명 사이의 관계를 구조적으로 표현합니다.",
+        "keyPoints": ["dt 하나에 여러 dd가 연결될 수도 있습니다.", "단순 불릿 목록과 달리 용어-설명 관계가 핵심입니다."],
+        "alternative": "키와 값이 행·열 비교 대상이라면 dl보다 table이 적절할 수 있습니다.",
+        "complexity": "콘텐츠 관계에 맞는 요소를 선택하면 별도 ARIA 없이 의미가 전달됩니다."
+      }
+    },
+    {
+      "id": 15,
+      "mode": "html",
+      "stage": "콘텐츠 모델",
+      "title": "본문 바로가기",
+      "question": "href=#content인 바로가기 링크와 id=content인 main을 작성하세요.",
+      "html": "",
+      "starterCode": "<header>\n  <nav aria-label=\"주 메뉴\"><a href=\"/\">홈</a></nav>\n</header>\n\n<main>\n  <h1>학습 대시보드</h1>\n</main>",
+      "answer": "<a href=\"#content\">본문 바로가기</a>\n<header>\n  <nav aria-label=\"주 메뉴\"><a href=\"/\">홈</a></nav>\n</header>\n<main id=\"content\" tabindex=\"-1\">\n  <h1>학습 대시보드</h1>\n</main>",
+      "constraints": ["바로가기 링크는 반복 내비게이션보다 앞에 둡니다.", "링크 대상의 id는 content입니다."],
+      "hints": ["페이지 내부 링크의 href는 대상 id 앞에 #을 붙입니다.", "비슷한 코드 예시: <a href=\"#main\">본문으로</a><main id=\"main\" tabindex=\"-1\">...</main>", "a[href=\"#content\"]와 main#content를 한 쌍으로 만드세요."],
+      "required": {
+        "rules": [
+          {"selector": "body > a[href=\"#content\"]", "min": 1, "max": 1, "message": "페이지 앞부분에 href=#content인 바로가기 링크를 작성하세요."},
+          {"selector": "nav", "min": 1, "message": "건너뛸 반복 내비게이션 nav를 유지하세요."},
+          {"selector": "main#content", "min": 1, "max": 1, "message": "바로가기 대상인 main#content를 작성하세요."},
+          {"selector": "main#content[tabindex=\"-1\"]", "min": 1, "max": 1, "message": "프로그래밍 방식 포커스를 받을 수 있도록 main에 tabindex=-1을 지정하세요."}
+        ],
+        "orders": [
+          {
+            "beforeSelector": "body > a[href=\"#content\"]",
+            "afterSelector": "nav",
+            "message": "본문 바로가기 링크는 반복 내비게이션보다 앞에 배치하세요."
+          }
+        ]
+      },
+      "solution": {
+        "summary": "본문 바로가기는 키보드 사용자가 반복 메뉴를 건너뛰고 핵심 콘텐츠로 이동하게 합니다.",
+        "keyPoints": ["href의 조각 식별자와 대상 id가 정확히 일치해야 합니다.", "tabindex=-1은 탭 순서에는 추가하지 않으면서 스크립트·브라우저 포커스 대상이 되게 합니다."],
+        "alternative": "대상 main이 자연스럽게 포커스를 받는 환경도 있지만 일관성을 위해 tabindex=-1을 함께 사용하는 패턴이 널리 쓰입니다.",
+        "complexity": "키보드 이동 횟수를 줄이는 사용자 경험 개선입니다."
+      }
+    }
+  ]
+}

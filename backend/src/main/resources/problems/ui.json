@@ -1,0 +1,478 @@
+{
+  "id": "ui",
+  "name": "5단계 · UI 구현",
+  "description": "컴포넌트와 실무 레이아웃을 구현하는 25문제",
+  "problems": [
+    {
+      "id": 1,
+      "mode": "declaration",
+      "stage": "기본 UI",
+      "title": "로그인 화면",
+      "question": "로그인 폼의 입력 요소를 세로로 배치하고 12px 간격을 주세요.",
+      "html": "<form class=\"login-ui\" data-preview><input placeholder=\"이메일\"><input placeholder=\"비밀번호\"><button>로그인</button></form>",
+      "answer": "display: flex; flex-direction: column; gap: 12px;",
+      "required": {
+        "display": "flex",
+        "flex-direction": "column",
+        "gap": "12px"
+      },
+      "hints": [
+        "세로 흐름은 Flex의 주축 방향을 바꾸어 만듭니다.",
+        "비슷한 코드 예시: .stack { display: flex; flex-direction: column; gap: 1rem; }",
+        "display, flex-direction, gap을 각각 한 선언씩 작성해 보세요."
+      ]
+    },
+    {
+      "id": 2,
+      "mode": "declaration",
+      "stage": "기본 UI",
+      "title": "카드",
+      "question": "카드에 20px 안쪽 여백, 12px 둥근 모서리, 그림자를 적용하세요.",
+      "html": "<article class=\"ui-card\" data-preview><h3>카드 제목</h3><p>카드 설명</p></article>",
+      "answer": "padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.15);",
+      "required": {
+        "padding": "20px",
+        "border-radius": "12px",
+        "box-shadow": "0 4px 12px rgba(0,0,0,.15)"
+      },
+      "hints": [
+        "카드 내부 여백, 모서리, 그림자는 서로 다른 속성입니다.",
+        "비슷한 코드 예시: .panel { padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px #0002; }",
+        "문장의 세 조건을 CSS 선언 세 개로 나누어 작성하세요."
+      ]
+    },
+    {
+      "id": 3,
+      "mode": "declaration",
+      "stage": "기본 UI",
+      "title": "네비게이션",
+      "question": "네비게이션 내부를 가로 배치하고 양끝 정렬과 세로 중앙 정렬을 적용하세요.",
+      "html": "<nav class=\"ui-nav\" data-preview><strong>LOGO</strong><div>홈 · 게시판 · 로그인</div></nav>",
+      "answer": "display: flex; justify-content: space-between; align-items: center;",
+      "required": {
+        "display": "flex",
+        "justify-content": "space-between",
+        "align-items": "center"
+      },
+      "hints": [
+        "가로 배치 후 주축과 교차축 정렬을 따로 지정합니다.",
+        "비슷한 코드 예시: .toolbar { display: flex; justify-content: space-around; align-items: flex-start; }",
+        "양끝 정렬은 주축, 세로 중앙은 교차축 속성으로 해결하세요."
+      ]
+    },
+    {
+      "id": 4,
+      "mode": "declaration",
+      "stage": "기본 UI",
+      "title": "게시판 행",
+      "question": "게시판 행을 번호·제목·작성자 3열로 구성하고 세로 중앙 정렬하세요.",
+      "html": "<div class=\"board-row\" data-preview><span>1</span><strong>게시글 제목</strong><span>작성자</span></div>",
+      "answer": "display: grid; grid-template-columns: 80px 1fr 120px; align-items: center;",
+      "required": {
+        "display": "grid",
+        "grid-template-columns": "80px 1fr 120px",
+        "align-items": "center"
+      },
+      "hints": [
+        "고정 열과 남는 공간을 차지하는 열을 함께 정의할 수 있습니다.",
+        "비슷한 코드 예시: .row { display: grid; grid-template-columns: 4rem 1fr auto; align-items: start; }",
+        "세 열의 너비를 왼쪽부터 문제의 순서대로 대응하세요."
+      ]
+    },
+    {
+      "id": 5,
+      "mode": "declaration",
+      "stage": "기본 UI",
+      "title": "모달 중앙",
+      "question": "모달 배경을 화면 전체에 고정하고 내용을 가로·세로 중앙에 배치하세요.",
+      "html": "<div class=\"modal-ui\" data-preview><section>모달 내용</section></div>",
+      "answer": "position: fixed; inset: 0; display: flex; justify-content: center; align-items: center;",
+      "required": {
+        "position": "fixed",
+        "inset": "0",
+        "display": "flex",
+        "justify-content": "center",
+        "align-items": "center"
+      },
+      "hints": [
+        "화면 전체를 덮는 고정 영역을 만든 뒤 내부 정렬을 적용합니다.",
+        "비슷한 코드 예시: .overlay { position: fixed; inset: 0; display: grid; place-items: center; }",
+        "위치 지정과 중앙 정렬을 두 단계로 나누어 생각하세요."
+      ]
+    },
+    {
+      "id": 6,
+      "mode": "declaration",
+      "stage": "기본 UI",
+      "title": "태그 목록",
+      "question": "태그를 가로로 배치하되 공간이 부족하면 줄바꿈하고 8px 간격을 주세요.",
+      "html": "<div class=\"tags-ui\" data-preview><span>Java</span><span>Spring</span><span>CSS</span><span>AI</span></div>",
+      "answer": "display: flex; flex-wrap: wrap; gap: 8px;",
+      "required": {
+        "display": "flex",
+        "flex-wrap": "wrap",
+        "gap": "8px"
+      },
+      "hints": [
+        "Flex 항목이 다음 줄로 넘어가도록 줄바꿈을 허용합니다.",
+        "비슷한 코드 예시: .chips { display: flex; flex-wrap: wrap; gap: .5rem; }",
+        "가로 배치, 줄바꿈 허용, 줄 사이까지 적용되는 간격을 조합하세요."
+      ]
+    },
+    {
+      "id": 7,
+      "mode": "declaration",
+      "stage": "UI 고급",
+      "title": "반응형 상품 카드",
+      "question": "상품 카드를 최소 220px 자동 열로 배치하고 20px 간격을 주세요.",
+      "html": "<section class=\"product-ui\" data-preview><article>A</article><article>B</article><article>C</article></section>",
+      "answer": "display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;",
+      "required": {
+        "display": "grid",
+        "grid-template-columns": "repeat(auto-fit, minmax(220px, 1fr))",
+        "gap": "20px"
+      },
+      "hints": [
+        "각 열의 최소 크기와 남는 공간 배분 방식을 차례로 설계하세요.",
+        "비슷한 코드 예시: .sample { display: grid; grid-template-columns: 10rem minmax(0, 1fr); }",
+        "minmax()는 열의 최소·최대 크기를 함께 정하고 1fr은 남는 공간의 비율입니다."
+      ]
+    },
+    {
+      "id": 8,
+      "mode": "declaration",
+      "stage": "UI 고급",
+      "title": "상단 고정 도구막대",
+      "question": "도구막대를 상단에 고정하고 z-index 100, 반투명 배경 흐림을 적용하세요.",
+      "html": "<div style=\"height:190px;overflow:auto;background:linear-gradient(#7c3aed,#0ea5e9)\"><header class=\"ui-nav\" data-preview>도구 모음</header><div style=\"height:440px;padding:24px\">스크롤되는 작업 내용</div></div>",
+      "answer": "position: sticky; top: 0; z-index: 100; background-color: rgba(18,16,24,.8); backdrop-filter: blur(12px);",
+      "required": {
+        "position": "sticky",
+        "top": "0",
+        "z-index": "100",
+        "background-color": "rgba(18,16,24,.8)",
+        "backdrop-filter": "blur(12px)"
+      },
+      "hints": [
+        "요소 자체가 아니라 뒤쪽 콘텐츠에 적용되는 필터를 사용하세요.",
+        "비슷한 코드 예시: .sample { background: rgb(20 20 30 / .5); backdrop-filter: blur(8px); }",
+        "배경이 일부 투명해야 backdrop-filter의 변화가 눈에 보입니다."
+      ]
+    },
+    {
+      "id": 9,
+      "mode": "declaration",
+      "stage": "UI 고급",
+      "title": "말줄임 목록 행",
+      "question": "목록 행을 80px·유동·auto로 배치하고 12px 간격 및 중앙 정렬하세요.",
+      "html": "<article data-preview><span>번호</span><strong style=\"min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap\">아주 긴 게시글 제목</strong><time>오늘</time></article>",
+      "answer": "display: grid; grid-template-columns: 80px minmax(0, 1fr) auto; gap: 12px; align-items: center;",
+      "required": {
+        "display": "grid",
+        "grid-template-columns": "80px minmax(0, 1fr) auto",
+        "gap": "12px",
+        "align-items": "center"
+      },
+      "hints": [
+        "주축과 교차축을 구분하고 필요한 정렬 속성을 선택하세요.",
+        "비슷한 코드 예시: .sample { display: flex; justify-content: flex-start; align-items: center; }",
+        "justify-content는 주축, align-items는 한 줄 안의 교차축 정렬을 담당합니다."
+      ]
+    },
+    {
+      "id": 10,
+      "mode": "declaration",
+      "stage": "UI 고급",
+      "title": "검색 입력 그룹",
+      "question": "검색 폼을 가로 배치하고 입력창이 남은 공간을 차지하게 하세요.",
+      "html": "<form class=\"flex-box\" data-preview><input style=\"flex:1\"><button>검색</button></form>",
+      "answer": "display: flex; align-items: stretch; gap: 8px;",
+      "required": {
+        "display": "flex",
+        "align-items": "stretch",
+        "gap": "8px"
+      },
+      "hints": [
+        "주축과 교차축을 구분하고 필요한 정렬 속성을 선택하세요.",
+        "비슷한 코드 예시: .sample { display: flex; justify-content: flex-start; align-items: center; }",
+        "justify-content는 주축, align-items는 한 줄 안의 교차축 정렬을 담당합니다."
+      ]
+    },
+    {
+      "id": 11,
+      "mode": "declaration",
+      "stage": "UI 고급",
+      "title": "가로 스크롤 탭",
+      "question": "탭을 줄바꿈하지 않고 가로 스크롤하며 8px 간격을 적용하세요.",
+      "html": "<nav class=\"flex-box\" data-preview><button style=\"flex:0 0 auto\">전체</button><button style=\"flex:0 0 auto\">프론트엔드 학습</button><button style=\"flex:0 0 auto\">백엔드 학습</button></nav>",
+      "answer": "display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 8px;",
+      "required": {
+        "display": "flex",
+        "flex-wrap": "nowrap",
+        "overflow-x": "auto",
+        "gap": "8px"
+      },
+      "hints": [
+        "한 줄에 들어가지 않는 항목을 감싸고 축별 간격을 따로 줄 수 있습니다.",
+        "비슷한 코드 예시: .sample { display: flex; flex-wrap: wrap; gap: .5rem 1rem; }",
+        "wrap은 새 줄을 허용하고 row-gap과 column-gap은 두 축의 간격을 정합니다."
+      ]
+    },
+    {
+      "id": 12,
+      "mode": "declaration",
+      "stage": "UI 고급",
+      "title": "채팅 레이아웃",
+      "question": "채팅 영역을 세로 Flex로 만들고 12px 간격과 세로 스크롤을 적용하세요.",
+      "html": "<section style=\"max-height:180px\" data-preview><article style=\"min-height:72px\">메시지 1</article><article style=\"min-height:72px\">메시지 2</article><article style=\"min-height:72px\">메시지 3</article><article style=\"min-height:72px\">메시지 4</article></section>",
+      "answer": "display: flex; flex-direction: column; gap: 12px; overflow-y: auto;",
+      "required": {
+        "display": "flex",
+        "flex-direction": "column",
+        "gap": "12px",
+        "overflow-y": "auto"
+      },
+      "hints": [
+        "컨테이너의 주축 방향과 항목 순서를 함께 고려하세요.",
+        "비슷한 코드 예시: .sample { display: flex; flex-direction: column; }",
+        "flex-direction은 주축 방향뿐 아니라 row-reverse처럼 시각적 순서도 바꿀 수 있습니다."
+      ]
+    },
+    {
+      "id": 13,
+      "mode": "declaration",
+      "stage": "UI 실무",
+      "title": "미디어 카드",
+      "question": "썸네일 120px과 유동 내용을 가로 배치하고 16px 간격을 주세요.",
+      "html": "<article data-preview><div>Image</div><div>Content</div></article>",
+      "answer": "display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 16px; align-items: start;",
+      "required": {
+        "display": "grid",
+        "grid-template-columns": "120px minmax(0, 1fr)",
+        "gap": "16px",
+        "align-items": "start"
+      },
+      "hints": [
+        "주축과 교차축을 구분하고 필요한 정렬 속성을 선택하세요.",
+        "비슷한 코드 예시: .sample { display: flex; justify-content: flex-start; align-items: center; }",
+        "justify-content는 주축, align-items는 한 줄 안의 교차축 정렬을 담당합니다."
+      ]
+    },
+    {
+      "id": 14,
+      "mode": "declaration",
+      "stage": "UI 실무",
+      "title": "설정 폼",
+      "question": "라벨 140px과 입력 영역을 2열로 배치하고 16px 간격을 주세요.",
+      "html": "<form class=\"grid-box\" data-preview><label>이메일</label><input><label>알림</label><input></form>",
+      "answer": "display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 16px;",
+      "required": {
+        "display": "grid",
+        "grid-template-columns": "140px minmax(0, 1fr)",
+        "gap": "16px"
+      },
+      "hints": [
+        "각 열의 최소 크기와 남는 공간 배분 방식을 차례로 설계하세요.",
+        "비슷한 코드 예시: .sample { display: grid; grid-template-columns: 10rem minmax(0, 1fr); }",
+        "minmax()는 열의 최소·최대 크기를 함께 정하고 1fr은 남는 공간의 비율입니다."
+      ]
+    },
+    {
+      "id": 15,
+      "mode": "declaration",
+      "stage": "UI 실무",
+      "title": "커맨드 팔레트",
+      "question": "팔레트를 화면 상단 중앙에 고정하고 너비를 640px 이하로 제한하세요.",
+      "html": "<section class=\"ui-card\" data-preview>명령 검색</section>",
+      "answer": "position: fixed; top: 12vh; left: 50%; transform: translateX(-50%); width: min(640px, calc(100% - 32px));",
+      "required": {
+        "position": "fixed",
+        "top": "12vh",
+        "left": "50%",
+        "transform": "translateX(-50%)",
+        "width": "min(640px, calc(100% - 32px))"
+      },
+      "hints": [
+        "요소가 어느 좌표계를 기준으로 배치될지 먼저 정한 뒤 위치 값을 추가하세요.",
+        "비슷한 코드 예시: .sample { position: fixed; inset-inline: 1rem; bottom: 1rem; }",
+        "fixed는 뷰포트, sticky는 가장 가까운 스크롤 컨테이너를 기준으로 동작합니다."
+      ]
+    },
+    {
+      "id": 16,
+      "mode": "declaration",
+      "stage": "UI 실무",
+      "title": "칸반 보드",
+      "question": "최소 280px 자동 열을 만들고 가로 넘침을 스크롤하게 하세요.",
+      "html": "<section class=\"grid-box\" data-preview><article>Todo</article><article>Doing</article><article>Done</article></section>",
+      "answer": "display: grid; grid-auto-flow: column; grid-auto-columns: minmax(280px, 1fr); overflow-x: auto; gap: 16px;",
+      "required": {
+        "display": "grid",
+        "grid-auto-flow": "column",
+        "grid-auto-columns": "minmax(280px, 1fr)",
+        "overflow-x": "auto",
+        "gap": "16px"
+      },
+      "hints": [
+        "자동 배치가 진행되는 축과 빈칸을 다시 채울지 결정하세요.",
+        "비슷한 코드 예시: .sample { display: grid; grid-auto-flow: column dense; }",
+        "dense는 뒤의 작은 아이템을 앞쪽 빈칸에 재배치할 수 있습니다."
+      ]
+    },
+    {
+      "id": 17,
+      "mode": "declaration",
+      "stage": "UI 실무",
+      "title": "데이터 테이블 래퍼",
+      "question": "테이블 영역을 가로 스크롤 가능하게 하고 최대 너비를 100%로 제한하세요.",
+      "html": "<div data-preview><table style=\"min-width:720px\"><tbody><tr><td>넓은 데이터 테이블</td></tr></tbody></table></div>",
+      "answer": "max-width: 100%; overflow-x: auto;",
+      "required": {
+        "max-width": "100%",
+        "overflow-x": "auto"
+      },
+      "hints": [
+        "컨테이너가 부모보다 넓어지지 않도록 최대 크기와 넘침 축을 함께 확인하세요.",
+        "비슷한 코드 예시: .sample { max-width: 90vw; overflow-x: scroll; }",
+        "max-width는 크기 상한을 정하고 overflow-x는 실제 넘침의 처리 방식을 정합니다."
+      ]
+    },
+    {
+      "id": 18,
+      "mode": "declaration",
+      "stage": "UI 실무",
+      "title": "파일 업로더",
+      "question": "업로더를 Grid로 만들고 내용을 중앙 정렬하며 최소 높이 240px을 적용하세요.",
+      "html": "<label data-preview>파일을 놓으세요<input type=\"file\"></label>",
+      "answer": "display: grid; place-items: center; min-height: 240px; border: 2px dashed #6d5bd0;",
+      "required": {
+        "display": "grid",
+        "place-items": "center",
+        "min-height": "240px",
+        "border": "2px dashed #6d5bd0"
+      },
+      "hints": [
+        "먼저 레이아웃 방식을 정한 뒤, 그 방식에서 사용할 축이나 열 속성을 추가하세요.",
+        "비슷한 코드 예시: .sample { display: grid; gap: 1rem; }",
+        "display는 레이아웃 문맥을 만들고 나머지 정렬·배치 속성의 기준이 됩니다."
+      ]
+    },
+    {
+      "id": 19,
+      "mode": "declaration",
+      "stage": "UI 실무",
+      "title": "모바일 하단 내비",
+      "question": "내비게이션을 화면 하단 전체 너비에 고정하고 아이템을 동일한 4열로 배치하세요.",
+      "html": "<nav data-preview><a>홈</a><a>검색</a><a>알림</a><a>내정보</a></nav>",
+      "answer": "position: fixed; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(4, 1fr);",
+      "required": {
+        "position": "fixed",
+        "left": "0",
+        "right": "0",
+        "bottom": "0",
+        "display": "grid",
+        "grid-template-columns": "repeat(4, 1fr)"
+      },
+      "hints": [
+        "각 열의 최소 크기와 남는 공간 배분 방식을 차례로 설계하세요.",
+        "비슷한 코드 예시: .sample { display: grid; grid-template-columns: 10rem minmax(0, 1fr); }",
+        "minmax()는 열의 최소·최대 크기를 함께 정하고 1fr은 남는 공간의 비율입니다."
+      ]
+    },
+    {
+      "id": 20,
+      "mode": "declaration",
+      "stage": "UI 실무",
+      "title": "좁은 화면 안전 카드 그룹",
+      "question": "카드 최소 너비는 260px로 유지하되 화면이 더 좁으면 100%까지 줄어드는 자동 맞춤 열을 만들고 20px 간격을 적용하세요.",
+      "html": "<section class=\"grid-box\" data-preview><a href=\"#\" class=\"ui-card\">프로필</a><a href=\"#\" class=\"ui-card\">학습 기록</a></section>",
+      "answer": "display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 20px;",
+      "required": {
+        "display": "grid",
+        "grid-template-columns": "repeat(auto-fit, minmax(min(100%, 260px), 1fr))",
+        "gap": "20px"
+      },
+      "hints": [
+        "자동 맞춤 열의 최소값이 작은 화면 너비를 넘지 않도록 함수 안에 상한을 한 번 더 두세요.",
+        "비슷한 코드 예시: .sample { grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); }",
+        "min()과 minmax()를 중첩하면 카드 최소 너비를 지키면서도 가로 넘침을 피할 수 있습니다."
+      ]
+    },
+    {
+      "id": 21,
+      "mode": "declaration",
+      "stage": "UI 실무",
+      "title": "동적 워크스페이스",
+      "question": "도구 패널 너비를 최소 240px, 선호 24vw, 최대 320px로 제한하고 유동 작업 영역과 20px 간격을 만든 뒤 동적 화면 높이를 채우세요.",
+      "html": "<div class=\"grid-box\" data-preview><aside>Tools</aside><main>Workspace</main></div>",
+      "answer": "display: grid; grid-template-columns: clamp(240px, 24vw, 320px) minmax(0, 1fr); gap: 20px; min-height: 100dvh;",
+      "required": {
+        "display": "grid",
+        "grid-template-columns": "clamp(240px, 24vw, 320px) minmax(0, 1fr)",
+        "gap": "20px",
+        "min-height": "100dvh"
+      },
+      "hints": [
+        "사이드바 너비는 clamp()로 범위를 만들고, 화면 높이는 모바일 주소창 변화를 반영하는 단위를 사용하세요.",
+        "비슷한 코드 예시: .sample { grid-template-columns: clamp(14rem, 20vw, 20rem) minmax(0, 1fr); min-height: 100dvh; }",
+        "dvh는 현재 보이는 동적 뷰포트 높이를 따르므로 모바일 브라우저 UI 변화에 대응합니다."
+      ]
+    },
+    {
+      "id": 22,
+      "mode": "declaration",
+      "stage": "UI 실무",
+      "title": "반응형 동작 헤더",
+      "question": "제목과 동작 그룹을 양끝에 두되 공간이 부족하면 자연스럽게 줄바꿈하고 12px 간격을 유지하세요.",
+      "html": "<header class=\"ui-card\" data-preview style=\"width:340px\"><h2>프로젝트 설정</h2><div><button>취소</button><button>저장</button></div></header>",
+      "answer": "display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;",
+      "hints": [
+        "한 줄 정렬과 좁은 화면의 줄바꿈을 동시에 허용하세요.",
+        "비슷한 코드 예시: .sample { display: flex; flex-wrap: wrap; justify-content: space-around; gap: 1rem; }",
+        "flex-wrap과 gap을 함께 쓰면 줄이 바뀌어도 항목 사이 간격이 유지됩니다."
+      ]
+    },
+    {
+      "id": 23,
+      "mode": "declaration",
+      "stage": "UI 실무",
+      "title": "스크롤 안전 대화상자",
+      "question": "헤더·스크롤 본문·푸터의 3행 대화상자를 만들고 높이를 화면의 80% 또는 640px 중 작은 값으로 제한하세요.",
+      "html": "<section class=\"ui-card\" data-preview style=\"height:300px\"><header>설정</header><main style=\"overflow:auto\"><p>긴 설정 내용</p><p>추가 옵션</p><p>도움말</p></main><footer><button>저장</button></footer></section>",
+      "answer": "display: grid; grid-template-rows: auto minmax(0, 1fr) auto; max-height: min(80vh, 640px);",
+      "hints": [
+        "가운데 행만 줄어들고 스크롤될 수 있도록 최소 크기를 0으로 내려 주세요.",
+        "비슷한 코드 예시: .sample { grid-template-rows: auto minmax(0, 1fr); max-height: 70vh; }",
+        "minmax(0, 1fr)은 콘텐츠의 기본 최소 높이 때문에 대화상자가 제한 높이를 넘는 문제를 막습니다."
+      ]
+    },
+    {
+      "id": 24,
+      "mode": "declaration",
+      "stage": "UI 실무",
+      "title": "논리적 토스트 스택",
+      "question": "토스트 목록을 화면 인라인 끝·블록 끝 24px에 고정하고 세로 12px 간격으로 쌓되 화면보다 넓어지지 않게 하세요.",
+      "html": "<aside data-preview><div class=\"ui-card\">저장 완료</div><div class=\"ui-card\">동기화 완료</div></aside>",
+      "answer": "position: fixed; inset-inline-end: 24px; inset-block-end: 24px; display: flex; flex-direction: column; gap: 12px; max-width: calc(100vw - 48px);",
+      "hints": [
+        "left/right 대신 쓰기 방향을 따르는 논리적 inset을 사용하세요.",
+        "비슷한 코드 예시: .sample { position: fixed; inset-inline-start: 1rem; inset-block-end: 1rem; }",
+        "논리적 inset은 LTR·RTL 전환에도 같은 의미의 화면 끝 위치를 유지합니다."
+      ]
+    },
+    {
+      "id": 25,
+      "mode": "declaration",
+      "stage": "UI 실무",
+      "title": "읽기 폭 콘텐츠",
+      "question": "본문을 최대 70ch로 제한해 가운데 배치하고 좌우 여백을 최소 16px, 화면에 따라 4vw까지 늘리세요.",
+      "html": "<article class=\"demo\" data-preview><h2>읽기 좋은 문서</h2><p>긴 문장은 한 줄이 지나치게 길어지지 않을 때 읽기 편합니다. 콘텐츠 폭과 화면 가장자리 여백을 함께 관리하세요.</p></article>",
+      "answer": "max-width: 70ch; margin-inline: auto; padding-inline: max(16px, 4vw);",
+      "hints": [
+        "글자 수 기반 폭, 논리적 자동 여백, 반응형 안쪽 여백을 조합하세요.",
+        "비슷한 코드 예시: .sample { max-width: 65ch; margin-inline: auto; padding-inline: 1rem; }",
+        "ch 단위는 0 글자의 폭을 기준으로 하며 긴 본문의 줄 길이를 제한할 때 유용합니다."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "acorn": "npm:acorn@8.17.0"
+  }
+}

@@ -1,0 +1,450 @@
+{
+  "id": "grid",
+  "name": "4단계 · Grid",
+  "description": "행·열, 정렬, 배치, 반응형 Grid를 다루는 25문제",
+  "problems": [
+    {
+      "id": 1,
+      "mode": "declaration",
+      "stage": "Grid 기초",
+      "title": "Grid 시작",
+      "question": "부모 요소를 Grid 컨테이너로 만드세요.",
+      "html": "<div class=\"grid-box\" data-preview><span>A</span><span>B</span><span>C</span><span>D</span></div>",
+      "answer": "display: grid;",
+      "required": {
+        "display": "grid"
+      },
+      "hints": [
+        "Grid 관련 속성을 사용합니다.",
+        "Grid는 행과 열의 2차원 구조로 요소를 배치합니다.",
+        "필요한 Grid 속성을 속성: 값; 형태로 작성하세요."
+      ]
+    },
+    {
+      "id": 2,
+      "mode": "declaration",
+      "stage": "Grid 기초",
+      "title": "2열",
+      "question": "같은 너비의 2열 Grid를 만드세요.",
+      "html": "<div class=\"grid-box\" data-preview><span>A</span><span>B</span><span>C</span><span>D</span></div>",
+      "answer": "display: grid; grid-template-columns: repeat(2, 1fr);",
+      "required": {
+        "display": "grid",
+        "grid-template-columns": "repeat(2, 1fr)"
+      },
+      "hints": [
+        "Grid 관련 속성을 사용합니다.",
+        "Grid는 행과 열의 2차원 구조로 요소를 배치합니다.",
+        "필요한 Grid 속성을 속성: 값; 형태로 작성하세요."
+      ]
+    },
+    {
+      "id": 3,
+      "mode": "declaration",
+      "stage": "Grid 기초",
+      "title": "전체 간격",
+      "question": "행과 열 사이 간격을 16px로 지정하세요.",
+      "html": "<div class=\"grid-box\" style=\"display:grid\" data-preview><span>A</span><span>B</span><span>C</span><span>D</span></div>",
+      "answer": "gap: 16px;",
+      "required": {
+        "gap": "16px"
+      },
+      "hints": [
+        "Grid 관련 속성을 사용합니다.",
+        "Grid는 행과 열의 2차원 구조로 요소를 배치합니다.",
+        "필요한 Grid 속성을 속성: 값; 형태로 작성하세요."
+      ]
+    },
+    {
+      "id": 4,
+      "mode": "declaration",
+      "stage": "Grid 기초",
+      "title": "가운데 정렬",
+      "question": "모든 Grid 아이템을 가로·세로 가운데 정렬하세요.",
+      "html": "<div class=\"grid-box\" style=\"display:grid\" data-preview><span>A</span><span>B</span><span>C</span><span>D</span></div>",
+      "answer": "place-items: center;",
+      "required": {
+        "place-items": "center"
+      },
+      "hints": [
+        "Grid 관련 속성을 사용합니다.",
+        "Grid는 행과 열의 2차원 구조로 요소를 배치합니다.",
+        "필요한 Grid 속성을 속성: 값; 형태로 작성하세요."
+      ]
+    },
+    {
+      "id": 5,
+      "mode": "declaration",
+      "stage": "Grid 기초",
+      "title": "열 차지",
+      "question": "아이템이 1번 열선부터 3번 열선까지 차지하게 하세요.",
+      "html": "<div class=\"grid-box\" style=\"display:grid;grid-template-columns:repeat(3,1fr)\"><span data-preview>A가 두 열 차지</span><span>B</span><span>C</span></div>",
+      "answer": "grid-column: 1 / 3;",
+      "required": {
+        "grid-column": "1 / 3"
+      },
+      "hints": [
+        "Grid 관련 속성을 사용합니다.",
+        "Grid는 행과 열의 2차원 구조로 요소를 배치합니다.",
+        "필요한 Grid 속성을 속성: 값; 형태로 작성하세요."
+      ]
+    },
+    {
+      "id": 6,
+      "mode": "declaration",
+      "stage": "Grid 기초",
+      "title": "행 차지",
+      "question": "아이템이 1번 행선부터 3번 행선까지 차지하게 하세요.",
+      "html": "<div class=\"grid-box\" style=\"display:grid;grid-template-columns:repeat(2,1fr);grid-auto-rows:64px\"><span data-preview>A가 두 행 차지</span><span>B</span><span>C</span></div>",
+      "answer": "grid-row: 1 / 3;",
+      "required": {
+        "grid-row": "1 / 3"
+      },
+      "hints": [
+        "Grid 관련 속성을 사용합니다.",
+        "Grid는 행과 열의 2차원 구조로 요소를 배치합니다.",
+        "필요한 Grid 속성을 속성: 값; 형태로 작성하세요."
+      ]
+    },
+    {
+      "id": 7,
+      "mode": "declaration",
+      "stage": "Grid 기초",
+      "title": "자동 열",
+      "question": "자동 배치 방향을 열 방향으로 설정하세요.",
+      "html": "<div class=\"grid-box\" style=\"display:grid\" data-preview><span>A</span><span>B</span><span>C</span><span>D</span></div>",
+      "answer": "grid-auto-flow: column;",
+      "required": {
+        "grid-auto-flow": "column"
+      },
+      "hints": [
+        "Grid 관련 속성을 사용합니다.",
+        "Grid는 행과 열의 2차원 구조로 요소를 배치합니다.",
+        "필요한 Grid 속성을 속성: 값; 형태로 작성하세요."
+      ]
+    },
+    {
+      "id": 8,
+      "mode": "declaration",
+      "stage": "Grid 기초",
+      "title": "최소 최대",
+      "question": "최소 180px을 유지하는 반응형 열을 만드세요.",
+      "html": "<div class=\"grid-box\" data-preview><span>A</span><span>B</span><span>C</span><span>D</span></div>",
+      "answer": "display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));",
+      "required": {
+        "display": "grid",
+        "grid-template-columns": "repeat(auto-fit, minmax(180px, 1fr))"
+      },
+      "hints": [
+        "Grid 관련 속성을 사용합니다.",
+        "Grid는 행과 열의 2차원 구조로 요소를 배치합니다.",
+        "필요한 Grid 속성을 속성: 값; 형태로 작성하세요."
+      ]
+    },
+    {
+      "id": 9,
+      "mode": "declaration",
+      "stage": "Grid 기초",
+      "title": "영역 이름",
+      "question": "header, side, main 영역을 2행 구조로 선언하세요.",
+      "html": "<div class=\"grid-box\" style=\"display:grid\" data-preview><header style=\"grid-area:header\">Header</header><aside style=\"grid-area:side\">Side</aside><main style=\"grid-area:main\">Main</main></div>",
+      "answer": "grid-template-areas: \"header header\" \"side main\";",
+      "required": {
+        "grid-template-areas": "\"header header\" \"side main\""
+      },
+      "hints": [
+        "Grid 관련 속성을 사용합니다.",
+        "Grid는 행과 열의 2차원 구조로 요소를 배치합니다.",
+        "필요한 Grid 속성을 속성: 값; 형태로 작성하세요."
+      ]
+    },
+    {
+      "id": 10,
+      "mode": "declaration",
+      "stage": "Grid 고급",
+      "title": "빈 공간 유지 카드",
+      "question": "최소 180px 열을 auto-fill로 생성하세요.",
+      "html": "<section class=\"grid-box\" data-preview><span>A</span><span>B</span></section>",
+      "answer": "display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));",
+      "required": {
+        "display": "grid",
+        "grid-template-columns": "repeat(auto-fill, minmax(180px, 1fr))"
+      },
+      "hints": [
+        "각 열의 최소 크기와 남는 공간 배분 방식을 차례로 설계하세요.",
+        "비슷한 코드 예시: .sample { display: grid; grid-template-columns: 10rem minmax(0, 1fr); }",
+        "minmax()는 열의 최소·최대 크기를 함께 정하고 1fr은 남는 공간의 비율입니다."
+      ]
+    },
+    {
+      "id": 11,
+      "mode": "declaration",
+      "stage": "Grid 고급",
+      "title": "대시보드 영역",
+      "question": "header, sidebar, main 영역을 이름으로 배치하세요.",
+      "html": "<div class=\"grid-box\" data-preview><header style=\"grid-area:header\">Header</header><aside style=\"grid-area:sidebar\">Side</aside><main style=\"grid-area:main\">Main</main></div>",
+      "answer": "display: grid; grid-template-areas: \"header header\" \"sidebar main\"; grid-template-columns: 240px 1fr;",
+      "required": {
+        "display": "grid",
+        "grid-template-areas": "\"header header\" \"sidebar main\"",
+        "grid-template-columns": "240px 1fr"
+      },
+      "hints": [
+        "영역 이름의 행을 문자열로 작성하고 각 아이템에도 대응하는 이름을 부여하세요.",
+        "비슷한 코드 예시: .sample { grid-template-areas: \"nav main\" \"nav footer\"; }",
+        "문자열 안의 같은 이름이 이어지면 하나의 직사각형 Grid 영역이 됩니다."
+      ]
+    },
+    {
+      "id": 12,
+      "mode": "declaration",
+      "stage": "Grid 고급",
+      "title": "고정·유동 열",
+      "question": "첫 열은 240px, 둘째 열은 최소 0에서 남은 공간을 차지하게 하세요.",
+      "html": "<div class=\"grid-box\" data-preview><aside>Side</aside><main>Content</main></div>",
+      "answer": "display: grid; grid-template-columns: 240px minmax(0, 1fr);",
+      "required": {
+        "display": "grid",
+        "grid-template-columns": "240px minmax(0, 1fr)"
+      },
+      "hints": [
+        "각 열의 최소 크기와 남는 공간 배분 방식을 차례로 설계하세요.",
+        "비슷한 코드 예시: .sample { display: grid; grid-template-columns: 10rem minmax(0, 1fr); }",
+        "minmax()는 열의 최소·최대 크기를 함께 정하고 1fr은 남는 공간의 비율입니다."
+      ]
+    },
+    {
+      "id": 13,
+      "mode": "declaration",
+      "stage": "Grid 고급",
+      "title": "콘텐츠 기반 열",
+      "question": "첫 열은 내용 크기, 둘째 열은 남은 공간을 사용하게 하세요.",
+      "html": "<div class=\"grid-box\" data-preview><strong>Label</strong><span>Content</span></div>",
+      "answer": "display: grid; grid-template-columns: max-content 1fr;",
+      "required": {
+        "display": "grid",
+        "grid-template-columns": "max-content 1fr"
+      },
+      "hints": [
+        "각 열의 최소 크기와 남는 공간 배분 방식을 차례로 설계하세요.",
+        "비슷한 코드 예시: .sample { display: grid; grid-template-columns: 10rem minmax(0, 1fr); }",
+        "minmax()는 열의 최소·최대 크기를 함께 정하고 1fr은 남는 공간의 비율입니다."
+      ]
+    },
+    {
+      "id": 14,
+      "mode": "declaration",
+      "stage": "Grid 고급",
+      "title": "암시적 행 크기",
+      "question": "자동 생성되는 모든 행의 최소 높이를 80px로 설정하세요.",
+      "html": "<div class=\"grid-box\" data-preview><span>A</span><span>B</span></div>",
+      "answer": "display: grid; grid-auto-rows: minmax(80px, auto);",
+      "required": {
+        "display": "grid",
+        "grid-auto-rows": "minmax(80px, auto)"
+      },
+      "hints": [
+        "명시하지 않아 자동 생성되는 행의 크기 규칙을 정하세요.",
+        "비슷한 코드 예시: .sample { display: grid; grid-auto-rows: minmax(4rem, max-content); }",
+        "grid-auto-rows는 암시적으로 만들어진 행 모두에 적용됩니다."
+      ]
+    },
+    {
+      "id": 15,
+      "mode": "declaration",
+      "stage": "Grid 고급",
+      "title": "조밀한 자동 배치",
+      "question": "빈 공간을 채우는 행 방향 dense 자동 배치를 사용하세요.",
+      "html": "<div class=\"grid-box\" data-preview><span>A</span><span>B</span><span>C</span></div>",
+      "answer": "display: grid; grid-auto-flow: row dense;",
+      "required": {
+        "display": "grid",
+        "grid-auto-flow": "row dense"
+      },
+      "hints": [
+        "자동 배치가 진행되는 축과 빈칸을 다시 채울지 결정하세요.",
+        "비슷한 코드 예시: .sample { display: grid; grid-auto-flow: column dense; }",
+        "dense는 뒤의 작은 아이템을 앞쪽 빈칸에 재배치할 수 있습니다."
+      ]
+    },
+    {
+      "id": 16,
+      "mode": "declaration",
+      "stage": "Grid 고급",
+      "title": "콘텐츠 중앙 배치",
+      "question": "Grid 전체 콘텐츠를 컨테이너 양축 중앙에 배치하세요.",
+      "html": "<div class=\"grid-box\" data-preview><span>A</span><span>B</span></div>",
+      "answer": "display: grid; place-content: center;",
+      "required": {
+        "display": "grid",
+        "place-content": "center"
+      },
+      "hints": [
+        "Grid 트랙 묶음 전체를 두 축에서 한 번에 정렬하세요.",
+        "비슷한 코드 예시: .sample { display: grid; place-content: start end; }",
+        "place-content는 align-content와 justify-content의 축약형입니다."
+      ]
+    },
+    {
+      "id": 17,
+      "mode": "declaration",
+      "stage": "Grid 고급",
+      "title": "아이템 확장 정렬",
+      "question": "모든 Grid 아이템을 가로로 늘리고 세로 중앙 정렬하세요.",
+      "html": "<div class=\"grid-box\" data-preview><span>A</span><span>B</span></div>",
+      "answer": "display: grid; justify-items: stretch; align-items: center;",
+      "required": {
+        "display": "grid",
+        "justify-items": "stretch",
+        "align-items": "center"
+      },
+      "hints": [
+        "주축과 교차축을 구분하고 필요한 정렬 속성을 선택하세요.",
+        "비슷한 코드 예시: .sample { display: flex; justify-content: flex-start; align-items: center; }",
+        "justify-content는 주축, align-items는 한 줄 안의 교차축 정렬을 담당합니다."
+      ]
+    },
+    {
+      "id": 18,
+      "mode": "declaration",
+      "stage": "Grid 실무",
+      "title": "전체 너비 헤더",
+      "question": "아이템이 첫 열부터 마지막 열까지 차지하게 하세요.",
+      "html": "<div class=\"grid-box\" style=\"display:grid;grid-template-columns:repeat(3,1fr)\"><header class=\"demo\" data-preview>전체 헤더</header><main>본문</main></div>",
+      "answer": "grid-column: 1 / -1;",
+      "required": {
+        "grid-column": "1 / -1"
+      },
+      "hints": [
+        "Grid 선 번호나 span을 사용해 아이템이 차지할 열 범위를 지정하세요.",
+        "비슷한 코드 예시: .sample { grid-column: 2 / span 3; }",
+        "grid-column은 시작선/끝선 또는 span으로 차지할 열 수를 표현합니다."
+      ]
+    },
+    {
+      "id": 19,
+      "mode": "declaration",
+      "stage": "Grid 실무",
+      "title": "두 열 카드",
+      "question": "아이템이 현재 위치에서 두 열을 차지하게 하세요.",
+      "html": "<div class=\"grid-box\" style=\"display:grid;grid-template-columns:repeat(3,1fr)\"><article class=\"demo\" data-preview>두 열 카드</article><article>일반 카드</article></div>",
+      "answer": "grid-column: span 2;",
+      "required": {
+        "grid-column": "span 2"
+      },
+      "hints": [
+        "Grid 선 번호나 span을 사용해 아이템이 차지할 열 범위를 지정하세요.",
+        "비슷한 코드 예시: .sample { grid-column: 2 / span 3; }",
+        "grid-column은 시작선/끝선 또는 span으로 차지할 열 수를 표현합니다."
+      ]
+    },
+    {
+      "id": 20,
+      "mode": "declaration",
+      "stage": "Grid 실무",
+      "title": "개별 우측 하단",
+      "question": "아이템 하나를 셀의 오른쪽 아래에 정렬하세요.",
+      "html": "<div class=\"grid-box\" style=\"display:grid;width:320px;height:180px\"><button data-preview>오른쪽 아래</button></div>",
+      "answer": "justify-self: end; align-self: end;",
+      "required": {
+        "justify-self": "end",
+        "align-self": "end"
+      },
+      "hints": [
+        "전체가 아닌 현재 아이템 하나만 셀 안에서 정렬하세요.",
+        "비슷한 코드 예시: .sample { justify-self: start; align-self: center; }",
+        "justify-self와 align-self는 해당 Grid 아이템의 기본 정렬만 덮어씁니다."
+      ]
+    },
+    {
+      "id": 21,
+      "mode": "declaration",
+      "stage": "Grid 실무",
+      "title": "좁은 화면 안전 갤러리",
+      "question": "카드 최소 너비는 160px로 유지하되 컨테이너가 더 좁으면 100%까지 줄어드는 자동 맞춤 열을 만들고 12px 간격을 적용하세요.",
+      "html": "<div class=\"grid-box\" data-preview><span>1</span><span>2</span><span>3</span><span>4</span></div>",
+      "answer": "display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 12px;",
+      "required": {
+        "display": "grid",
+        "grid-template-columns": "repeat(auto-fit, minmax(min(100%, 160px), 1fr))",
+        "gap": "12px"
+      },
+      "hints": [
+        "카드 최소 크기 자체가 화면보다 커지지 않도록 min()을 minmax() 안에 중첩하세요.",
+        "비슷한 코드 예시: .sample { grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); }",
+        "min(100%, 고정값)은 좁은 화면에서는 컨테이너 너비를, 넓은 화면에서는 고정값을 선택합니다."
+      ]
+    },
+    {
+      "id": 22,
+      "mode": "declaration",
+      "stage": "Grid 실무",
+      "title": "행 높이 제한",
+      "question": "첫 행은 자동, 둘째 행은 최소 200px에서 남은 공간을 차지하게 하세요.",
+      "html": "<div class=\"grid-box\" data-preview><header>Header</header><main>Main</main></div>",
+      "answer": "display: grid; grid-template-rows: auto minmax(200px, 1fr);",
+      "required": {
+        "display": "grid",
+        "grid-template-rows": "auto minmax(200px, 1fr)"
+      },
+      "hints": [
+        "각 행의 콘텐츠 크기와 남은 높이 배분 방식을 순서대로 정하세요.",
+        "비슷한 코드 예시: .sample { display: grid; grid-template-rows: max-content minmax(0, 1fr); }",
+        "grid-template-rows는 위에서 아래 순서로 각 명시적 행의 크기를 정합니다."
+      ]
+    },
+    {
+      "id": 23,
+      "mode": "declaration",
+      "stage": "Grid 실무",
+      "title": "오버레이 영역",
+      "question": "모든 자식을 같은 첫 번째 셀에 겹쳐 배치할 Grid를 만드세요.",
+      "html": "<div class=\"grid-box\" data-preview><span style=\"grid-area:1/1\">Image</span><strong style=\"grid-area:1/1\">Text</strong></div>",
+      "answer": "display: grid; grid-template-columns: 1fr; grid-template-rows: 1fr;",
+      "required": {
+        "display": "grid",
+        "grid-template-columns": "1fr",
+        "grid-template-rows": "1fr"
+      },
+      "hints": [
+        "각 열의 최소 크기와 남는 공간 배분 방식을 차례로 설계하세요.",
+        "비슷한 코드 예시: .sample { display: grid; grid-template-columns: 10rem minmax(0, 1fr); }",
+        "minmax()는 열의 최소·최대 크기를 함께 정하고 1fr은 남는 공간의 비율입니다."
+      ]
+    },
+    {
+      "id": 24,
+      "mode": "declaration",
+      "stage": "Grid 실무",
+      "title": "완성형 앱 셸",
+      "question": "240px 사이드바와 유동 본문, 24px 간격의 앱 셸을 만드세요.",
+      "html": "<div class=\"grid-box\" data-preview><aside>Sidebar</aside><main>Application</main></div>",
+      "answer": "display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 24px; min-height: 100vh;",
+      "required": {
+        "display": "grid",
+        "grid-template-columns": "240px minmax(0, 1fr)",
+        "gap": "24px",
+        "min-height": "100vh"
+      },
+      "hints": [
+        "각 열의 최소 크기와 남는 공간 배분 방식을 차례로 설계하세요.",
+        "비슷한 코드 예시: .sample { display: grid; grid-template-columns: 10rem minmax(0, 1fr); }",
+        "minmax()는 열의 최소·최대 크기를 함께 정하고 1fr은 남는 공간의 비율입니다."
+      ]
+    },
+    {
+      "id": 25,
+      "mode": "declaration",
+      "stage": "Grid 실무",
+      "title": "중첩 열 정렬",
+      "question": "부모 Grid의 모든 열을 차지하면서 부모 열선을 그대로 상속하는 중첩 Grid를 만드세요.",
+      "html": "<div style=\"display:grid;grid-template-columns:120px 1fr 100px\"><section class=\"grid-box\" data-preview><span>라벨</span><span>내용</span><span>상태</span></section></div>",
+      "answer": "display: grid; grid-template-columns: subgrid; grid-column: 1 / -1;",
+      "hints": [
+        "중첩 Grid가 독자적인 열을 만들지 않고 부모의 열 트랙을 재사용하게 하세요.",
+        "비슷한 코드 예시: .sample { display: grid; grid-template-rows: subgrid; }",
+        "subgrid는 부모 Grid의 트랙 크기와 선을 중첩 Grid가 공유하게 합니다."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1446 @@
+{
+  "id": "java-advanced",
+  "name": "Java Applied",
+  "description": "객체 설계부터 컬렉션·함수형 문법·실무 모델링까지 익히는 Java 응용 22문제",
+  "problems": [
+    {
+      "id": 1,
+      "mode": "java",
+      "stage": "객체지향 설계",
+      "title": "불변 직사각형",
+      "question": "양수인 width와 height를 생성자로 받는 불변 Rectangle 클래스를 완성하고 area와 perimeter 메서드를 구현하세요.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\nfinal class Rectangle {\n    private final int width;\n    private final int height;\n\n    Rectangle(int width, int height) {\n        this.width = width;\n        this.height = height;\n    }\n\n    int area() {\n        return 0;\n    }\n\n    int perimeter() {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {}\n\nfinal class Rectangle {\n    private final int width;\n    private final int height;\n\n    Rectangle(int width, int height) {\n        if (width <= 0 || height <= 0) throw new IllegalArgumentException(\"길이는 양수여야 합니다.\");\n        this.width = width;\n        this.height = height;\n    }\n\n    int area() {\n        return width * height;\n    }\n\n    int perimeter() {\n        return 2 * (width + height);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new Rectangle(4, 3).area()",
+          "output": "12"
+        }
+      ],
+      "constraints": [
+        "width와 height는 int 범위의 정수입니다.",
+        "0 이하의 길이는 IllegalArgumentException으로 거부합니다.",
+        "필드는 private final로 유지합니다."
+      ],
+      "hints": [
+        "생성자에서 객체가 유효한 상태로만 만들어지게 하세요.",
+        "비슷한 예시: final class Size { private final int value; }",
+        "넓이와 둘레는 저장된 두 필드로 계산합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "넓이",
+            "expression": "new Rectangle(4, 3).area()",
+            "expected": "12"
+          },
+          {
+            "id": "case-2",
+            "label": "둘레",
+            "expression": "new Rectangle(4, 3).perimeter()",
+            "expected": "14"
+          },
+          {
+            "id": "case-3",
+            "label": "정사각형 넓이",
+            "expression": "new Rectangle(5, 5).area()",
+            "expected": "25"
+          },
+          {
+            "id": "case-4",
+            "label": "가로 0 거부",
+            "expression": "new Rectangle(0, 3).area()",
+            "expectedException": "IllegalArgumentException"
+          },
+          {
+            "id": "case-5",
+            "label": "음수 세로 거부",
+            "expression": "new Rectangle(2, -1).perimeter()",
+            "expectedException": "IllegalArgumentException"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "mode": "java",
+      "stage": "객체지향 설계",
+      "title": "직원 급여 다형성",
+      "question": "추상 Employee를 상속하는 SalariedEmployee와 HourlyEmployee를 구현하고 각 객체의 monthlyPay가 올바른 급여를 반환하게 하세요.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\nabstract class Employee {\n    private final String name;\n\n    Employee(String name) {\n        this.name = name;\n    }\n\n    String name() {\n        return name;\n    }\n\n    abstract int monthlyPay();\n}\n\nfinal class SalariedEmployee extends Employee {\n    private final int salary;\n\n    SalariedEmployee(String name, int salary) {\n        super(name);\n        this.salary = salary;\n    }\n\n    @Override\n    int monthlyPay() {\n        return 0;\n    }\n}\n\nfinal class HourlyEmployee extends Employee {\n    private final int hourlyRate;\n    private final int hours;\n\n    HourlyEmployee(String name, int hourlyRate, int hours) {\n        super(name);\n        this.hourlyRate = hourlyRate;\n        this.hours = hours;\n    }\n\n    @Override\n    int monthlyPay() {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {}\n\nabstract class Employee {\n    private final String name;\n\n    Employee(String name) {\n        this.name = name;\n    }\n\n    String name() {\n        return name;\n    }\n\n    abstract int monthlyPay();\n}\n\nfinal class SalariedEmployee extends Employee {\n    private final int salary;\n\n    SalariedEmployee(String name, int salary) {\n        super(name);\n        this.salary = salary;\n    }\n\n    @Override\n    int monthlyPay() {\n        return salary;\n    }\n}\n\nfinal class HourlyEmployee extends Employee {\n    private final int hourlyRate;\n    private final int hours;\n\n    HourlyEmployee(String name, int hourlyRate, int hours) {\n        super(name);\n        this.hourlyRate = hourlyRate;\n        this.hours = hours;\n    }\n\n    @Override\n    int monthlyPay() {\n        return hourlyRate * hours;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new HourlyEmployee(\"민수\", 12000, 80).monthlyPay()",
+          "output": "960000"
+        }
+      ],
+      "constraints": [
+        "salary, hourlyRate, hours는 0 이상입니다.",
+        "Employee의 monthlyPay는 추상 메서드로 유지합니다.",
+        "각 하위 클래스가 급여 계산 책임을 가집니다."
+      ],
+      "hints": [
+        "같은 메서드 호출이 실제 객체 타입에 따라 다르게 동작해야 합니다.",
+        "비슷한 예시: abstract int calculate();",
+        "고정 급여와 시급 급여의 계산 규칙을 각 클래스에 두세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "시급 직원",
+            "expression": "new HourlyEmployee(\"민수\", 12000, 80).monthlyPay()",
+            "expected": "960000"
+          },
+          {
+            "id": "case-2",
+            "label": "고정 급여 직원",
+            "expression": "new SalariedEmployee(\"지수\", 3200000).monthlyPay()",
+            "expected": "3200000"
+          },
+          {
+            "id": "case-3",
+            "label": "부모 타입 다형성",
+            "expression": "((Employee) new HourlyEmployee(\"Alex\", 15000, 10)).monthlyPay()",
+            "expected": "150000"
+          },
+          {
+            "id": "case-4",
+            "label": "이름 보존",
+            "expression": "new SalariedEmployee(\"봄\", 1000000).name()",
+            "expected": "\"봄\""
+          },
+          {
+            "id": "case-5",
+            "label": "근무 시간 0",
+            "expression": "new HourlyEmployee(\"Zero\", 20000, 0).monthlyPay()",
+            "expected": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "mode": "java",
+      "stage": "객체지향 설계",
+      "title": "할인 정책 인터페이스",
+      "question": "DiscountPolicy 인터페이스와 RateDiscount, FixedDiscount 구현체를 완성해 할인 후 가격을 반환하세요. 결과는 0보다 작아질 수 없습니다.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\ninterface DiscountPolicy {\n    int apply(int price);\n}\n\nfinal class RateDiscount implements DiscountPolicy {\n    private final int percent;\n\n    RateDiscount(int percent) {\n        this.percent = percent;\n    }\n\n    public int apply(int price) {\n        return price;\n    }\n}\n\nfinal class FixedDiscount implements DiscountPolicy {\n    private final int amount;\n\n    FixedDiscount(int amount) {\n        this.amount = amount;\n    }\n\n    public int apply(int price) {\n        return price;\n    }\n}",
+      "answer": "public class Solution {}\n\ninterface DiscountPolicy {\n    int apply(int price);\n}\n\nfinal class RateDiscount implements DiscountPolicy {\n    private final int percent;\n\n    RateDiscount(int percent) {\n        this.percent = percent;\n    }\n\n    public int apply(int price) {\n        return Math.max(0, price * (100 - percent) / 100);\n    }\n}\n\nfinal class FixedDiscount implements DiscountPolicy {\n    private final int amount;\n\n    FixedDiscount(int amount) {\n        this.amount = amount;\n    }\n\n    public int apply(int price) {\n        return Math.max(0, price - amount);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new RateDiscount(20).apply(10000)",
+          "output": "8000"
+        }
+      ],
+      "constraints": [
+        "price와 amount는 0 이상입니다.",
+        "percent는 0 이상 100 이하입니다.",
+        "정수 나눗셈 결과를 사용합니다."
+      ],
+      "hints": [
+        "정책을 사용하는 쪽은 구체 클래스가 아니라 인터페이스에 의존할 수 있습니다.",
+        "비슷한 예시: interface Formatter { String format(String value); }",
+        "고정 할인액이 가격보다 크면 최종 가격은 0입니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "20퍼센트 할인",
+            "expression": "new RateDiscount(20).apply(10000)",
+            "expected": "8000"
+          },
+          {
+            "id": "case-2",
+            "label": "고정 금액 할인",
+            "expression": "new FixedDiscount(1500).apply(10000)",
+            "expected": "8500"
+          },
+          {
+            "id": "case-3",
+            "label": "인터페이스 타입 호출",
+            "expression": "((DiscountPolicy) new RateDiscount(25)).apply(8000)",
+            "expected": "6000"
+          },
+          {
+            "id": "case-4",
+            "label": "가격보다 큰 고정 할인",
+            "expression": "new FixedDiscount(5000).apply(3000)",
+            "expected": "0"
+          },
+          {
+            "id": "case-5",
+            "label": "100퍼센트 할인",
+            "expression": "new RateDiscount(100).apply(9999)",
+            "expected": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "mode": "java",
+      "stage": "객체지향 설계",
+      "title": "주문 객체 합성",
+      "question": "Product를 포함하는 OrderLine과 여러 OrderLine을 포함하는 Order를 완성해 주문 총액을 계산하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {}\n\nrecord Product(String name, int price) {}\n\nrecord OrderLine(Product product, int quantity) {\n    int subtotal() {\n        return 0;\n    }\n}\n\nfinal class Order {\n    private final List<OrderLine> lines;\n\n    Order(List<OrderLine> lines) {\n        this.lines = List.copyOf(lines);\n    }\n\n    int total() {\n        return 0;\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {}\n\nrecord Product(String name, int price) {}\n\nrecord OrderLine(Product product, int quantity) {\n    int subtotal() {\n        return product.price() * quantity;\n    }\n}\n\nfinal class Order {\n    private final List<OrderLine> lines;\n\n    Order(List<OrderLine> lines) {\n        this.lines = List.copyOf(lines);\n    }\n\n    int total() {\n        int total = 0;\n        for (OrderLine line : lines) total += line.subtotal();\n        return total;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "펜 500원×3개, 노트 2000원×2개",
+          "output": "5500"
+        }
+      ],
+      "constraints": [
+        "price와 quantity는 0 이상입니다.",
+        "생성자에서 전달받은 목록을 복사해 보관합니다.",
+        "Order는 각 OrderLine의 subtotal을 합산합니다."
+      ],
+      "hints": [
+        "큰 객체가 작은 객체의 계산 결과를 조합하게 하세요.",
+        "비슷한 예시: total += item.price() * item.count();",
+        "List.copyOf는 외부 목록 변경으로부터 주문을 보호합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "두 주문 항목",
+            "expression": "new Order(List.of(new OrderLine(new Product(\"펜\", 500), 3), new OrderLine(new Product(\"노트\", 2000), 2))).total()",
+            "expected": "5500"
+          },
+          {
+            "id": "case-2",
+            "label": "한 주문 항목",
+            "expression": "new Order(List.of(new OrderLine(new Product(\"책\", 15000), 2))).total()",
+            "expected": "30000"
+          },
+          {
+            "id": "case-3",
+            "label": "빈 주문",
+            "expression": "new Order(List.of()).total()",
+            "expected": "0"
+          },
+          {
+            "id": "case-4",
+            "label": "수량 0",
+            "expression": "new OrderLine(new Product(\"샘플\", 1000), 0).subtotal()",
+            "expected": "0"
+          },
+          {
+            "id": "case-5",
+            "label": "여러 가격 합산",
+            "expression": "new Order(List.of(new OrderLine(new Product(\"A\", 1200), 1), new OrderLine(new Product(\"B\", 800), 4), new OrderLine(new Product(\"C\", 300), 5))).total()",
+            "expected": "5900"
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "mode": "java",
+      "stage": "예외·검증",
+      "title": "나이 값 객체 검증",
+      "question": "0 이상 150 이하의 값만 허용하는 Age 클래스를 완성하세요. 범위를 벗어나면 IllegalArgumentException을 발생시켜야 합니다.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\nfinal class Age {\n    private final int value;\n\n    Age(int value) {\n        this.value = value;\n    }\n\n    int value() {\n        return value;\n    }\n}",
+      "answer": "public class Solution {}\n\nfinal class Age {\n    private final int value;\n\n    Age(int value) {\n        if (value < 0 || value > 150) throw new IllegalArgumentException(\"나이 범위를 벗어났습니다.\");\n        this.value = value;\n    }\n\n    int value() {\n        return value;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new Age(28).value()",
+          "output": "28"
+        }
+      ],
+      "constraints": [
+        "유효 범위는 0부터 150까지이며 양 끝을 포함합니다.",
+        "잘못된 값을 가진 Age 객체가 생성되면 안 됩니다."
+      ],
+      "hints": [
+        "필드에 저장하기 전에 생성자 매개변수를 검사하세요.",
+        "비슷한 예시: if (value < 0) throw new IllegalArgumentException();",
+        "0과 150은 유효한 경계값입니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "일반 나이",
+            "expression": "new Age(28).value()",
+            "expected": "28"
+          },
+          {
+            "id": "case-2",
+            "label": "최솟값",
+            "expression": "new Age(0).value()",
+            "expected": "0"
+          },
+          {
+            "id": "case-3",
+            "label": "최댓값",
+            "expression": "new Age(150).value()",
+            "expected": "150"
+          },
+          {
+            "id": "case-4",
+            "label": "음수 거부",
+            "expression": "new Age(-1).value()",
+            "expectedException": "IllegalArgumentException"
+          },
+          {
+            "id": "case-5",
+            "label": "최댓값 초과 거부",
+            "expression": "new Age(151).value()",
+            "expectedException": "IllegalArgumentException"
+          }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "mode": "java",
+      "stage": "예외·검증",
+      "title": "이메일 정규화와 검증",
+      "question": "앞뒤 공백을 제거하고 소문자로 정규화하는 EmailAddress를 완성하세요. @가 없거나 문자열 양 끝에 있으면 IllegalArgumentException을 발생시키세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {}\n\nfinal class EmailAddress {\n    private final String value;\n\n    EmailAddress(String raw) {\n        this.value = raw;\n    }\n\n    String value() {\n        return value;\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {}\n\nfinal class EmailAddress {\n    private final String value;\n\n    EmailAddress(String raw) {\n        String normalized = raw.trim().toLowerCase(Locale.ROOT);\n        int at = normalized.indexOf('@');\n        if (at <= 0 || at == normalized.length() - 1) throw new IllegalArgumentException(\"이메일 형식이 아닙니다.\");\n        this.value = normalized;\n    }\n\n    String value() {\n        return value;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new EmailAddress(\"  USER@Example.COM \").value()",
+          "output": "user@example.com"
+        }
+      ],
+      "constraints": [
+        "raw는 null이 아닌 문자열입니다.",
+        "@ 앞과 뒤에는 각각 한 글자 이상 있어야 합니다.",
+        "이 문제에서는 @ 개수와 도메인 세부 규칙까지 검사하지 않습니다."
+      ],
+      "hints": [
+        "검사하기 전에 trim과 소문자 변환을 적용하세요.",
+        "비슷한 예시: String normalized = raw.trim().toLowerCase(Locale.ROOT);",
+        "indexOf('@')의 위치로 문자열 양 끝 여부를 확인할 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "공백과 대문자 정규화",
+            "expression": "new EmailAddress(\"  USER@Example.COM \").value()",
+            "expected": "\"user@example.com\""
+          },
+          {
+            "id": "case-2",
+            "label": "일반 이메일",
+            "expression": "new EmailAddress(\"java@quest.dev\").value()",
+            "expected": "\"java@quest.dev\""
+          },
+          {
+            "id": "case-3",
+            "label": "@ 없음",
+            "expression": "new EmailAddress(\"invalid\").value()",
+            "expectedException": "IllegalArgumentException"
+          },
+          {
+            "id": "case-4",
+            "label": "@로 시작",
+            "expression": "new EmailAddress(\"@domain.com\").value()",
+            "expectedException": "IllegalArgumentException"
+          },
+          {
+            "id": "case-5",
+            "label": "@로 끝남",
+            "expression": "new EmailAddress(\"user@\").value()",
+            "expectedException": "IllegalArgumentException"
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "mode": "java",
+      "stage": "예외·검증",
+      "title": "재고 부족 사용자 정의 예외",
+      "question": "Inventory의 remove가 요청 수량을 차감한 남은 재고를 반환하게 하세요. 재고보다 많이 요청하면 InsufficientStockException을 발생시켜야 합니다.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\nfinal class InsufficientStockException extends RuntimeException {\n    InsufficientStockException(String message) {\n        super(message);\n    }\n}\n\nfinal class Inventory {\n    private final int stock;\n\n    Inventory(int stock) {\n        this.stock = stock;\n    }\n\n    int remove(int requested) {\n        return stock;\n    }\n}",
+      "answer": "public class Solution {}\n\nfinal class InsufficientStockException extends RuntimeException {\n    InsufficientStockException(String message) {\n        super(message);\n    }\n}\n\nfinal class Inventory {\n    private final int stock;\n\n    Inventory(int stock) {\n        if (stock < 0) throw new IllegalArgumentException(\"재고는 음수일 수 없습니다.\");\n        this.stock = stock;\n    }\n\n    int remove(int requested) {\n        if (requested < 0) throw new IllegalArgumentException(\"요청 수량은 음수일 수 없습니다.\");\n        if (requested > stock) throw new InsufficientStockException(\"재고가 부족합니다.\");\n        return stock - requested;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new Inventory(10).remove(3)",
+          "output": "7"
+        }
+      ],
+      "constraints": [
+        "stock과 requested는 int 범위입니다.",
+        "음수 입력은 IllegalArgumentException으로 거부합니다.",
+        "재고 부족은 전용 예외로 구분합니다."
+      ],
+      "hints": [
+        "잘못된 입력과 업무상 재고 부족을 서로 다른 예외로 표현하세요.",
+        "비슷한 예시: throw new OutOfStockException(\"재고 부족\");",
+        "요청 수량이 재고와 같으면 남은 재고는 0입니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "일반 출고",
+            "expression": "new Inventory(10).remove(3)",
+            "expected": "7"
+          },
+          {
+            "id": "case-2",
+            "label": "전량 출고",
+            "expression": "new Inventory(5).remove(5)",
+            "expected": "0"
+          },
+          {
+            "id": "case-3",
+            "label": "재고 부족",
+            "expression": "new Inventory(3).remove(4)",
+            "expectedException": "InsufficientStockException"
+          },
+          {
+            "id": "case-4",
+            "label": "음수 요청",
+            "expression": "new Inventory(3).remove(-1)",
+            "expectedException": "IllegalArgumentException"
+          },
+          {
+            "id": "case-5",
+            "label": "음수 초기 재고",
+            "expression": "new Inventory(-1).remove(0)",
+            "expectedException": "IllegalArgumentException"
+          }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "mode": "java",
+      "stage": "예외·검증",
+      "title": "안전한 점수 파서",
+      "question": "문자열을 0 이상 100 이하의 점수로 변환하는 ScoreParser를 완성하세요. 숫자가 아니거나 범위를 벗어나면 OptionalInt.empty를 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {}\n\nfinal class ScoreParser {\n    static OptionalInt parse(String text) {\n        return OptionalInt.empty();\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {}\n\nfinal class ScoreParser {\n    static OptionalInt parse(String text) {\n        try {\n            int score = Integer.parseInt(text.trim());\n            return score >= 0 && score <= 100 ? OptionalInt.of(score) : OptionalInt.empty();\n        } catch (NumberFormatException exception) {\n            return OptionalInt.empty();\n        }\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "ScoreParser.parse(\" 85 \")",
+          "output": "OptionalInt[85]"
+        }
+      ],
+      "constraints": [
+        "text는 null이 아닙니다.",
+        "앞뒤 공백은 허용합니다.",
+        "파싱 실패를 호출자에게 예외로 전파하지 않습니다."
+      ],
+      "hints": [
+        "Integer.parseInt가 발생시키는 구체적인 예외만 처리하세요.",
+        "비슷한 예시: try { return Integer.parseInt(text); } catch (NumberFormatException e) { ... }",
+        "파싱 성공 후 범위 검사도 필요합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "공백이 있는 점수",
+            "expression": "ScoreParser.parse(\" 85 \")",
+            "expected": "OptionalInt.of(85)"
+          },
+          {
+            "id": "case-2",
+            "label": "최솟값",
+            "expression": "ScoreParser.parse(\"0\")",
+            "expected": "OptionalInt.of(0)"
+          },
+          {
+            "id": "case-3",
+            "label": "최댓값",
+            "expression": "ScoreParser.parse(\"100\")",
+            "expected": "OptionalInt.of(100)"
+          },
+          {
+            "id": "case-4",
+            "label": "숫자가 아닌 문자열",
+            "expression": "ScoreParser.parse(\"A+\")",
+            "expected": "OptionalInt.empty()"
+          },
+          {
+            "id": "case-5",
+            "label": "범위 초과",
+            "expression": "ScoreParser.parse(\"101\")",
+            "expected": "OptionalInt.empty()"
+          },
+          {
+            "id": "case-6",
+            "label": "빈 문자열",
+            "expression": "ScoreParser.parse(\"  \")",
+            "expected": "OptionalInt.empty()"
+          }
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "mode": "java",
+      "stage": "제네릭·컬렉션",
+      "title": "변환 가능한 제네릭 Box",
+      "question": "값 하나를 보관하는 Box<T>와 Function을 받아 Box<R>로 변환하는 map 메서드를 구현하세요.",
+      "html": "",
+      "starterCode": "import java.util.function.*;\n\npublic class Solution {}\n\nfinal class Box<T> {\n    private final T value;\n\n    Box(T value) {\n        this.value = value;\n    }\n\n    T get() {\n        return value;\n    }\n\n    <R> Box<R> map(Function<? super T, ? extends R> mapper) {\n        return null;\n    }\n}",
+      "answer": "import java.util.function.*;\n\npublic class Solution {}\n\nfinal class Box<T> {\n    private final T value;\n\n    Box(T value) {\n        this.value = value;\n    }\n\n    T get() {\n        return value;\n    }\n\n    <R> Box<R> map(Function<? super T, ? extends R> mapper) {\n        return new Box<>(mapper.apply(value));\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new Box<>(5).map(v -> v * 2).get()",
+          "output": "10"
+        }
+      ],
+      "constraints": [
+        "value와 mapper는 null이 아닙니다.",
+        "map은 원래 Box를 변경하지 않고 새 Box를 반환합니다.",
+        "입력 타입과 결과 타입은 서로 달라도 됩니다."
+      ],
+      "hints": [
+        "메서드 자체에 새로운 타입 매개변수 R이 필요합니다.",
+        "비슷한 예시: <R> R convert(Function<T, R> mapper)",
+        "mapper.apply로 현재 값을 변환하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "정수 두 배",
+            "expression": "new Box<Integer>(5).map(v -> v * 2).get()",
+            "expected": "10"
+          },
+          {
+            "id": "case-2",
+            "label": "정수에서 문자열",
+            "expression": "new Box<Integer>(21).map(String::valueOf).get()",
+            "expected": "\"21\""
+          },
+          {
+            "id": "case-3",
+            "label": "문자열 길이",
+            "expression": "new Box<String>(\"quest\").map(String::length).get()",
+            "expected": "5"
+          },
+          {
+            "id": "case-4",
+            "label": "원본 값 보존",
+            "expression": "new Box<String>(\"java\").get()",
+            "expected": "\"java\""
+          },
+          {
+            "id": "case-5",
+            "label": "연속 변환",
+            "expression": "new Box<Integer>(3).map(v -> v + 1).map(v -> v * v).get()",
+            "expected": "16"
+          }
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "mode": "java",
+      "stage": "제네릭·컬렉션",
+      "title": "순서를 지키는 중복 제거",
+      "question": "입력 순서를 유지하면서 중복을 제거한 불변 목록을 만드는 DistinctList<T>를 완성하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {}\n\nfinal class DistinctList<T> {\n    private final List<T> values;\n\n    DistinctList(List<T> source) {\n        this.values = List.of();\n    }\n\n    List<T> values() {\n        return values;\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {}\n\nfinal class DistinctList<T> {\n    private final List<T> values;\n\n    DistinctList(List<T> source) {\n        this.values = List.copyOf(new LinkedHashSet<>(source));\n    }\n\n    List<T> values() {\n        return values;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new DistinctList<>(List.of(3, 1, 3, 2, 1)).values()",
+          "output": "[3, 1, 2]"
+        }
+      ],
+      "constraints": [
+        "source와 원소는 null이 아닙니다.",
+        "첫 등장 순서를 유지합니다.",
+        "반환 목록은 수정할 수 없어야 합니다."
+      ],
+      "hints": [
+        "삽입 순서를 기억하는 Set 구현을 사용하세요.",
+        "비슷한 예시: new LinkedHashSet<>(source)",
+        "List.copyOf로 최종 컬렉션의 변경을 막을 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "정수 중복 제거",
+            "expression": "new DistinctList<Integer>(List.of(3, 1, 3, 2, 1)).values()",
+            "expected": "List.of(3, 1, 2)"
+          },
+          {
+            "id": "case-2",
+            "label": "문자열 중복 제거",
+            "expression": "new DistinctList<String>(List.of(\"b\", \"a\", \"b\", \"c\")).values()",
+            "expected": "List.of(\"b\", \"a\", \"c\")"
+          },
+          {
+            "id": "case-3",
+            "label": "중복 없음",
+            "expression": "new DistinctList<Integer>(List.of(1, 2, 3)).values()",
+            "expected": "List.of(1, 2, 3)"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 목록",
+            "expression": "new DistinctList<Integer>(List.of()).values()",
+            "expected": "List.of()"
+          },
+          {
+            "id": "case-5",
+            "label": "모두 같은 값",
+            "expression": "new DistinctList<String>(List.of(\"x\", \"x\", \"x\")).values()",
+            "expected": "List.of(\"x\")"
+          },
+          {
+            "id": "case-6",
+            "label": "원본 변경과 독립된 값",
+            "contract": "source-independence",
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { var source = new java.util.ArrayList<Integer>(java.util.List.of(3, 1, 3)); var distinct = new DistinctList<Integer>(source); source.add(9); return distinct.values().equals(java.util.List.of(3, 1)); }).get()",
+            "expected": "true"
+          },
+          {
+            "id": "case-7",
+            "label": "반환 목록 수정 불가",
+            "contract": "unmodifiable-result",
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { var values = new DistinctList<Integer>(java.util.List.of(3, 1, 3)).values(); try { values.add(9); return false; } catch (UnsupportedOperationException expected) { return true; } }).get()",
+            "expected": "true"
+          }
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "mode": "java",
+      "stage": "제네릭·컬렉션",
+      "title": "제네릭 메모리 저장소",
+      "question": "Identifiable을 구현한 객체를 보관하고 id로 찾는 MemoryRepository<T>를 완성하세요. 찾지 못하면 Optional.empty를 반환합니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {}\n\ninterface Identifiable {\n    int id();\n}\n\nrecord Book(int id, String title) implements Identifiable {}\n\nfinal class MemoryRepository<T extends Identifiable> {\n    private final List<T> items;\n\n    MemoryRepository(List<T> items) {\n        this.items = List.copyOf(items);\n    }\n\n    Optional<T> findById(int id) {\n        return Optional.empty();\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {}\n\ninterface Identifiable {\n    int id();\n}\n\nrecord Book(int id, String title) implements Identifiable {}\n\nfinal class MemoryRepository<T extends Identifiable> {\n    private final List<T> items;\n\n    MemoryRepository(List<T> items) {\n        this.items = List.copyOf(items);\n    }\n\n    Optional<T> findById(int id) {\n        for (T item : items) {\n            if (item.id() == id) return Optional.of(item);\n        }\n        return Optional.empty();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "책 목록에서 id 2의 제목 찾기",
+          "output": "Spring"
+        }
+      ],
+      "constraints": [
+        "items와 원소는 null이 아닙니다.",
+        "같은 id는 한 번만 등장합니다.",
+        "저장소는 전달받은 목록의 복사본을 보관합니다."
+      ],
+      "hints": [
+        "T가 id 메서드를 가진다는 사실을 타입 경계로 표현하세요.",
+        "비슷한 예시: class Store<T extends HasId>",
+        "일치하는 객체를 찾으면 Optional.of로 감싸 반환합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "책 제목 찾기",
+            "expression": "new MemoryRepository<Book>(List.of(new Book(1, \"Java\"), new Book(2, \"Spring\"))).findById(2).map(Book::title).orElse(\"\")",
+            "expected": "\"Spring\""
+          },
+          {
+            "id": "case-2",
+            "label": "첫 객체 찾기",
+            "expression": "new MemoryRepository<Book>(List.of(new Book(1, \"A\"), new Book(2, \"B\"))).findById(1).map(Book::title).orElse(\"\")",
+            "expected": "\"A\""
+          },
+          {
+            "id": "case-3",
+            "label": "없는 id",
+            "expression": "new MemoryRepository<Book>(List.of(new Book(1, \"A\"))).findById(9)",
+            "expected": "Optional.empty()"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 저장소",
+            "expression": "new MemoryRepository<Book>(List.of()).findById(1)",
+            "expected": "Optional.empty()"
+          },
+          {
+            "id": "case-5",
+            "label": "객체 자체 반환",
+            "expression": "new MemoryRepository<Book>(List.of(new Book(7, \"Quest\"))).findById(7)",
+            "expected": "Optional.of(new Book(7, \"Quest\"))"
+          }
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "mode": "java",
+      "stage": "제네릭·컬렉션",
+      "title": "복합 기준 학생 정렬",
+      "question": "학생을 점수 내림차순, 나이 오름차순, 이름 오름차순으로 정렬한 이름 목록을 반환하는 StudentSorter를 완성하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {}\n\nrecord Student(String name, int score, int age) {}\n\nfinal class StudentSorter {\n    static List<String> namesByRank(List<Student> students) {\n        return List.of();\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {}\n\nrecord Student(String name, int score, int age) {}\n\nfinal class StudentSorter {\n    static List<String> namesByRank(List<Student> students) {\n        return students.stream()\n                .sorted(Comparator.comparingInt(Student::score).reversed()\n                        .thenComparingInt(Student::age)\n                        .thenComparing(Student::name))\n                .map(Student::name)\n                .toList();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "민수(90,22), 지수(95,24), 봄(90,20)",
+          "output": "[지수, 봄, 민수]"
+        }
+      ],
+      "constraints": [
+        "students와 필드는 null이 아닙니다.",
+        "score와 age는 int 범위입니다.",
+        "원본 목록의 순서를 변경하지 않습니다."
+      ],
+      "hints": [
+        "Comparator를 첫 기준부터 순서대로 연결하세요.",
+        "비슷한 예시: comparingInt(Item::score).reversed().thenComparing(Item::name)",
+        "정렬 후 이름만 map으로 추출할 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "세 학생 복합 정렬",
+            "expression": "StudentSorter.namesByRank(List.of(new Student(\"민수\", 90, 22), new Student(\"지수\", 95, 24), new Student(\"봄\", 90, 20)))",
+            "expected": "List.of(\"지수\", \"봄\", \"민수\")"
+          },
+          {
+            "id": "case-2",
+            "label": "동점과 동갑 이름순",
+            "expression": "StudentSorter.namesByRank(List.of(new Student(\"Charlie\", 80, 20), new Student(\"Alice\", 80, 20), new Student(\"Bob\", 80, 20)))",
+            "expected": "List.of(\"Alice\", \"Bob\", \"Charlie\")"
+          },
+          {
+            "id": "case-3",
+            "label": "점수 우선",
+            "expression": "StudentSorter.namesByRank(List.of(new Student(\"Young\", 70, 18), new Student(\"Old\", 100, 40)))",
+            "expected": "List.of(\"Old\", \"Young\")"
+          },
+          {
+            "id": "case-4",
+            "label": "한 학생",
+            "expression": "StudentSorter.namesByRank(List.of(new Student(\"Solo\", 50, 30)))",
+            "expected": "List.of(\"Solo\")"
+          },
+          {
+            "id": "case-5",
+            "label": "빈 목록",
+            "expression": "StudentSorter.namesByRank(List.of())",
+            "expected": "List.of()"
+          }
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "mode": "java",
+      "stage": "람다·스트림",
+      "title": "Predicate 조건 필터",
+      "question": "목록과 Predicate를 받아 조건을 만족하는 원소만 원래 순서대로 반환하는 NumberFilter를 완성하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\nimport java.util.function.*;\n\npublic class Solution {}\n\nfinal class NumberFilter {\n    static List<Integer> select(List<Integer> numbers, Predicate<Integer> condition) {\n        return List.of();\n    }\n}",
+      "answer": "import java.util.*;\nimport java.util.function.*;\n\npublic class Solution {}\n\nfinal class NumberFilter {\n    static List<Integer> select(List<Integer> numbers, Predicate<Integer> condition) {\n        return numbers.stream().filter(condition).toList();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "select([1,2,3,4,5], n -> n % 2 == 0)",
+          "output": "[2, 4]"
+        }
+      ],
+      "constraints": [
+        "numbers, condition과 원소는 null이 아닙니다.",
+        "원본 순서를 유지합니다.",
+        "원본 목록을 변경하지 않습니다."
+      ],
+      "hints": [
+        "필터 기준을 메서드 내부에 고정하지 말고 매개변수로 받으세요.",
+        "비슷한 예시: values.stream().filter(predicate).toList()",
+        "Predicate.test는 boolean 결과를 반환합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "짝수 필터",
+            "expression": "NumberFilter.select(List.of(1, 2, 3, 4, 5), n -> n % 2 == 0)",
+            "expected": "List.of(2, 4)"
+          },
+          {
+            "id": "case-2",
+            "label": "양수 필터",
+            "expression": "NumberFilter.select(List.of(-2, 0, 3, 5), n -> n > 0)",
+            "expected": "List.of(3, 5)"
+          },
+          {
+            "id": "case-3",
+            "label": "10 이상",
+            "expression": "NumberFilter.select(List.of(9, 10, 11), n -> n >= 10)",
+            "expected": "List.of(10, 11)"
+          },
+          {
+            "id": "case-4",
+            "label": "모두 제외",
+            "expression": "NumberFilter.select(List.of(1, 3, 5), n -> n % 2 == 0)",
+            "expected": "List.of()"
+          },
+          {
+            "id": "case-5",
+            "label": "빈 목록",
+            "expression": "NumberFilter.select(List.of(), n -> true)",
+            "expected": "List.of()"
+          }
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "mode": "java",
+      "stage": "람다·스트림",
+      "title": "Function 타입 변환",
+      "question": "List<T>의 각 원소에 Function<T, R>을 적용해 List<R>로 반환하는 제네릭 TextMapper.map을 완성하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\nimport java.util.function.*;\n\npublic class Solution {}\n\nfinal class TextMapper {\n    static <T, R> List<R> map(List<T> source, Function<? super T, ? extends R> mapper) {\n        return List.of();\n    }\n}",
+      "answer": "import java.util.*;\nimport java.util.function.*;\n\npublic class Solution {}\n\nfinal class TextMapper {\n    static <T, R> List<R> map(List<T> source, Function<? super T, ? extends R> mapper) {\n        return source.stream().<R>map(mapper).toList();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "map([\"java\", \"quest\"], String::length)",
+          "output": "[4, 5]"
+        }
+      ],
+      "constraints": [
+        "source, mapper와 원소는 null이 아닙니다.",
+        "입력과 결과의 타입은 다를 수 있습니다.",
+        "원본 순서를 유지합니다."
+      ],
+      "hints": [
+        "메서드 타입 매개변수 T와 R을 각각 선언하세요.",
+        "비슷한 예시: source.stream().map(mapper).toList()",
+        "Function.apply가 각 원소를 결과 타입으로 바꿉니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "문자열 길이",
+            "expression": "TextMapper.map(List.of(\"java\", \"quest\"), String::length)",
+            "expected": "List.of(4, 5)"
+          },
+          {
+            "id": "case-2",
+            "label": "대문자 변환",
+            "expression": "TextMapper.map(List.of(\"a\", \"bc\"), String::toUpperCase)",
+            "expected": "List.of(\"A\", \"BC\")"
+          },
+          {
+            "id": "case-3",
+            "label": "정수를 문자열로",
+            "expression": "TextMapper.map(List.of(1, 20, 300), String::valueOf)",
+            "expected": "List.of(\"1\", \"20\", \"300\")"
+          },
+          {
+            "id": "case-4",
+            "label": "제곱 변환",
+            "expression": "TextMapper.map(List.of(2, 3, 4), n -> n * n)",
+            "expected": "List.of(4, 9, 16)"
+          },
+          {
+            "id": "case-5",
+            "label": "빈 목록",
+            "expression": "TextMapper.map(List.<String>of(), String::length)",
+            "expected": "List.of()"
+          }
+        ]
+      }
+    },
+    {
+      "id": 15,
+      "mode": "java",
+      "stage": "람다·스트림",
+      "title": "카테고리별 매출 집계",
+      "question": "Sale 목록을 카테고리별 금액 합계 Map으로 집계하는 SalesSummary.totalByCategory를 완성하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\nimport java.util.stream.*;\n\npublic class Solution {}\n\nrecord Sale(String category, int amount) {}\n\nfinal class SalesSummary {\n    static Map<String, Integer> totalByCategory(List<Sale> sales) {\n        return Map.of();\n    }\n}",
+      "answer": "import java.util.*;\nimport java.util.stream.*;\n\npublic class Solution {}\n\nrecord Sale(String category, int amount) {}\n\nfinal class SalesSummary {\n    static Map<String, Integer> totalByCategory(List<Sale> sales) {\n        return sales.stream().collect(Collectors.groupingBy(\n                Sale::category,\n                Collectors.summingInt(Sale::amount)\n        ));\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "book 12000, toy 8000, book 5000",
+          "output": "{book=17000, toy=8000}"
+        }
+      ],
+      "constraints": [
+        "sales, category는 null이 아닙니다.",
+        "amount는 0 이상입니다.",
+        "Map의 순서는 채점하지 않습니다."
+      ],
+      "hints": [
+        "groupingBy의 두 번째 수집기로 그룹 내부 값을 합칠 수 있습니다.",
+        "비슷한 예시: groupingBy(Item::type, summingInt(Item::price))",
+        "Map.equals는 항목 순서와 무관하게 비교합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "두 카테고리 집계",
+            "expression": "SalesSummary.totalByCategory(List.of(new Sale(\"book\", 12000), new Sale(\"toy\", 8000), new Sale(\"book\", 5000)))",
+            "expected": "Map.of(\"book\", 17000, \"toy\", 8000)"
+          },
+          {
+            "id": "case-2",
+            "label": "한 카테고리",
+            "expression": "SalesSummary.totalByCategory(List.of(new Sale(\"food\", 1000), new Sale(\"food\", 2500)))",
+            "expected": "Map.of(\"food\", 3500)"
+          },
+          {
+            "id": "case-3",
+            "label": "서로 다른 세 카테고리",
+            "expression": "SalesSummary.totalByCategory(List.of(new Sale(\"a\", 1), new Sale(\"b\", 2), new Sale(\"c\", 3)))",
+            "expected": "Map.of(\"a\", 1, \"b\", 2, \"c\", 3)"
+          },
+          {
+            "id": "case-4",
+            "label": "0원 포함",
+            "expression": "SalesSummary.totalByCategory(List.of(new Sale(\"free\", 0), new Sale(\"free\", 10)))",
+            "expected": "Map.of(\"free\", 10)"
+          },
+          {
+            "id": "case-5",
+            "label": "빈 매출",
+            "expression": "SalesSummary.totalByCategory(List.of())",
+            "expected": "Map.of()"
+          }
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "mode": "java",
+      "stage": "람다·스트림",
+      "title": "Optional 회원 이메일 조회",
+      "question": "회원 목록에서 id가 일치하는 이메일을 Optional<String>으로 반환하는 UserDirectory.findEmail을 완성하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {}\n\nrecord User(long id, String email) {}\n\nfinal class UserDirectory {\n    static Optional<String> findEmail(List<User> users, long id) {\n        return Optional.empty();\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {}\n\nrecord User(long id, String email) {}\n\nfinal class UserDirectory {\n    static Optional<String> findEmail(List<User> users, long id) {\n        return users.stream()\n                .filter(user -> user.id() == id)\n                .map(User::email)\n                .findFirst();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "사용자 [(1,a@x.com), (2,b@x.com)]에서 id 2 조회",
+          "output": "Optional[b@x.com]"
+        }
+      ],
+      "constraints": [
+        "users, email은 null이 아닙니다.",
+        "id는 목록에서 중복되지 않습니다.",
+        "없는 값을 null 대신 Optional.empty로 표현합니다."
+      ],
+      "hints": [
+        "먼저 id 조건으로 필터링한 뒤 필요한 필드만 변환하세요.",
+        "비슷한 예시: stream().filter(item -> item.id() == id).map(Item::name).findFirst()",
+        "findFirst의 반환 타입은 Optional입니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "두 번째 회원 조회",
+            "expression": "UserDirectory.findEmail(List.of(new User(1, \"a@x.com\"), new User(2, \"b@x.com\")), 2)",
+            "expected": "Optional.of(\"b@x.com\")"
+          },
+          {
+            "id": "case-2",
+            "label": "첫 회원 조회",
+            "expression": "UserDirectory.findEmail(List.of(new User(5, \"five@x.com\"), new User(6, \"six@x.com\")), 5)",
+            "expected": "Optional.of(\"five@x.com\")"
+          },
+          {
+            "id": "case-3",
+            "label": "없는 회원",
+            "expression": "UserDirectory.findEmail(List.of(new User(1, \"a@x.com\")), 9)",
+            "expected": "Optional.empty()"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 목록",
+            "expression": "UserDirectory.findEmail(List.of(), 1)",
+            "expected": "Optional.empty()"
+          },
+          {
+            "id": "case-5",
+            "label": "큰 id",
+            "expression": "UserDirectory.findEmail(List.of(new User(10000000000L, \"large@x.com\")), 10000000000L)",
+            "expected": "Optional.of(\"large@x.com\")"
+          }
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "mode": "java",
+      "stage": "실무 모델링",
+      "title": "장바구니 금액과 무료배송",
+      "question": "상품과 수량을 가진 CartItem, 여러 항목을 가진 Cart를 완성하세요. total은 총액을, qualifiesForFreeShipping은 50000원 이상 여부를 반환합니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {}\n\nrecord CartProduct(String name, int price) {}\n\nrecord CartItem(CartProduct product, int quantity) {\n    int subtotal() {\n        return 0;\n    }\n}\n\nfinal class Cart {\n    private final List<CartItem> items;\n\n    Cart(List<CartItem> items) {\n        this.items = List.copyOf(items);\n    }\n\n    int total() {\n        return 0;\n    }\n\n    boolean qualifiesForFreeShipping() {\n        return false;\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {}\n\nrecord CartProduct(String name, int price) {}\n\nrecord CartItem(CartProduct product, int quantity) {\n    int subtotal() {\n        return product.price() * quantity;\n    }\n}\n\nfinal class Cart {\n    private final List<CartItem> items;\n\n    Cart(List<CartItem> items) {\n        this.items = List.copyOf(items);\n    }\n\n    int total() {\n        return items.stream().mapToInt(CartItem::subtotal).sum();\n    }\n\n    boolean qualifiesForFreeShipping() {\n        return total() >= 50000;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "책 20000원×2, 펜 5000원×2의 총액",
+          "output": "50000"
+        },
+        {
+          "testId": "case-2",
+          "input": "책 50000원×1의 무료배송 여부",
+          "output": "true"
+        }
+      ],
+      "constraints": [
+        "price와 quantity는 0 이상입니다.",
+        "무료배송 기준은 50000원을 포함합니다.",
+        "장바구니 생성 후 외부 목록 변경의 영향을 받지 않습니다."
+      ],
+      "hints": [
+        "항목별 계산과 장바구니 전체 계산의 책임을 나누세요.",
+        "비슷한 예시: items.stream().mapToInt(Item::subtotal).sum()",
+        "무료배송 여부는 total 결과를 기준값과 비교합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "무료배송 경계 총액",
+            "expression": "new Cart(List.of(new CartItem(new CartProduct(\"책\", 20000), 2), new CartItem(new CartProduct(\"펜\", 5000), 2))).total()",
+            "expected": "50000"
+          },
+          {
+            "id": "case-2",
+            "label": "무료배송 경계",
+            "expression": "new Cart(List.of(new CartItem(new CartProduct(\"책\", 50000), 1))).qualifiesForFreeShipping()",
+            "expected": "true"
+          },
+          {
+            "id": "case-3",
+            "label": "무료배송 미달",
+            "expression": "new Cart(List.of(new CartItem(new CartProduct(\"책\", 49999), 1))).qualifiesForFreeShipping()",
+            "expected": "false"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 장바구니",
+            "expression": "new Cart(List.of()).total()",
+            "expected": "0"
+          },
+          {
+            "id": "case-5",
+            "label": "여러 항목 합산",
+            "expression": "new Cart(List.of(new CartItem(new CartProduct(\"A\", 1200), 3), new CartItem(new CartProduct(\"B\", 2500), 2))).total()",
+            "expected": "8600"
+          }
+        ]
+      }
+    },
+    {
+      "id": 18,
+      "mode": "java",
+      "stage": "실무 모델링",
+      "title": "주문 상태 전이",
+      "question": "CREATED → PAID → SHIPPED → DELIVERED 순서로 새 Order를 반환하는 next 메서드를 구현하세요. DELIVERED 이후 전이는 IllegalStateException입니다.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\nenum OrderStatus {\n    CREATED, PAID, SHIPPED, DELIVERED\n}\n\nrecord StatusOrder(OrderStatus status) {\n    StatusOrder next() {\n        return this;\n    }\n}",
+      "answer": "public class Solution {}\n\nenum OrderStatus {\n    CREATED, PAID, SHIPPED, DELIVERED\n}\n\nrecord StatusOrder(OrderStatus status) {\n    StatusOrder next() {\n        return switch (status) {\n            case CREATED -> new StatusOrder(OrderStatus.PAID);\n            case PAID -> new StatusOrder(OrderStatus.SHIPPED);\n            case SHIPPED -> new StatusOrder(OrderStatus.DELIVERED);\n            case DELIVERED -> throw new IllegalStateException(\"완료된 주문입니다.\");\n        };\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new StatusOrder(CREATED).next().status()",
+          "output": "PAID"
+        }
+      ],
+      "constraints": [
+        "status는 null이 아닙니다.",
+        "next는 현재 객체를 바꾸지 않고 새 객체를 반환합니다.",
+        "상태를 건너뛸 수 없습니다."
+      ],
+      "hints": [
+        "enum의 모든 값을 switch 식으로 처리하면 누락을 컴파일러가 확인할 수 있습니다.",
+        "비슷한 예시: return switch (state) { case READY -> RUNNING; ... };",
+        "마지막 상태는 정상 결과 대신 예외를 발생시킵니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "생성에서 결제",
+            "expression": "new StatusOrder(OrderStatus.CREATED).next().status()",
+            "expected": "OrderStatus.PAID"
+          },
+          {
+            "id": "case-2",
+            "label": "결제에서 배송",
+            "expression": "new StatusOrder(OrderStatus.PAID).next().status()",
+            "expected": "OrderStatus.SHIPPED"
+          },
+          {
+            "id": "case-3",
+            "label": "배송에서 완료",
+            "expression": "new StatusOrder(OrderStatus.SHIPPED).next().status()",
+            "expected": "OrderStatus.DELIVERED"
+          },
+          {
+            "id": "case-4",
+            "label": "연속 전이",
+            "expression": "new StatusOrder(OrderStatus.CREATED).next().next().next().status()",
+            "expected": "OrderStatus.DELIVERED"
+          },
+          {
+            "id": "case-5",
+            "label": "완료 후 전이 거부",
+            "expression": "new StatusOrder(OrderStatus.DELIVERED).next()",
+            "expectedException": "IllegalStateException"
+          }
+        ]
+      }
+    },
+    {
+      "id": 19,
+      "mode": "java",
+      "stage": "실무 모델링",
+      "title": "회원 등급별 포인트 정책",
+      "question": "PointPolicy를 사용하는 Purchase를 완성하세요. RegularPolicy는 결제액의 1%, VipPolicy는 3%를 정수 포인트로 적립합니다.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\ninterface PointPolicy {\n    int earn(int amount);\n}\n\nfinal class RegularPolicy implements PointPolicy {\n    public int earn(int amount) {\n        return 0;\n    }\n}\n\nfinal class VipPolicy implements PointPolicy {\n    public int earn(int amount) {\n        return 0;\n    }\n}\n\nrecord Purchase(int amount, PointPolicy policy) {\n    int earnedPoints() {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {}\n\ninterface PointPolicy {\n    int earn(int amount);\n}\n\nfinal class RegularPolicy implements PointPolicy {\n    public int earn(int amount) {\n        return amount / 100;\n    }\n}\n\nfinal class VipPolicy implements PointPolicy {\n    public int earn(int amount) {\n        return amount * 3 / 100;\n    }\n}\n\nrecord Purchase(int amount, PointPolicy policy) {\n    int earnedPoints() {\n        return policy.earn(amount);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new Purchase(12000, new VipPolicy()).earnedPoints()",
+          "output": "360"
+        }
+      ],
+      "constraints": [
+        "amount는 0 이상입니다.",
+        "소수점 이하는 정수 연산으로 버립니다.",
+        "Purchase는 구체 등급이 아닌 PointPolicy에 의존합니다."
+      ],
+      "hints": [
+        "결제 객체가 비율을 직접 판단하지 말고 정책에 계산을 위임하세요.",
+        "비슷한 예시: return policy.calculate(amount);",
+        "1%는 100으로 나눈 몫으로 계산할 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "VIP 포인트",
+            "expression": "new Purchase(12000, new VipPolicy()).earnedPoints()",
+            "expected": "360"
+          },
+          {
+            "id": "case-2",
+            "label": "일반 포인트",
+            "expression": "new Purchase(12000, new RegularPolicy()).earnedPoints()",
+            "expected": "120"
+          },
+          {
+            "id": "case-3",
+            "label": "인터페이스 교체",
+            "expression": "new Purchase(9999, (PointPolicy) new VipPolicy()).earnedPoints()",
+            "expected": "299"
+          },
+          {
+            "id": "case-4",
+            "label": "0원 결제",
+            "expression": "new Purchase(0, new RegularPolicy()).earnedPoints()",
+            "expected": "0"
+          },
+          {
+            "id": "case-5",
+            "label": "작은 결제의 절삭",
+            "expression": "new Purchase(99, new RegularPolicy()).earnedPoints()",
+            "expected": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "mode": "java",
+      "stage": "실무 모델링",
+      "title": "창고 재고 요약",
+      "question": "StockItem 목록을 보관하는 Warehouse를 완성하세요. totalValue는 전체 재고 금액을, lowStockSkus는 수량이 기준 이하인 SKU를 오름차순으로 반환합니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {}\n\nrecord StockItem(String sku, int unitPrice, int quantity) {\n    int value() {\n        return 0;\n    }\n}\n\nfinal class Warehouse {\n    private final List<StockItem> items;\n\n    Warehouse(List<StockItem> items) {\n        this.items = List.copyOf(items);\n    }\n\n    int totalValue() {\n        return 0;\n    }\n\n    List<String> lowStockSkus(int threshold) {\n        return List.of();\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {}\n\nrecord StockItem(String sku, int unitPrice, int quantity) {\n    int value() {\n        return unitPrice * quantity;\n    }\n}\n\nfinal class Warehouse {\n    private final List<StockItem> items;\n\n    Warehouse(List<StockItem> items) {\n        this.items = List.copyOf(items);\n    }\n\n    int totalValue() {\n        return items.stream().mapToInt(StockItem::value).sum();\n    }\n\n    List<String> lowStockSkus(int threshold) {\n        return items.stream()\n                .filter(item -> item.quantity() <= threshold)\n                .map(StockItem::sku)\n                .sorted()\n                .toList();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "A(1000원×3), B(2500원×2)의 전체 재고 금액",
+          "output": "8000"
+        }
+      ],
+      "constraints": [
+        "sku와 items는 null이 아닙니다.",
+        "unitPrice, quantity, threshold는 0 이상입니다.",
+        "낮은 재고 기준은 threshold와 같은 수량을 포함합니다."
+      ],
+      "hints": [
+        "항목 하나의 금액 계산과 창고 전체 합계를 분리하세요.",
+        "비슷한 예시: items.stream().filter(item -> item.count() <= limit).map(Item::code).sorted().toList()",
+        "필터링한 SKU는 마지막에 정렬합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "전체 재고 금액",
+            "expression": "new Warehouse(List.of(new StockItem(\"A\", 1000, 3), new StockItem(\"B\", 2500, 2))).totalValue()",
+            "expected": "8000"
+          },
+          {
+            "id": "case-2",
+            "label": "낮은 재고 SKU",
+            "expression": "new Warehouse(List.of(new StockItem(\"C\", 100, 5), new StockItem(\"A\", 100, 2), new StockItem(\"B\", 100, 1))).lowStockSkus(2)",
+            "expected": "List.of(\"A\", \"B\")"
+          },
+          {
+            "id": "case-3",
+            "label": "경계 수량 포함",
+            "expression": "new Warehouse(List.of(new StockItem(\"EDGE\", 500, 3))).lowStockSkus(3)",
+            "expected": "List.of(\"EDGE\")"
+          },
+          {
+            "id": "case-4",
+            "label": "낮은 재고 없음",
+            "expression": "new Warehouse(List.of(new StockItem(\"SAFE\", 500, 10))).lowStockSkus(3)",
+            "expected": "List.of()"
+          },
+          {
+            "id": "case-5",
+            "label": "빈 창고",
+            "expression": "new Warehouse(List.of()).totalValue()",
+            "expected": "0"
+          },
+          {
+            "id": "case-6",
+            "label": "SKU 정렬",
+            "expression": "new Warehouse(List.of(new StockItem(\"Z\", 1, 0), new StockItem(\"M\", 1, 0), new StockItem(\"A\", 1, 0))).lowStockSkus(0)",
+            "expected": "List.of(\"A\", \"M\", \"Z\")"
+          }
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "mode": "java",
+      "stage": "객체지향 설계",
+      "title": "배송 방식별 위치 안내",
+      "question": "Delivery 타입으로 받은 객체를 설명하는 DeliveryLabel.describe를 완성하세요. DoorDelivery면 '코드:층수층', LockerDelivery면 '코드:보관함 이름', 그 밖의 Delivery면 '코드:직접 수령'을 반환합니다. instanceof로 실제 하위 타입을 확인한 뒤 안전하게 하위 타입 기능을 사용하세요.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\nclass Delivery {\n    private final String code;\n\n    Delivery(String code) {\n        this.code = code;\n    }\n\n    String code() {\n        return code;\n    }\n}\n\nfinal class DoorDelivery extends Delivery {\n    private final int floor;\n\n    DoorDelivery(String code, int floor) {\n        super(code);\n        this.floor = floor;\n    }\n\n    int floor() {\n        return floor;\n    }\n}\n\nfinal class LockerDelivery extends Delivery {\n    private final String locker;\n\n    LockerDelivery(String code, String locker) {\n        super(code);\n        this.locker = locker;\n    }\n\n    String locker() {\n        return locker;\n    }\n}\n\nfinal class DeliveryLabel {\n    static String describe(Delivery delivery) {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {}\n\nclass Delivery {\n    private final String code;\n\n    Delivery(String code) {\n        this.code = code;\n    }\n\n    String code() {\n        return code;\n    }\n}\n\nfinal class DoorDelivery extends Delivery {\n    private final int floor;\n\n    DoorDelivery(String code, int floor) {\n        super(code);\n        this.floor = floor;\n    }\n\n    int floor() {\n        return floor;\n    }\n}\n\nfinal class LockerDelivery extends Delivery {\n    private final String locker;\n\n    LockerDelivery(String code, String locker) {\n        super(code);\n        this.locker = locker;\n    }\n\n    String locker() {\n        return locker;\n    }\n}\n\nfinal class DeliveryLabel {\n    static String describe(Delivery delivery) {\n        if (delivery instanceof DoorDelivery door) {\n            return delivery.code() + \":\" + door.floor() + \"층\";\n        }\n        if (delivery instanceof LockerDelivery locker) {\n            return delivery.code() + \":보관함 \" + locker.locker();\n        }\n        return delivery.code() + \":직접 수령\";\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "DeliveryLabel.describe(new DoorDelivery(\"D1\", 3))",
+          "output": "D1:3층"
+        }
+      ],
+      "constraints": [
+        "delivery와 code는 null이 아닙니다.",
+        "DoorDelivery의 floor는 1 이상 100 이하입니다.",
+        "LockerDelivery의 locker는 비어 있지 않은 문자열입니다.",
+        "하위 객체는 Delivery 매개변수로 자동 업캐스팅되어 전달됩니다."
+      ],
+      "hints": [
+        "부모 타입 변수는 여러 하위 타입 객체를 받을 수 있지만 하위 타입 전용 메서드는 바로 호출할 수 없습니다.",
+        "비슷한 예시: if (animal instanceof Dog dog) { return dog.breed(); }",
+        "instanceof 패턴 변수는 타입 검사가 성공한 블록 안에서만 사용할 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "문 앞 배송 업캐스팅",
+            "expression": "DeliveryLabel.describe(new DoorDelivery(\"D1\", 3))",
+            "expected": "\"D1:3층\""
+          },
+          {
+            "id": "case-2",
+            "label": "보관함 배송 업캐스팅",
+            "expression": "DeliveryLabel.describe(new LockerDelivery(\"L2\", \"A-17\"))",
+            "expected": "\"L2:보관함 A-17\""
+          },
+          {
+            "id": "case-3",
+            "label": "부모 타입 자체",
+            "expression": "DeliveryLabel.describe(new Delivery(\"P0\"))",
+            "expected": "\"P0:직접 수령\""
+          },
+          {
+            "id": "case-4",
+            "label": "명시적인 부모 타입 변환",
+            "expression": "DeliveryLabel.describe((Delivery) new DoorDelivery(\"TOP\", 100))",
+            "expected": "\"TOP:100층\""
+          },
+          {
+            "id": "case-5",
+            "label": "하위 타입별 필드 구분",
+            "expression": "DeliveryLabel.describe(new DoorDelivery(\"SAME\", 1)) + \",\" + DeliveryLabel.describe(new LockerDelivery(\"SAME\", \"B-2\"))",
+            "expected": "\"SAME:1층,SAME:보관함 B-2\""
+          },
+          {
+            "id": "case-6",
+            "label": "알 수 없는 하위 배송 타입",
+            "expression": "DeliveryLabel.describe(new Delivery(\"OTHER\") {})",
+            "expected": "\"OTHER:직접 수령\""
+          }
+        ]
+      },
+      "solution": {
+        "summary": "하위 객체를 Delivery로 받아 공통 코드에 접근하고, instanceof 패턴으로 실제 타입을 확인해 하위 타입 전용 정보를 안전하게 읽습니다.",
+        "keyPoints": [
+          "하위 타입 객체를 부모 타입 변수에 담는 업캐스팅은 자동으로 이루어집니다.",
+          "다운캐스팅 전 실제 타입을 확인하면 ClassCastException을 피할 수 있습니다."
+        ],
+        "alternative": "Delivery에 추상 label 메서드를 두고 각 하위 클래스가 오버라이딩하면 타입 검사 없이 다형성으로 해결할 수 있습니다.",
+        "complexity": "타입 검사와 문자열 조합은 입력 문자열 길이에 대해 시간·결과 공간 O(n)"
+      }
+    },
+    {
+      "id": 22,
+      "mode": "java",
+      "stage": "예외·검증",
+      "title": "서비스 포트 입력 검증",
+      "question": "ServicePort.parse가 앞뒤 공백을 제거한 text를 정수 포트로 변환하게 하세요. 숫자가 아니거나 1~65,535 범위를 벗어나면 checked 예외인 PortValueException을 던지고, 메서드 시그니처에 throws 선언을 유지합니다.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\nfinal class PortValueException extends Exception {\n    PortValueException(String message) {\n        super(message);\n    }\n}\n\nfinal class ServicePort {\n    static int parse(String text) throws PortValueException {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {}\n\nfinal class PortValueException extends Exception {\n    PortValueException(String message) {\n        super(message);\n    }\n}\n\nfinal class ServicePort {\n    static int parse(String text) throws PortValueException {\n        final int port;\n        try {\n            port = Integer.parseInt(text.strip());\n        } catch (NumberFormatException exception) {\n            throw new PortValueException(\"포트는 정수여야 합니다.\");\n        }\n        if (port < 1 || port > 65535) {\n            throw new PortValueException(\"포트 범위를 벗어났습니다.\");\n        }\n        return port;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "ServicePort.parse(\" 8080 \")",
+          "output": "8080"
+        }
+      ],
+      "constraints": [
+        "text는 null이 아닙니다.",
+        "유효 포트 범위는 1 이상 65,535 이하이며 양 끝을 포함합니다.",
+        "잘못된 숫자 형식과 범위 오류는 모두 PortValueException으로 변환합니다.",
+        "PortValueException은 Exception을 직접 상속하는 checked 예외입니다."
+      ],
+      "hints": [
+        "checked 예외를 호출자에게 전달하는 메서드는 시그니처에 throws를 선언합니다.",
+        "비슷한 예시: static int load(String value) throws DataException { ... }",
+        "Integer.parseInt가 던지는 형식 예외를 catch한 뒤 학습용 예외로 바꿔 던질 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "sourceContract": "checked-port-exception",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "공백이 있는 일반 포트",
+            "expression": "ServicePort.parse(\" 8080 \")",
+            "expected": "8080"
+          },
+          {
+            "id": "case-2",
+            "label": "최소 포트",
+            "expression": "ServicePort.parse(\"1\")",
+            "expected": "1"
+          },
+          {
+            "id": "case-3",
+            "label": "최대 포트",
+            "expression": "ServicePort.parse(\"65535\")",
+            "expected": "65535"
+          },
+          {
+            "id": "case-4",
+            "label": "0 범위 오류",
+            "expression": "ServicePort.parse(\"0\")",
+            "expectedException": "PortValueException"
+          },
+          {
+            "id": "case-5",
+            "label": "최댓값 초과",
+            "expression": "ServicePort.parse(\"65536\")",
+            "expectedException": "PortValueException"
+          },
+          {
+            "id": "case-6",
+            "label": "숫자가 아닌 입력",
+            "expression": "ServicePort.parse(\"http\")",
+            "expectedException": "PortValueException"
+          },
+          {
+            "id": "case-7",
+            "label": "빈 문자열",
+            "expression": "ServicePort.parse(\"   \")",
+            "expectedException": "PortValueException"
+          },
+          {
+            "id": "case-8",
+            "label": "음수 포트",
+            "expression": "ServicePort.parse(\"-1\")",
+            "expectedException": "PortValueException"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "표준 숫자 형식 예외를 도메인 의미가 있는 checked 예외로 변환하고 범위 오류에도 같은 계약을 적용합니다.",
+        "keyPoints": [
+          "Exception을 직접 상속한 예외는 catch하거나 throws로 선언해야 합니다.",
+          "파싱 성공과 값 범위 유효성은 서로 다른 검증 단계입니다."
+        ],
+        "alternative": "OptionalInt로 실패를 값으로 표현할 수도 있지만, 이 문제는 호출자에게 명시적인 예외 처리를 요구하는 계약을 연습합니다.",
+        "complexity": "입력 문자열 길이를 n이라 할 때 시간 O(n), 추가 공간 O(n)"
+      }
+    }
+  ]
+}

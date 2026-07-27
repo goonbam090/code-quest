@@ -1,0 +1,4403 @@
+{
+  "id": "java",
+  "name": "Java Quest",
+  "description": "Java 21 기본 문법을 컴파일과 테스트로 익히는 47문제",
+  "problems": [
+    {
+      "id": 1,
+      "mode": "java",
+      "stage": "변수·연산자",
+      "title": "두 정수 더하기",
+      "question": "두 정수 a와 b를 더해 반환하는 solve 메서드를 완성하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int a, int b) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int a, int b) {\n        return a + b;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "a = 7, b = 5",
+          "output": "12"
+        }
+      ],
+      "hints": [
+        "두 매개변수는 이미 int 변수로 전달됩니다.",
+        "비슷한 예시: return width + height;",
+        "+ 연산자는 두 정수의 합을 만듭니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "양수 두 개",
+            "arguments": [
+              "7",
+              "5"
+            ],
+            "expected": "12"
+          },
+          {
+            "id": "case-2",
+            "label": "음수가 포함된 경우",
+            "arguments": [
+              "-4",
+              "9"
+            ],
+            "expected": "5"
+          },
+          {
+            "id": "case-3",
+            "label": "0 두 개",
+            "arguments": [
+              "0",
+              "0"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-4",
+            "label": "음수 두 개",
+            "arguments": [
+              "-8",
+              "-3"
+            ],
+            "expected": "-11"
+          },
+          {
+            "id": "case-5",
+            "label": "서로 상쇄되는 수",
+            "arguments": [
+              "1000000",
+              "-1000000"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-6",
+            "label": "큰 양수 두 개",
+            "arguments": [
+              "1000000000",
+              "1000000000"
+            ],
+            "expected": "2000000000"
+          },
+          {
+            "id": "case-7",
+            "label": "순서가 바뀐 피연산자",
+            "arguments": [
+              "25",
+              "-40"
+            ],
+            "expected": "-15"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "mode": "java",
+      "stage": "변수·연산자",
+      "title": "직사각형 넓이",
+      "question": "가로 width와 세로 height를 곱해 직사각형의 넓이를 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int width, int height) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int width, int height) {\n        return width * height;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "width = 8, height = 6",
+          "output": "48"
+        }
+      ],
+      "hints": [
+        "넓이는 두 길이의 곱입니다.",
+        "비슷한 예시: int total = price * count;",
+        "* 연산자를 사용해 곱셈할 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "일반 직사각형",
+            "arguments": [
+              "8",
+              "6"
+            ],
+            "expected": "48"
+          },
+          {
+            "id": "case-2",
+            "label": "정사각형",
+            "arguments": [
+              "9",
+              "9"
+            ],
+            "expected": "81"
+          },
+          {
+            "id": "case-3",
+            "label": "한 변이 0",
+            "arguments": [
+              "0",
+              "12"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-4",
+            "label": "작은 직사각형",
+            "arguments": [
+              "1",
+              "3"
+            ],
+            "expected": "3"
+          },
+          {
+            "id": "case-5",
+            "label": "세로가 0",
+            "arguments": [
+              "15",
+              "0"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-6",
+            "label": "가늘고 긴 직사각형",
+            "arguments": [
+              "1",
+              "1000"
+            ],
+            "expected": "1000"
+          },
+          {
+            "id": "case-7",
+            "label": "큰 정사각형",
+            "arguments": [
+              "10000",
+              "10000"
+            ],
+            "expected": "100000000"
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "mode": "java",
+      "stage": "변수·연산자",
+      "title": "짝수 판별",
+      "question": "정수 number가 짝수이면 true, 홀수이면 false를 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static boolean solve(int number) {\n        return false;\n    }\n}",
+      "answer": "public class Solution {\n    public static boolean solve(int number) {\n        return number % 2 == 0;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "number = 14",
+          "output": "true"
+        }
+      ],
+      "hints": [
+        "2로 나눈 나머지를 확인하세요.",
+        "비슷한 예시: value % 5 == 0",
+        "나머지 연산자는 %입니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "양의 짝수",
+            "arguments": [
+              "14"
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-2",
+            "label": "양의 홀수",
+            "arguments": [
+              "9"
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-3",
+            "label": "0",
+            "arguments": [
+              "0"
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-4",
+            "label": "음의 홀수",
+            "arguments": [
+              "-7"
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-5",
+            "label": "음의 짝수",
+            "arguments": [
+              "-8"
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-6",
+            "label": "1",
+            "arguments": [
+              "1"
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-7",
+            "label": "큰 음의 짝수",
+            "arguments": [
+              "-1000000"
+            ],
+            "expected": "true"
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "mode": "java",
+      "stage": "변수·연산자",
+      "title": "인사 문자열",
+      "question": "이름 name을 받아 '안녕하세요, 이름!' 형식의 문자열을 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static String solve(String name) {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {\n    public static String solve(String name) {\n        return \"안녕하세요, \" + name + \"!\";\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "name = \"민수\"",
+          "output": "안녕하세요, 민수!"
+        }
+      ],
+      "hints": [
+        "고정 문자열 사이에 name을 연결합니다.",
+        "비슷한 예시: \"Hello, \" + user",
+        "문자열은 + 연산자로 이어 붙일 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "한글 이름",
+            "arguments": [
+              "\"민수\""
+            ],
+            "expected": "\"안녕하세요, 민수!\""
+          },
+          {
+            "id": "case-2",
+            "label": "영문 이름",
+            "arguments": [
+              "\"Alex\""
+            ],
+            "expected": "\"안녕하세요, Alex!\""
+          },
+          {
+            "id": "case-3",
+            "label": "한 글자 이름",
+            "arguments": [
+              "\"봄\""
+            ],
+            "expected": "\"안녕하세요, 봄!\""
+          },
+          {
+            "id": "case-4",
+            "label": "빈 이름",
+            "arguments": [
+              "\"\""
+            ],
+            "expected": "\"안녕하세요, !\""
+          },
+          {
+            "id": "case-5",
+            "label": "공백이 있는 이름",
+            "arguments": [
+              "\"김 자바\""
+            ],
+            "expected": "\"안녕하세요, 김 자바!\""
+          },
+          {
+            "id": "case-6",
+            "label": "숫자가 포함된 이름",
+            "arguments": [
+              "\"Java21\""
+            ],
+            "expected": "\"안녕하세요, Java21!\""
+          },
+          {
+            "id": "case-7",
+            "label": "두 글자 영문 이름",
+            "arguments": [
+              "\"Bo\""
+            ],
+            "expected": "\"안녕하세요, Bo!\""
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "mode": "java",
+      "stage": "변수·연산자",
+      "title": "분을 초로 변환",
+      "question": "분 단위 정수 minutes를 초 단위로 변환해 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int minutes) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int minutes) {\n        return minutes * 60;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "minutes = 3",
+          "output": "180"
+        }
+      ],
+      "hints": [
+        "1분에 몇 초가 있는지 떠올려 보세요.",
+        "비슷한 예시: hours * 60",
+        "단위를 변환할 때 변환 비율을 곱합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "3분",
+            "arguments": [
+              "3"
+            ],
+            "expected": "180"
+          },
+          {
+            "id": "case-2",
+            "label": "0분",
+            "arguments": [
+              "0"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-3",
+            "label": "1분",
+            "arguments": [
+              "1"
+            ],
+            "expected": "60"
+          },
+          {
+            "id": "case-4",
+            "label": "90분",
+            "arguments": [
+              "90"
+            ],
+            "expected": "5400"
+          },
+          {
+            "id": "case-5",
+            "label": "한 시간",
+            "arguments": [
+              "60"
+            ],
+            "expected": "3600"
+          },
+          {
+            "id": "case-6",
+            "label": "하루",
+            "arguments": [
+              "1440"
+            ],
+            "expected": "86400"
+          },
+          {
+            "id": "case-7",
+            "label": "큰 분 값",
+            "arguments": [
+              "10000"
+            ],
+            "expected": "600000"
+          }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "mode": "java",
+      "stage": "조건문·반복문",
+      "title": "세 수 중 최댓값",
+      "question": "세 정수 a, b, c 중 가장 큰 값을 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int a, int b, int c) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int a, int b, int c) {\n        int max = a;\n        if (b > max) max = b;\n        if (c > max) max = c;\n        return max;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "a = 4, b = 9, c = 2",
+          "output": "9",
+          "trace": [
+            {
+              "label": "시작",
+              "state": "max = a = 4",
+              "detail": "첫 값을 비교 기준으로 저장합니다."
+            },
+            {
+              "label": "b 비교",
+              "state": "9 > 4 → max = 9",
+              "detail": "조건이 참이므로 max를 갱신합니다."
+            },
+            {
+              "label": "c 비교",
+              "state": "2 > 9 → false",
+              "detail": "조건이 거짓이므로 max는 9입니다."
+            },
+            {
+              "label": "반환",
+              "state": "return 9",
+              "detail": "마지막 max를 반환합니다."
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "첫 값을 기준으로 두 번 비교해도 됩니다.",
+        "비슷한 예시: if (next > max) max = next;",
+        "같은 최댓값이 여러 개여도 값 하나만 반환하면 됩니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "가운데 값이 최대",
+            "arguments": [
+              "4",
+              "9",
+              "2"
+            ],
+            "expected": "9"
+          },
+          {
+            "id": "case-2",
+            "label": "첫 값이 최대",
+            "arguments": [
+              "10",
+              "3",
+              "7"
+            ],
+            "expected": "10"
+          },
+          {
+            "id": "case-3",
+            "label": "모두 같은 값",
+            "arguments": [
+              "5",
+              "5",
+              "5"
+            ],
+            "expected": "5"
+          },
+          {
+            "id": "case-4",
+            "label": "음수 세 개",
+            "arguments": [
+              "-8",
+              "-2",
+              "-11"
+            ],
+            "expected": "-2"
+          },
+          {
+            "id": "case-5",
+            "label": "세 번째 값이 최대",
+            "arguments": [
+              "3",
+              "7",
+              "12"
+            ],
+            "expected": "12"
+          },
+          {
+            "id": "case-6",
+            "label": "최댓값이 두 개",
+            "arguments": [
+              "9",
+              "9",
+              "1"
+            ],
+            "expected": "9"
+          },
+          {
+            "id": "case-7",
+            "label": "0과 음수",
+            "arguments": [
+              "-3",
+              "0",
+              "-1"
+            ],
+            "expected": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "mode": "java",
+      "stage": "조건문·반복문",
+      "title": "부호 분류",
+      "question": "number가 양수면 \"positive\", 음수면 \"negative\", 0이면 \"zero\"를 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static String solve(int number) {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {\n    public static String solve(int number) {\n        if (number > 0) return \"positive\";\n        if (number < 0) return \"negative\";\n        return \"zero\";\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-2",
+          "input": "number = -3",
+          "output": "negative",
+          "trace": [
+            {
+              "label": "첫 조건",
+              "state": "-3 > 0 → false",
+              "detail": "positive 분기로 이동하지 않습니다."
+            },
+            {
+              "label": "둘째 조건",
+              "state": "-3 < 0 → true",
+              "detail": "negative 분기를 선택합니다."
+            },
+            {
+              "label": "반환",
+              "state": "return \"negative\"",
+              "detail": "선택된 문자열을 반환합니다."
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "0보다 큰지와 작은지를 순서대로 비교하세요.",
+        "비슷한 예시: if (age >= 20) return \"adult\";",
+        "모든 분기에서 문자열을 반환해야 합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "양수",
+            "arguments": [
+              "12"
+            ],
+            "expected": "\"positive\""
+          },
+          {
+            "id": "case-2",
+            "label": "음수",
+            "arguments": [
+              "-3"
+            ],
+            "expected": "\"negative\""
+          },
+          {
+            "id": "case-3",
+            "label": "0",
+            "arguments": [
+              "0"
+            ],
+            "expected": "\"zero\""
+          },
+          {
+            "id": "case-4",
+            "label": "큰 음수",
+            "arguments": [
+              "-1000"
+            ],
+            "expected": "\"negative\""
+          },
+          {
+            "id": "case-5",
+            "label": "가장 작은 양수",
+            "arguments": [
+              "1"
+            ],
+            "expected": "\"positive\""
+          },
+          {
+            "id": "case-6",
+            "label": "큰 양수",
+            "arguments": [
+              "1000000000"
+            ],
+            "expected": "\"positive\""
+          },
+          {
+            "id": "case-7",
+            "label": "int 최솟값",
+            "arguments": [
+              "Integer.MIN_VALUE"
+            ],
+            "expected": "\"negative\""
+          }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "mode": "java",
+      "stage": "조건문·반복문",
+      "title": "점수 등급",
+      "question": "0~100점 score를 90 이상 A, 80 이상 B, 70 이상 C, 60 이상 D, 나머지는 F로 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static String solve(int score) {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {\n    public static String solve(int score) {\n        if (score >= 90) return \"A\";\n        if (score >= 80) return \"B\";\n        if (score >= 70) return \"C\";\n        if (score >= 60) return \"D\";\n        return \"F\";\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "score = 84",
+          "output": "B",
+          "trace": [
+            {
+              "label": "90점 조건",
+              "state": "84 >= 90 → false",
+              "detail": "다음 등급 조건으로 이동합니다."
+            },
+            {
+              "label": "80점 조건",
+              "state": "84 >= 80 → true",
+              "detail": "B 등급 분기를 선택합니다."
+            },
+            {
+              "label": "반환",
+              "state": "return \"B\"",
+              "detail": "이후 조건은 확인하지 않습니다."
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "높은 점수 구간부터 확인하면 조건이 단순해집니다.",
+        "비슷한 예시: if (value >= 50) return \"pass\";",
+        "경계값 90, 80, 70, 60이 각 등급에 포함됩니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "B 구간",
+            "arguments": [
+              "84"
+            ],
+            "expected": "\"B\""
+          },
+          {
+            "id": "case-2",
+            "label": "A 경계",
+            "arguments": [
+              "90"
+            ],
+            "expected": "\"A\""
+          },
+          {
+            "id": "case-3",
+            "label": "D 경계",
+            "arguments": [
+              "60"
+            ],
+            "expected": "\"D\""
+          },
+          {
+            "id": "case-4",
+            "label": "F 구간",
+            "arguments": [
+              "59"
+            ],
+            "expected": "\"F\""
+          },
+          {
+            "id": "case-5",
+            "label": "만점",
+            "arguments": [
+              "100"
+            ],
+            "expected": "\"A\""
+          },
+          {
+            "id": "case-6",
+            "label": "C 경계",
+            "arguments": [
+              "70"
+            ],
+            "expected": "\"C\""
+          },
+          {
+            "id": "case-7",
+            "label": "B 경계",
+            "arguments": [
+              "80"
+            ],
+            "expected": "\"B\""
+          },
+          {
+            "id": "case-8",
+            "label": "최저점",
+            "arguments": [
+              "0"
+            ],
+            "expected": "\"F\""
+          }
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "mode": "java",
+      "stage": "조건문·반복문",
+      "title": "1부터 n까지 합",
+      "question": "0 이상의 정수 n이 주어질 때 1부터 n까지의 합을 반복문으로 계산해 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int n) {\n        int sum = 0;\n        return sum;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int n) {\n        int sum = 0;\n        for (int number = 1; number <= n; number++) {\n            sum += number;\n        }\n        return sum;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "n = 5",
+          "output": "15",
+          "trace": [
+            {
+              "label": "초기값",
+              "state": "sum = 0",
+              "detail": "누적할 변수를 준비합니다."
+            },
+            {
+              "label": "1회",
+              "state": "sum = 0 + 1 → 1",
+              "detail": "number가 1일 때의 누적값입니다."
+            },
+            {
+              "label": "2회",
+              "state": "sum = 1 + 2 → 3",
+              "detail": "반복할 때마다 현재 수를 더합니다."
+            },
+            {
+              "label": "3~5회",
+              "state": "3 → 6 → 10 → 15",
+              "detail": "number가 n이 될 때까지 반복합니다."
+            },
+            {
+              "label": "반환",
+              "state": "return 15",
+              "detail": "최종 누적값을 반환합니다."
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "합을 저장할 변수를 0으로 시작하세요.",
+        "비슷한 예시: for (int i = 1; i <= limit; i++) total += i;",
+        "n이 0이면 반복문이 한 번도 실행되지 않아야 합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "1부터 5",
+            "arguments": [
+              "5"
+            ],
+            "expected": "15"
+          },
+          {
+            "id": "case-2",
+            "label": "0",
+            "arguments": [
+              "0"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-3",
+            "label": "1",
+            "arguments": [
+              "1"
+            ],
+            "expected": "1"
+          },
+          {
+            "id": "case-4",
+            "label": "1부터 100",
+            "arguments": [
+              "100"
+            ],
+            "expected": "5050"
+          },
+          {
+            "id": "case-5",
+            "label": "1부터 2",
+            "arguments": [
+              "2"
+            ],
+            "expected": "3"
+          },
+          {
+            "id": "case-6",
+            "label": "1부터 10",
+            "arguments": [
+              "10"
+            ],
+            "expected": "55"
+          },
+          {
+            "id": "case-7",
+            "label": "큰 반복 범위",
+            "arguments": [
+              "1000"
+            ],
+            "expected": "500500"
+          }
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "mode": "java",
+      "stage": "조건문·반복문",
+      "title": "윤년 판별",
+      "question": "year가 윤년이면 true를 반환하세요. 4의 배수이면서 100의 배수가 아니거나, 400의 배수이면 윤년입니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static boolean solve(int year) {\n        return false;\n    }\n}",
+      "answer": "public class Solution {\n    public static boolean solve(int year) {\n        return year % 400 == 0 || (year % 4 == 0 && year % 100 != 0);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "year = 2024",
+          "output": "true",
+          "trace": [
+            {
+              "label": "400의 배수",
+              "state": "2024 % 400 == 0 → false",
+              "detail": "첫 번째 윤년 조건은 거짓입니다."
+            },
+            {
+              "label": "4의 배수",
+              "state": "2024 % 4 == 0 → true",
+              "detail": "4로 나누어떨어집니다."
+            },
+            {
+              "label": "100의 배수",
+              "state": "2024 % 100 != 0 → true",
+              "detail": "평년으로 제외되는 해가 아닙니다."
+            },
+            {
+              "label": "결과",
+              "state": "false || (true && true) → true",
+              "detail": "전체 조건식은 참입니다."
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "400의 배수 조건과 일반적인 4의 배수 조건을 분리하세요.",
+        "비슷한 예시: divisibleByA || (divisibleByB && !exception)",
+        "&&가 ||보다 먼저 계산되지만 괄호로 의도를 드러내는 편이 좋습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "일반 윤년",
+            "arguments": [
+              "2024"
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-2",
+            "label": "100의 배수 평년",
+            "arguments": [
+              "1900"
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-3",
+            "label": "400의 배수 윤년",
+            "arguments": [
+              "2000"
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-4",
+            "label": "일반 평년",
+            "arguments": [
+              "2023"
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-5",
+            "label": "다른 100의 배수 평년",
+            "arguments": [
+              "2100"
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-6",
+            "label": "미래의 400의 배수",
+            "arguments": [
+              "2400"
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-7",
+            "label": "과거의 일반 윤년",
+            "arguments": [
+              "1996"
+            ],
+            "expected": "true"
+          }
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "mode": "java",
+      "stage": "메서드·문자열",
+      "title": "절댓값",
+      "question": "정수 number의 절댓값을 반환하세요. 입력 범위는 -1,000,000 이상 1,000,000 이하입니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int number) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int number) {\n        return Math.abs(number);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "number = -17",
+          "output": "17"
+        }
+      ],
+      "hints": [
+        "음수는 부호를 바꾸고 양수와 0은 그대로 둡니다.",
+        "비슷한 예시: Math.max(first, second)",
+        "표준 라이브러리 Math의 메서드를 사용할 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "음수",
+            "arguments": [
+              "-17"
+            ],
+            "expected": "17"
+          },
+          {
+            "id": "case-2",
+            "label": "양수",
+            "arguments": [
+              "42"
+            ],
+            "expected": "42"
+          },
+          {
+            "id": "case-3",
+            "label": "0",
+            "arguments": [
+              "0"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-4",
+            "label": "최솟값 범위",
+            "arguments": [
+              "-1000000"
+            ],
+            "expected": "1000000"
+          },
+          {
+            "id": "case-5",
+            "label": "최댓값 범위",
+            "arguments": [
+              "1000000"
+            ],
+            "expected": "1000000"
+          },
+          {
+            "id": "case-6",
+            "label": "-1",
+            "arguments": [
+              "-1"
+            ],
+            "expected": "1"
+          },
+          {
+            "id": "case-7",
+            "label": "큰 음수",
+            "arguments": [
+              "-999999"
+            ],
+            "expected": "999999"
+          }
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "mode": "java",
+      "stage": "메서드·문자열",
+      "title": "범위로 제한하기",
+      "question": "value가 min보다 작으면 min, max보다 크면 max, 범위 안이면 value를 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int value, int min, int max) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int value, int min, int max) {\n        return Math.max(min, Math.min(value, max));\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "value = 15, min = 0, max = 10",
+          "output": "10"
+        }
+      ],
+      "hints": [
+        "먼저 최댓값을 넘는지, 그다음 최솟값보다 작은지 확인해도 됩니다.",
+        "비슷한 예시: Math.min(current, limit)",
+        "min은 항상 max 이하로 주어집니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "상한 초과",
+            "arguments": [
+              "15",
+              "0",
+              "10"
+            ],
+            "expected": "10"
+          },
+          {
+            "id": "case-2",
+            "label": "하한 미만",
+            "arguments": [
+              "-4",
+              "0",
+              "10"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-3",
+            "label": "범위 내부",
+            "arguments": [
+              "6",
+              "0",
+              "10"
+            ],
+            "expected": "6"
+          },
+          {
+            "id": "case-4",
+            "label": "상한 경계값",
+            "arguments": [
+              "10",
+              "0",
+              "10"
+            ],
+            "expected": "10"
+          },
+          {
+            "id": "case-5",
+            "label": "하한 경계값",
+            "arguments": [
+              "0",
+              "0",
+              "10"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-6",
+            "label": "음수 범위",
+            "arguments": [
+              "-20",
+              "-10",
+              "-1"
+            ],
+            "expected": "-10"
+          },
+          {
+            "id": "case-7",
+            "label": "최소와 최대가 같음",
+            "arguments": [
+              "100",
+              "5",
+              "5"
+            ],
+            "expected": "5"
+          }
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "mode": "java",
+      "stage": "메서드·문자열",
+      "title": "문자열 뒤집기",
+      "question": "문자열 text의 문자 순서를 뒤집어 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static String solve(String text) {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {\n    public static String solve(String text) {\n        return new StringBuilder(text).reverse().toString();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "text = \"quest\"",
+          "output": "tseuq"
+        }
+      ],
+      "hints": [
+        "끝 문자부터 새 문자열에 추가하는 반복문을 사용할 수 있습니다.",
+        "비슷한 예시: new StringBuilder(word).append(\"!\")",
+        "StringBuilder에는 reverse 메서드가 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "영문 문자열",
+            "arguments": [
+              "\"quest\""
+            ],
+            "expected": "\"tseuq\""
+          },
+          {
+            "id": "case-2",
+            "label": "한글 문자열",
+            "arguments": [
+              "\"자바\""
+            ],
+            "expected": "\"바자\""
+          },
+          {
+            "id": "case-3",
+            "label": "빈 문자열",
+            "arguments": [
+              "\"\""
+            ],
+            "expected": "\"\""
+          },
+          {
+            "id": "case-4",
+            "label": "한 문자",
+            "arguments": [
+              "\"A\""
+            ],
+            "expected": "\"A\""
+          },
+          {
+            "id": "case-5",
+            "label": "공백 포함",
+            "arguments": [
+              "\"Java 21\""
+            ],
+            "expected": "\"12 avaJ\""
+          },
+          {
+            "id": "case-6",
+            "label": "두 문자",
+            "arguments": [
+              "\"ab\""
+            ],
+            "expected": "\"ba\""
+          },
+          {
+            "id": "case-7",
+            "label": "한글과 공백",
+            "arguments": [
+              "\"가 나\""
+            ],
+            "expected": "\"나 가\""
+          }
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "mode": "java",
+      "stage": "메서드·문자열",
+      "title": "특정 문자 개수",
+      "question": "문자열 text에 문자 target이 몇 번 등장하는지 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(String text, char target) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(String text, char target) {\n        int count = 0;\n        for (int index = 0; index < text.length(); index++) {\n            if (text.charAt(index) == target) count++;\n        }\n        return count;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "text = \"banana\", target = 'a'",
+          "output": "3"
+        }
+      ],
+      "hints": [
+        "문자열 길이만큼 인덱스를 이동하세요.",
+        "비슷한 예시: if (word.charAt(i) == 'x') count++;",
+        "문자 비교에는 ==를 사용할 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "여러 번 등장",
+            "arguments": [
+              "\"banana\"",
+              "'a'"
+            ],
+            "expected": "3"
+          },
+          {
+            "id": "case-2",
+            "label": "한 번 등장",
+            "arguments": [
+              "\"java\"",
+              "'j'"
+            ],
+            "expected": "1"
+          },
+          {
+            "id": "case-3",
+            "label": "등장하지 않음",
+            "arguments": [
+              "\"code\"",
+              "'x'"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 문자열",
+            "arguments": [
+              "\"\"",
+              "'a'"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-5",
+            "label": "모두 같은 문자",
+            "arguments": [
+              "\"aaaa\"",
+              "'a'"
+            ],
+            "expected": "4"
+          },
+          {
+            "id": "case-6",
+            "label": "대소문자 구분",
+            "arguments": [
+              "\"AaA\"",
+              "'a'"
+            ],
+            "expected": "1"
+          },
+          {
+            "id": "case-7",
+            "label": "공백 문자",
+            "arguments": [
+              "\"a a\"",
+              "' '"
+            ],
+            "expected": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": 15,
+      "mode": "java",
+      "stage": "메서드·문자열",
+      "title": "회문 판별",
+      "question": "대소문자를 그대로 구분할 때 문자열 text가 앞뒤로 같은 회문이면 true를 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static boolean solve(String text) {\n        return false;\n    }\n}",
+      "answer": "public class Solution {\n    public static boolean solve(String text) {\n        int left = 0;\n        int right = text.length() - 1;\n        while (left < right) {\n            if (text.charAt(left++) != text.charAt(right--)) return false;\n        }\n        return true;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "text = \"level\"",
+          "output": "true"
+        }
+      ],
+      "hints": [
+        "문자열의 양끝 문자를 안쪽으로 이동하며 비교하세요.",
+        "비슷한 예시: while (left < right) { left++; right--; }",
+        "빈 문자열과 한 글자 문자열도 회문입니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "홀수 길이 회문",
+            "arguments": [
+              "\"level\""
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-2",
+            "label": "회문이 아님",
+            "arguments": [
+              "\"java\""
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-3",
+            "label": "짝수 길이 회문",
+            "arguments": [
+              "\"abba\""
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 문자열",
+            "arguments": [
+              "\"\""
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-5",
+            "label": "대소문자 구분",
+            "arguments": [
+              "\"Aa\""
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-6",
+            "label": "한 문자",
+            "arguments": [
+              "\"x\""
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-7",
+            "label": "양끝만 같은 문자열",
+            "arguments": [
+              "\"abca\""
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-8",
+            "label": "숫자 짝수 길이 회문",
+            "arguments": [
+              "\"1221\""
+            ],
+            "expected": "true"
+          }
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "mode": "java",
+      "stage": "배열·컬렉션",
+      "title": "배열 원소 합",
+      "question": "정수 배열 numbers의 모든 원소 합을 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int[] numbers) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int[] numbers) {\n        int sum = 0;\n        for (int number : numbers) sum += number;\n        return sum;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [3, 1, 4]",
+          "output": "8"
+        }
+      ],
+      "hints": [
+        "향상된 for문으로 배열의 값을 하나씩 꺼낼 수 있습니다.",
+        "비슷한 예시: for (int value : values) total += value;",
+        "빈 배열의 합은 0입니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "양수 배열",
+            "arguments": [
+              "new int[]{3, 1, 4}"
+            ],
+            "expected": "8"
+          },
+          {
+            "id": "case-2",
+            "label": "음수 포함",
+            "arguments": [
+              "new int[]{-2, 5, -1}"
+            ],
+            "expected": "2"
+          },
+          {
+            "id": "case-3",
+            "label": "빈 배열",
+            "arguments": [
+              "new int[]{}"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-4",
+            "label": "한 원소",
+            "arguments": [
+              "new int[]{9}"
+            ],
+            "expected": "9"
+          },
+          {
+            "id": "case-5",
+            "label": "모두 음수",
+            "arguments": [
+              "new int[]{-5, -7, -3}"
+            ],
+            "expected": "-15"
+          },
+          {
+            "id": "case-6",
+            "label": "서로 상쇄되는 값",
+            "arguments": [
+              "new int[]{100, -100, 50, -50}"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-7",
+            "label": "0만 있는 배열",
+            "arguments": [
+              "new int[]{0, 0, 0}"
+            ],
+            "expected": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "mode": "java",
+      "stage": "배열·컬렉션",
+      "title": "배열 최댓값",
+      "question": "하나 이상의 원소가 있는 정수 배열 numbers에서 최댓값을 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int[] numbers) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int[] numbers) {\n        int max = numbers[0];\n        for (int number : numbers) {\n            if (number > max) max = number;\n        }\n        return max;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [7, 2, 11, 4]",
+          "output": "11"
+        }
+      ],
+      "hints": [
+        "초깃값을 0으로 두면 음수 배열에서 문제가 생깁니다.",
+        "비슷한 예시: int best = values[0];",
+        "현재 최댓값보다 큰 원소를 만날 때만 갱신하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "일반 배열",
+            "arguments": [
+              "new int[]{7, 2, 11, 4}"
+            ],
+            "expected": "11"
+          },
+          {
+            "id": "case-2",
+            "label": "모두 음수",
+            "arguments": [
+              "new int[]{-8, -3, -12}"
+            ],
+            "expected": "-3"
+          },
+          {
+            "id": "case-3",
+            "label": "한 원소",
+            "arguments": [
+              "new int[]{5}"
+            ],
+            "expected": "5"
+          },
+          {
+            "id": "case-4",
+            "label": "중복 최댓값",
+            "arguments": [
+              "new int[]{9, 1, 9}"
+            ],
+            "expected": "9"
+          },
+          {
+            "id": "case-5",
+            "label": "최댓값이 첫 원소",
+            "arguments": [
+              "new int[]{100, 3, 2}"
+            ],
+            "expected": "100"
+          },
+          {
+            "id": "case-6",
+            "label": "최댓값이 마지막 원소",
+            "arguments": [
+              "new int[]{-1, 0, 8}"
+            ],
+            "expected": "8"
+          },
+          {
+            "id": "case-7",
+            "label": "int 최솟값 포함",
+            "arguments": [
+              "new int[]{Integer.MIN_VALUE, -1}"
+            ],
+            "expected": "-1"
+          }
+        ]
+      }
+    },
+    {
+      "id": 18,
+      "mode": "java",
+      "stage": "배열·컬렉션",
+      "title": "양수 개수",
+      "question": "정수 배열 numbers에서 0보다 큰 원소의 개수를 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int[] numbers) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int[] numbers) {\n        int count = 0;\n        for (int number : numbers) {\n            if (number > 0) count++;\n        }\n        return count;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [-1, 0, 4, 7]",
+          "output": "2"
+        }
+      ],
+      "hints": [
+        "0은 양수에 포함되지 않습니다.",
+        "비슷한 예시: if (value < 0) negatives++;",
+        "조건을 만족할 때만 count를 증가시키세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "양수와 비양수 혼합",
+            "arguments": [
+              "new int[]{-1, 0, 4, 7}"
+            ],
+            "expected": "2"
+          },
+          {
+            "id": "case-2",
+            "label": "모두 양수",
+            "arguments": [
+              "new int[]{1, 2, 3}"
+            ],
+            "expected": "3"
+          },
+          {
+            "id": "case-3",
+            "label": "양수 없음",
+            "arguments": [
+              "new int[]{0, -2, -8}"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 배열",
+            "arguments": [
+              "new int[]{}"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-5",
+            "label": "0 한 개",
+            "arguments": [
+              "new int[]{0}"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-6",
+            "label": "같은 양수 반복",
+            "arguments": [
+              "new int[]{2, 2, 2, -2}"
+            ],
+            "expected": "3"
+          },
+          {
+            "id": "case-7",
+            "label": "양수 하나",
+            "arguments": [
+              "new int[]{-5, 1, 0}"
+            ],
+            "expected": "1"
+          }
+        ]
+      }
+    },
+    {
+      "id": 19,
+      "mode": "java",
+      "stage": "배열·컬렉션",
+      "title": "배열에 값이 있는지",
+      "question": "정수 배열 numbers에 target과 같은 원소가 하나라도 있으면 true를 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static boolean solve(int[] numbers, int target) {\n        return false;\n    }\n}",
+      "answer": "public class Solution {\n    public static boolean solve(int[] numbers, int target) {\n        for (int number : numbers) {\n            if (number == target) return true;\n        }\n        return false;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [2, 5, 8], target = 5",
+          "output": "true"
+        }
+      ],
+      "hints": [
+        "일치하는 값을 찾는 즉시 반환할 수 있습니다.",
+        "비슷한 예시: if (item == wanted) return true;",
+        "반복이 끝날 때까지 찾지 못한 경우 false입니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "가운데에 존재",
+            "arguments": [
+              "new int[]{2, 5, 8}",
+              "5"
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-2",
+            "label": "존재하지 않음",
+            "arguments": [
+              "new int[]{2, 5, 8}",
+              "3"
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-3",
+            "label": "첫 원소",
+            "arguments": [
+              "new int[]{-4, 0, 9}",
+              "-4"
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 배열",
+            "arguments": [
+              "new int[]{}",
+              "1"
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-5",
+            "label": "마지막 원소",
+            "arguments": [
+              "new int[]{1, 4, 7}",
+              "7"
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-6",
+            "label": "중복 원소 중 하나",
+            "arguments": [
+              "new int[]{3, 3, 3}",
+              "3"
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-7",
+            "label": "int 최솟값",
+            "arguments": [
+              "new int[]{0, Integer.MIN_VALUE}",
+              "Integer.MIN_VALUE"
+            ],
+            "expected": "true"
+          }
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "mode": "java",
+      "stage": "배열·컬렉션",
+      "title": "중복 제거",
+      "question": "정수 배열 numbers의 중복을 제거하되 처음 등장한 순서를 유지한 int 배열을 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] numbers) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] numbers) {\n        Set<Integer> unique = new LinkedHashSet<>();\n        for (int number : numbers) unique.add(number);\n        return unique.stream().mapToInt(Integer::intValue).toArray();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [3, 1, 3, 2, 1]",
+          "output": "[3, 1, 2]"
+        }
+      ],
+      "hints": [
+        "삽입 순서를 유지하는 Set 구현체를 찾아보세요.",
+        "비슷한 예시: Set<String> names = new LinkedHashSet<>();",
+        "반환형은 Set이 아니라 int[]이므로 마지막 변환이 필요합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "여러 중복",
+            "arguments": [
+              "new int[]{3, 1, 3, 2, 1}"
+            ],
+            "expected": "new int[]{3, 1, 2}"
+          },
+          {
+            "id": "case-2",
+            "label": "중복 없음",
+            "arguments": [
+              "new int[]{4, 5, 6}"
+            ],
+            "expected": "new int[]{4, 5, 6}"
+          },
+          {
+            "id": "case-3",
+            "label": "모두 같은 값",
+            "arguments": [
+              "new int[]{7, 7, 7}"
+            ],
+            "expected": "new int[]{7}"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 배열",
+            "arguments": [
+              "new int[]{}"
+            ],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-5",
+            "label": "음수와 0의 중복",
+            "arguments": [
+              "new int[]{-1, 0, -1, 0, 2}"
+            ],
+            "expected": "new int[]{-1, 0, 2}"
+          },
+          {
+            "id": "case-6",
+            "label": "떨어진 중복",
+            "arguments": [
+              "new int[]{1, 2, 1, 3, 2, 4}"
+            ],
+            "expected": "new int[]{1, 2, 3, 4}"
+          },
+          {
+            "id": "case-7",
+            "label": "int 경계값 중복",
+            "arguments": [
+              "new int[]{Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE}"
+            ],
+            "expected": "new int[]{Integer.MIN_VALUE, Integer.MAX_VALUE}"
+          }
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "mode": "java",
+      "stage": "변수·연산자",
+      "title": "정수 나눗셈의 몫",
+      "question": "0이 아닌 정수 divisor로 dividend를 나눈 Java 정수 나눗셈의 몫을 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int dividend, int divisor) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int dividend, int divisor) {\n        return dividend / divisor;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "dividend = 17, divisor = 5",
+          "output": "3"
+        }
+      ],
+      "hints": [
+        "두 피연산자가 int이면 나눗셈 결과의 소수 부분은 버려집니다.",
+        "비슷한 예시: int boxes = items / boxSize;",
+        "divisor는 항상 0이 아닌 값으로 주어집니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "나머지가 있는 양수 나눗셈",
+            "arguments": [
+              "17",
+              "5"
+            ],
+            "expected": "3"
+          },
+          {
+            "id": "case-2",
+            "label": "음수 피제수",
+            "arguments": [
+              "-7",
+              "2"
+            ],
+            "expected": "-3"
+          },
+          {
+            "id": "case-3",
+            "label": "음수 제수",
+            "arguments": [
+              "7",
+              "-2"
+            ],
+            "expected": "-3"
+          },
+          {
+            "id": "case-4",
+            "label": "음수 두 개",
+            "arguments": [
+              "-7",
+              "-2"
+            ],
+            "expected": "3"
+          },
+          {
+            "id": "case-5",
+            "label": "0을 나눔",
+            "arguments": [
+              "0",
+              "9"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-6",
+            "label": "나누어떨어짐",
+            "arguments": [
+              "20",
+              "4"
+            ],
+            "expected": "5"
+          },
+          {
+            "id": "case-7",
+            "label": "1로 나눔",
+            "arguments": [
+              "-123",
+              "1"
+            ],
+            "expected": "-123"
+          }
+        ]
+      }
+    },
+    {
+      "id": 22,
+      "mode": "java",
+      "stage": "변수·연산자",
+      "title": "24시간 시계",
+      "question": "0~23시의 hour에서 elapsed시간이 지난 뒤의 시각을 0~23 범위의 정수로 반환하세요. hour는 0~23, elapsed는 0~Integer.MAX_VALUE입니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int hour, int elapsed) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int hour, int elapsed) {\n        return (int) (((long) hour + elapsed) % 24);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-2",
+          "input": "hour = 22, elapsed = 5",
+          "output": "3"
+        }
+      ],
+      "constraints": [
+        "0 ≤ hour ≤ 23",
+        "0 ≤ elapsed ≤ Integer.MAX_VALUE"
+      ],
+      "hints": [
+        "하루가 지나면 시각은 24시간 주기로 반복됩니다.",
+        "비슷한 예시: long total = (long) left + right;",
+        "hour와 elapsed를 더하기 전에 long으로 승격한 뒤 24로 나누면 int overflow를 피할 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "날짜를 넘지 않음",
+            "arguments": [
+              "10",
+              "5"
+            ],
+            "expected": "15"
+          },
+          {
+            "id": "case-2",
+            "label": "자정을 넘김",
+            "arguments": [
+              "22",
+              "5"
+            ],
+            "expected": "3"
+          },
+          {
+            "id": "case-3",
+            "label": "변화 없음",
+            "arguments": [
+              "0",
+              "0"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-4",
+            "label": "자정 경계",
+            "arguments": [
+              "23",
+              "1"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-5",
+            "label": "정확히 하루",
+            "arguments": [
+              "5",
+              "24"
+            ],
+            "expected": "5"
+          },
+          {
+            "id": "case-6",
+            "label": "이틀 뒤",
+            "arguments": [
+              "12",
+              "48"
+            ],
+            "expected": "12"
+          },
+          {
+            "id": "case-7",
+            "label": "여러 날 뒤",
+            "arguments": [
+              "7",
+              "100"
+            ],
+            "expected": "11"
+          },
+          {
+            "id": "case-8",
+            "label": "최대 경과 시간",
+            "arguments": [
+              "23",
+              "Integer.MAX_VALUE"
+            ],
+            "expected": "6"
+          }
+        ]
+      }
+    },
+    {
+      "id": 23,
+      "mode": "java",
+      "stage": "변수·연산자",
+      "title": "정수 할인 가격",
+      "question": "0~Integer.MAX_VALUE의 price에 discountPercent만큼 할인한 가격을 정수로 반환하세요. 계산 결과의 소수 부분은 버리고 discountPercent는 0~100입니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int price, int discountPercent) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int price, int discountPercent) {\n        return (int) ((long) price * (100 - discountPercent) / 100);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "price = 10000, discountPercent = 20",
+          "output": "8000"
+        }
+      ],
+      "constraints": [
+        "0 ≤ price ≤ Integer.MAX_VALUE",
+        "0 ≤ discountPercent ≤ 100"
+      ],
+      "hints": [
+        "할인 후에는 원래 가격의 100-discountPercent 퍼센트가 남습니다.",
+        "비슷한 예시: long scaled = (long) total * ratio;",
+        "곱셈 전에 price를 long으로 승격하고 마지막에 나누면 overflow와 너무 이른 버림을 함께 피할 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "20퍼센트 할인",
+            "arguments": [
+              "10000",
+              "20"
+            ],
+            "expected": "8000"
+          },
+          {
+            "id": "case-2",
+            "label": "소수 부분 버림",
+            "arguments": [
+              "9999",
+              "15"
+            ],
+            "expected": "8499"
+          },
+          {
+            "id": "case-3",
+            "label": "가격이 0",
+            "arguments": [
+              "0",
+              "50"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-4",
+            "label": "할인 없음",
+            "arguments": [
+              "5000",
+              "0"
+            ],
+            "expected": "5000"
+          },
+          {
+            "id": "case-5",
+            "label": "전액 할인",
+            "arguments": [
+              "5000",
+              "100"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-6",
+            "label": "작은 가격",
+            "arguments": [
+              "99",
+              "10"
+            ],
+            "expected": "89"
+          },
+          {
+            "id": "case-7",
+            "label": "30퍼센트 할인",
+            "arguments": [
+              "12500",
+              "30"
+            ],
+            "expected": "8750"
+          },
+          {
+            "id": "case-8",
+            "label": "최대 가격 할인 없음",
+            "arguments": [
+              "Integer.MAX_VALUE",
+              "0"
+            ],
+            "expected": "Integer.MAX_VALUE"
+          },
+          {
+            "id": "case-9",
+            "label": "최대 가격 1퍼센트 할인",
+            "arguments": [
+              "Integer.MAX_VALUE",
+              "1"
+            ],
+            "expected": "2126008810"
+          }
+        ]
+      }
+    },
+    {
+      "id": 24,
+      "mode": "java",
+      "stage": "변수·연산자",
+      "title": "초를 시·분·초로",
+      "question": "0 이상의 totalSeconds를 'H시간 M분 S초' 형식의 문자열로 변환하세요. 시간은 24를 넘어도 그대로 표시합니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static String solve(int totalSeconds) {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {\n    public static String solve(int totalSeconds) {\n        int hours = totalSeconds / 3600;\n        int minutes = totalSeconds % 3600 / 60;\n        int seconds = totalSeconds % 60;\n        return hours + \"시간 \" + minutes + \"분 \" + seconds + \"초\";\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "totalSeconds = 3723",
+          "output": "1시간 2분 3초"
+        }
+      ],
+      "hints": [
+        "한 시간은 3600초, 한 분은 60초입니다.",
+        "비슷한 예시: int remainder = total % unit;",
+        "시간을 구한 뒤 남은 초에서 분과 초를 차례대로 분리하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "시분초 모두 있음",
+            "arguments": [
+              "3723"
+            ],
+            "expected": "\"1시간 2분 3초\""
+          },
+          {
+            "id": "case-2",
+            "label": "0초",
+            "arguments": [
+              "0"
+            ],
+            "expected": "\"0시간 0분 0초\""
+          },
+          {
+            "id": "case-3",
+            "label": "1분 미만",
+            "arguments": [
+              "59"
+            ],
+            "expected": "\"0시간 0분 59초\""
+          },
+          {
+            "id": "case-4",
+            "label": "정확히 1분",
+            "arguments": [
+              "60"
+            ],
+            "expected": "\"0시간 1분 0초\""
+          },
+          {
+            "id": "case-5",
+            "label": "정확히 1시간",
+            "arguments": [
+              "3600"
+            ],
+            "expected": "\"1시간 0분 0초\""
+          },
+          {
+            "id": "case-6",
+            "label": "각 단위 1",
+            "arguments": [
+              "3661"
+            ],
+            "expected": "\"1시간 1분 1초\""
+          },
+          {
+            "id": "case-7",
+            "label": "24시간 이상",
+            "arguments": [
+              "359999"
+            ],
+            "expected": "\"99시간 59분 59초\""
+          }
+        ]
+      }
+    },
+    {
+      "id": 25,
+      "mode": "java",
+      "stage": "변수·연산자",
+      "title": "다음 유니코드 문자",
+      "question": "문자 value의 유니코드 값보다 1 큰 값을 갖는 char를 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static char solve(char value) {\n        return value;\n    }\n}",
+      "answer": "public class Solution {\n    public static char solve(char value) {\n        return (char) (value + 1);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "value = 'a'",
+          "output": "b"
+        }
+      ],
+      "hints": [
+        "char는 산술 연산에서 정수형 값으로 변환됩니다.",
+        "비슷한 예시: char next = (char) (current + 2);",
+        "계산 결과를 다시 char로 명시적으로 변환해야 합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "소문자",
+            "arguments": [
+              "'a'"
+            ],
+            "expected": "'b'"
+          },
+          {
+            "id": "case-2",
+            "label": "대문자",
+            "arguments": [
+              "'A'"
+            ],
+            "expected": "'B'"
+          },
+          {
+            "id": "case-3",
+            "label": "숫자 문자",
+            "arguments": [
+              "'0'"
+            ],
+            "expected": "'1'"
+          },
+          {
+            "id": "case-4",
+            "label": "소문자 끝 직전",
+            "arguments": [
+              "'y'"
+            ],
+            "expected": "'z'"
+          },
+          {
+            "id": "case-5",
+            "label": "한글 음절",
+            "arguments": [
+              "'가'"
+            ],
+            "expected": "'각'"
+          },
+          {
+            "id": "case-6",
+            "label": "대문자 시작 직전",
+            "arguments": [
+              "'@'"
+            ],
+            "expected": "'A'"
+          },
+          {
+            "id": "case-7",
+            "label": "숫자 시작 직전",
+            "arguments": [
+              "'/'"
+            ],
+            "expected": "'0'"
+          }
+        ]
+      }
+    },
+    {
+      "id": 26,
+      "mode": "java",
+      "stage": "조건문·반복문",
+      "title": "요일 이름",
+      "question": "1부터 7까지의 day를 받아 1은 '월요일', 2는 '화요일' 순서로 해당 요일 이름을 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static String solve(int day) {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {\n    public static String solve(int day) {\n        return switch (day) {\n            case 1 -> \"월요일\";\n            case 2 -> \"화요일\";\n            case 3 -> \"수요일\";\n            case 4 -> \"목요일\";\n            case 5 -> \"금요일\";\n            case 6 -> \"토요일\";\n            case 7 -> \"일요일\";\n            default -> throw new IllegalArgumentException();\n        };\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-3",
+          "input": "day = 3",
+          "output": "수요일",
+          "trace": [
+            {
+              "label": "입력",
+              "state": "day = 3",
+              "detail": "switch가 day 값을 확인합니다."
+            },
+            {
+              "label": "분기 선택",
+              "state": "case 3 일치",
+              "detail": "값이 같은 case로 바로 이동합니다."
+            },
+            {
+              "label": "반환",
+              "state": "return \"수요일\"",
+              "detail": "선택된 분기의 문자열을 반환합니다."
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "서로 다른 정수 값에 문자열 하나씩 대응시키는 문제입니다.",
+        "비슷한 예시: return switch (code) { case 1 -> \"one\"; default -> \"other\"; };",
+        "day는 항상 1부터 7 사이로 주어집니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "월요일",
+            "arguments": [
+              "1"
+            ],
+            "expected": "\"월요일\""
+          },
+          {
+            "id": "case-2",
+            "label": "화요일",
+            "arguments": [
+              "2"
+            ],
+            "expected": "\"화요일\""
+          },
+          {
+            "id": "case-3",
+            "label": "수요일",
+            "arguments": [
+              "3"
+            ],
+            "expected": "\"수요일\""
+          },
+          {
+            "id": "case-4",
+            "label": "목요일",
+            "arguments": [
+              "4"
+            ],
+            "expected": "\"목요일\""
+          },
+          {
+            "id": "case-5",
+            "label": "금요일",
+            "arguments": [
+              "5"
+            ],
+            "expected": "\"금요일\""
+          },
+          {
+            "id": "case-6",
+            "label": "토요일",
+            "arguments": [
+              "6"
+            ],
+            "expected": "\"토요일\""
+          },
+          {
+            "id": "case-7",
+            "label": "일요일",
+            "arguments": [
+              "7"
+            ],
+            "expected": "\"일요일\""
+          }
+        ]
+      }
+    },
+    {
+      "id": 27,
+      "mode": "java",
+      "stage": "조건문·반복문",
+      "title": "팩토리얼",
+      "question": "0 이상 20 이하의 n에 대해 n!을 long으로 반환하세요. 0!은 1입니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static long solve(int n) {\n        return 0L;\n    }\n}",
+      "answer": "public class Solution {\n    public static long solve(int n) {\n        long result = 1L;\n        for (int number = 2; number <= n; number++) {\n            result *= number;\n        }\n        return result;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "n = 5",
+          "output": "120",
+          "trace": [
+            {
+              "label": "초기값",
+              "state": "result = 1",
+              "detail": "곱셈 누적값은 1에서 시작합니다."
+            },
+            {
+              "label": "2회",
+              "state": "1 × 2 → 2",
+              "detail": "현재 number를 곱합니다."
+            },
+            {
+              "label": "3회",
+              "state": "2 × 3 → 6",
+              "detail": "누적값을 다음 반복에 사용합니다."
+            },
+            {
+              "label": "4~5회",
+              "state": "6 × 4 → 24 × 5 → 120",
+              "detail": "n까지 곱셈을 이어갑니다."
+            },
+            {
+              "label": "반환",
+              "state": "return 120",
+              "detail": "최종 누적값을 반환합니다."
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "곱셈 결과를 저장할 long 변수는 1부터 시작해야 합니다.",
+        "비슷한 예시: for (int i = 2; i <= limit; i++) product *= i;",
+        "n이 0이나 1이면 반복문이 실행되지 않아도 1을 반환해야 합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "5 팩토리얼",
+            "arguments": [
+              "5"
+            ],
+            "expected": "120L"
+          },
+          {
+            "id": "case-2",
+            "label": "0 팩토리얼",
+            "arguments": [
+              "0"
+            ],
+            "expected": "1L"
+          },
+          {
+            "id": "case-3",
+            "label": "1 팩토리얼",
+            "arguments": [
+              "1"
+            ],
+            "expected": "1L"
+          },
+          {
+            "id": "case-4",
+            "label": "2 팩토리얼",
+            "arguments": [
+              "2"
+            ],
+            "expected": "2L"
+          },
+          {
+            "id": "case-5",
+            "label": "10 팩토리얼",
+            "arguments": [
+              "10"
+            ],
+            "expected": "3628800L"
+          },
+          {
+            "id": "case-6",
+            "label": "15 팩토리얼",
+            "arguments": [
+              "15"
+            ],
+            "expected": "1307674368000L"
+          },
+          {
+            "id": "case-7",
+            "label": "long 범위의 최댓값 사례",
+            "arguments": [
+              "20"
+            ],
+            "expected": "2432902008176640000L"
+          }
+        ]
+      }
+    },
+    {
+      "id": 28,
+      "mode": "java",
+      "stage": "조건문·반복문",
+      "title": "정수 거듭제곱",
+      "question": "정수 base를 0 이상의 exponent번 곱한 값을 long으로 반환하세요. 0제곱은 1입니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static long solve(int base, int exponent) {\n        return 0L;\n    }\n}",
+      "answer": "public class Solution {\n    public static long solve(int base, int exponent) {\n        long result = 1L;\n        for (int count = 0; count < exponent; count++) {\n            result *= base;\n        }\n        return result;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "base = 2, exponent = 10",
+          "output": "1024",
+          "trace": [
+            {
+              "label": "초기값",
+              "state": "result = 1, count = 0",
+              "detail": "아직 base를 곱하지 않은 상태입니다."
+            },
+            {
+              "label": "1~3회",
+              "state": "1 → 2 → 4 → 8",
+              "detail": "반복마다 result에 base를 곱합니다."
+            },
+            {
+              "label": "4~7회",
+              "state": "16 → 32 → 64 → 128",
+              "detail": "count가 증가하며 반복합니다."
+            },
+            {
+              "label": "8~10회",
+              "state": "256 → 512 → 1024",
+              "detail": "총 exponent번 곱합니다."
+            },
+            {
+              "label": "반환",
+              "state": "return 1024",
+              "detail": "최종 거듭제곱 값을 반환합니다."
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "결과를 1로 시작하고 exponent번 같은 수를 곱해 보세요.",
+        "비슷한 예시: for (int i = 0; i < count; i++) result *= value;",
+        "exponent가 0이면 반복하지 않고 1을 반환합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "2의 10제곱",
+            "arguments": [
+              "2",
+              "10"
+            ],
+            "expected": "1024L"
+          },
+          {
+            "id": "case-2",
+            "label": "0제곱",
+            "arguments": [
+              "5",
+              "0"
+            ],
+            "expected": "1L"
+          },
+          {
+            "id": "case-3",
+            "label": "음수의 홀수 제곱",
+            "arguments": [
+              "-2",
+              "3"
+            ],
+            "expected": "-8L"
+          },
+          {
+            "id": "case-4",
+            "label": "음수의 짝수 제곱",
+            "arguments": [
+              "-2",
+              "4"
+            ],
+            "expected": "16L"
+          },
+          {
+            "id": "case-5",
+            "label": "0의 양수 제곱",
+            "arguments": [
+              "0",
+              "5"
+            ],
+            "expected": "0L"
+          },
+          {
+            "id": "case-6",
+            "label": "10의 9제곱",
+            "arguments": [
+              "10",
+              "9"
+            ],
+            "expected": "1000000000L"
+          },
+          {
+            "id": "case-7",
+            "label": "1의 거듭제곱",
+            "arguments": [
+              "1",
+              "10"
+            ],
+            "expected": "1L"
+          }
+        ]
+      }
+    },
+    {
+      "id": 29,
+      "mode": "java",
+      "stage": "조건문·반복문",
+      "title": "n 이하 홀수의 합",
+      "question": "0 이상의 n이 주어질 때 1부터 n까지의 홀수만 더한 값을 반복문으로 계산해 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int n) {\n        int sum = 0;\n        return sum;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int n) {\n        int sum = 0;\n        for (int number = 1; number <= n; number += 2) {\n            sum += number;\n        }\n        return sum;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "n = 7",
+          "output": "16",
+          "trace": [
+            {
+              "label": "초기값",
+              "state": "sum = 0, number = 1",
+              "detail": "첫 홀수부터 시작합니다."
+            },
+            {
+              "label": "1회",
+              "state": "sum = 0 + 1 → 1",
+              "detail": "현재 홀수를 더합니다."
+            },
+            {
+              "label": "2회",
+              "state": "sum = 1 + 3 → 4",
+              "detail": "number를 2씩 증가시킵니다."
+            },
+            {
+              "label": "3~4회",
+              "state": "4 + 5 → 9, 9 + 7 → 16",
+              "detail": "n 이하인 동안 반복합니다."
+            },
+            {
+              "label": "반환",
+              "state": "return 16",
+              "detail": "홀수의 누적합을 반환합니다."
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "첫 홀수인 1부터 시작해 2씩 증가할 수 있습니다.",
+        "비슷한 예시: for (int value = 2; value <= limit; value += 2) ...",
+        "n이 0이면 더할 홀수가 없습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "7 이하 홀수",
+            "arguments": [
+              "7"
+            ],
+            "expected": "16"
+          },
+          {
+            "id": "case-2",
+            "label": "0",
+            "arguments": [
+              "0"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-3",
+            "label": "1",
+            "arguments": [
+              "1"
+            ],
+            "expected": "1"
+          },
+          {
+            "id": "case-4",
+            "label": "짝수 상한",
+            "arguments": [
+              "2"
+            ],
+            "expected": "1"
+          },
+          {
+            "id": "case-5",
+            "label": "5 이하 홀수",
+            "arguments": [
+              "5"
+            ],
+            "expected": "9"
+          },
+          {
+            "id": "case-6",
+            "label": "10 이하 홀수",
+            "arguments": [
+              "10"
+            ],
+            "expected": "25"
+          },
+          {
+            "id": "case-7",
+            "label": "100 이하 홀수",
+            "arguments": [
+              "100"
+            ],
+            "expected": "2500"
+          }
+        ]
+      }
+    },
+    {
+      "id": 30,
+      "mode": "java",
+      "stage": "조건문·반복문",
+      "title": "구구단 한 단",
+      "question": "1~9 사이의 dan에 대해 dan×1부터 dan×9까지의 결과를 순서대로 담은 int 배열을 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int[] solve(int dan) {\n        return new int[0];\n    }\n}",
+      "answer": "public class Solution {\n    public static int[] solve(int dan) {\n        int[] table = new int[9];\n        for (int index = 0; index < table.length; index++) {\n            table[index] = dan * (index + 1);\n        }\n        return table;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "dan = 3",
+          "output": "[3, 6, 9, 12, 15, 18, 21, 24, 27]",
+          "trace": [
+            {
+              "label": "배열 준비",
+              "state": "table = int[9]",
+              "detail": "1배부터 9배까지 저장할 공간입니다."
+            },
+            {
+              "label": "index 0",
+              "state": "table[0] = 3 × 1 → 3",
+              "detail": "배열 인덱스보다 곱하는 수가 1 큽니다."
+            },
+            {
+              "label": "index 1",
+              "state": "table[1] = 3 × 2 → 6",
+              "detail": "다음 위치에 다음 곱을 저장합니다."
+            },
+            {
+              "label": "index 2~8",
+              "state": "9 → 12 → 15 → 18 → 21 → 24 → 27",
+              "detail": "배열 끝까지 같은 규칙을 반복합니다."
+            },
+            {
+              "label": "반환",
+              "state": "return table",
+              "detail": "완성된 배열을 반환합니다."
+            }
+          ]
+        }
+      ],
+      "hints": [
+        "결과 배열의 길이는 항상 9입니다.",
+        "비슷한 예시: values[index] = number * (index + 1);",
+        "배열 인덱스는 0부터지만 곱하는 수는 1부터 시작합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "3단",
+            "arguments": [
+              "3"
+            ],
+            "expected": "new int[]{3, 6, 9, 12, 15, 18, 21, 24, 27}"
+          },
+          {
+            "id": "case-2",
+            "label": "1단",
+            "arguments": [
+              "1"
+            ],
+            "expected": "new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9}"
+          },
+          {
+            "id": "case-3",
+            "label": "2단",
+            "arguments": [
+              "2"
+            ],
+            "expected": "new int[]{2, 4, 6, 8, 10, 12, 14, 16, 18}"
+          },
+          {
+            "id": "case-4",
+            "label": "5단",
+            "arguments": [
+              "5"
+            ],
+            "expected": "new int[]{5, 10, 15, 20, 25, 30, 35, 40, 45}"
+          },
+          {
+            "id": "case-5",
+            "label": "7단",
+            "arguments": [
+              "7"
+            ],
+            "expected": "new int[]{7, 14, 21, 28, 35, 42, 49, 56, 63}"
+          },
+          {
+            "id": "case-6",
+            "label": "8단",
+            "arguments": [
+              "8"
+            ],
+            "expected": "new int[]{8, 16, 24, 32, 40, 48, 56, 64, 72}"
+          },
+          {
+            "id": "case-7",
+            "label": "9단",
+            "arguments": [
+              "9"
+            ],
+            "expected": "new int[]{9, 18, 27, 36, 45, 54, 63, 72, 81}"
+          }
+        ]
+      }
+    },
+    {
+      "id": 31,
+      "mode": "java",
+      "stage": "메서드·문자열",
+      "title": "문자열 정규화",
+      "question": "문자열 text의 앞뒤 공백을 제거한 뒤 영문자를 모두 대문자로 바꿔 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static String solve(String text) {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {\n    public static String solve(String text) {\n        return text.strip().toUpperCase();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "text = \"  java  \"",
+          "output": "JAVA"
+        }
+      ],
+      "hints": [
+        "String에는 앞뒤 공백을 제거하는 strip 메서드가 있습니다.",
+        "비슷한 예시: String cleaned = value.strip();",
+        "대문자 변환은 공백 제거 결과에 이어서 호출할 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "앞뒤 공백",
+            "arguments": [
+              "\"  java  \""
+            ],
+            "expected": "\"JAVA\""
+          },
+          {
+            "id": "case-2",
+            "label": "중간 공백 유지",
+            "arguments": [
+              "\"Code Quest\""
+            ],
+            "expected": "\"CODE QUEST\""
+          },
+          {
+            "id": "case-3",
+            "label": "빈 문자열",
+            "arguments": [
+              "\"\""
+            ],
+            "expected": "\"\""
+          },
+          {
+            "id": "case-4",
+            "label": "공백만 있음",
+            "arguments": [
+              "\"   \""
+            ],
+            "expected": "\"\""
+          },
+          {
+            "id": "case-5",
+            "label": "숫자 포함",
+            "arguments": [
+              "\" java21 \""
+            ],
+            "expected": "\"JAVA21\""
+          },
+          {
+            "id": "case-6",
+            "label": "한글 유지",
+            "arguments": [
+              "\"  자바  \""
+            ],
+            "expected": "\"자바\""
+          },
+          {
+            "id": "case-7",
+            "label": "이미 대문자",
+            "arguments": [
+              "\"  API \""
+            ],
+            "expected": "\"API\""
+          }
+        ]
+      }
+    },
+    {
+      "id": 32,
+      "mode": "java",
+      "stage": "메서드·문자열",
+      "title": "문자열 구간 추출",
+      "question": "문자열 text에서 start 이상 end 미만 인덱스 구간의 문자열을 반환하세요. 0 ≤ start ≤ end ≤ text.length()입니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static String solve(String text, int start, int end) {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {\n    public static String solve(String text, int start, int end) {\n        return text.substring(start, end);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "text = \"hello\", start = 1, end = 4",
+          "output": "ell"
+        }
+      ],
+      "hints": [
+        "String의 substring은 시작 인덱스를 포함하고 끝 인덱스는 포함하지 않습니다.",
+        "비슷한 예시: word.substring(2, 5)",
+        "start와 end가 같으면 빈 문자열입니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "가운데 구간",
+            "arguments": [
+              "\"hello\"",
+              "1",
+              "4"
+            ],
+            "expected": "\"ell\""
+          },
+          {
+            "id": "case-2",
+            "label": "전체 문자열",
+            "arguments": [
+              "\"hello\"",
+              "0",
+              "5"
+            ],
+            "expected": "\"hello\""
+          },
+          {
+            "id": "case-3",
+            "label": "빈 구간",
+            "arguments": [
+              "\"hello\"",
+              "2",
+              "2"
+            ],
+            "expected": "\"\""
+          },
+          {
+            "id": "case-4",
+            "label": "한글 구간",
+            "arguments": [
+              "\"자바문법\"",
+              "2",
+              "4"
+            ],
+            "expected": "\"문법\""
+          },
+          {
+            "id": "case-5",
+            "label": "공백 뒤 단어",
+            "arguments": [
+              "\"Code Quest\"",
+              "5",
+              "10"
+            ],
+            "expected": "\"Quest\""
+          },
+          {
+            "id": "case-6",
+            "label": "첫 문자",
+            "arguments": [
+              "\"abc\"",
+              "0",
+              "1"
+            ],
+            "expected": "\"a\""
+          },
+          {
+            "id": "case-7",
+            "label": "마지막 문자",
+            "arguments": [
+              "\"abc\"",
+              "2",
+              "3"
+            ],
+            "expected": "\"c\""
+          }
+        ]
+      }
+    },
+    {
+      "id": 33,
+      "mode": "java",
+      "stage": "메서드·문자열",
+      "title": "파일 확장자",
+      "question": "파일명 filename의 마지막 점(.) 뒤 문자열을 반환하세요. 점이 없거나 점이 마지막 문자이면 빈 문자열을 반환합니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static String solve(String filename) {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {\n    public static String solve(String filename) {\n        int dot = filename.lastIndexOf('.');\n        if (dot < 0 || dot == filename.length() - 1) return \"\";\n        return filename.substring(dot + 1);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-2",
+          "input": "filename = \"archive.tar.gz\"",
+          "output": "gz"
+        }
+      ],
+      "hints": [
+        "여러 점 중 마지막 점의 위치를 찾아야 합니다.",
+        "비슷한 예시: int index = text.lastIndexOf(':');",
+        "찾은 위치가 -1인지 또는 문자열 끝인지 먼저 확인하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "일반 확장자",
+            "arguments": [
+              "\"report.pdf\""
+            ],
+            "expected": "\"pdf\""
+          },
+          {
+            "id": "case-2",
+            "label": "점이 여러 개",
+            "arguments": [
+              "\"archive.tar.gz\""
+            ],
+            "expected": "\"gz\""
+          },
+          {
+            "id": "case-3",
+            "label": "점이 없음",
+            "arguments": [
+              "\"README\""
+            ],
+            "expected": "\"\""
+          },
+          {
+            "id": "case-4",
+            "label": "점으로 끝남",
+            "arguments": [
+              "\"photo.\""
+            ],
+            "expected": "\"\""
+          },
+          {
+            "id": "case-5",
+            "label": "점으로 시작",
+            "arguments": [
+              "\".env\""
+            ],
+            "expected": "\"env\""
+          },
+          {
+            "id": "case-6",
+            "label": "한 글자 확장자",
+            "arguments": [
+              "\"a.b\""
+            ],
+            "expected": "\"b\""
+          },
+          {
+            "id": "case-7",
+            "label": "긴 파일명",
+            "arguments": [
+              "\"name.with.many.parts.txt\""
+            ],
+            "expected": "\"txt\""
+          }
+        ]
+      }
+    },
+    {
+      "id": 34,
+      "mode": "java",
+      "stage": "메서드·문자열",
+      "title": "문자열 반복",
+      "question": "문자열 text를 count번 이어 붙인 문자열을 반환하세요. count는 0 이상입니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static String solve(String text, int count) {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {\n    public static String solve(String text, int count) {\n        return text.repeat(count);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "text = \"ab\", count = 3",
+          "output": "ababab"
+        }
+      ],
+      "hints": [
+        "Java의 String에는 지정한 횟수만큼 반복하는 repeat 메서드가 있습니다.",
+        "비슷한 예시: String border = \"-\".repeat(width);",
+        "count가 0이면 빈 문자열이 됩니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "세 번 반복",
+            "arguments": [
+              "\"ab\"",
+              "3"
+            ],
+            "expected": "\"ababab\""
+          },
+          {
+            "id": "case-2",
+            "label": "한 번 반복",
+            "arguments": [
+              "\"x\"",
+              "1"
+            ],
+            "expected": "\"x\""
+          },
+          {
+            "id": "case-3",
+            "label": "0번 반복",
+            "arguments": [
+              "\"java\"",
+              "0"
+            ],
+            "expected": "\"\""
+          },
+          {
+            "id": "case-4",
+            "label": "빈 문자열 반복",
+            "arguments": [
+              "\"\"",
+              "5"
+            ],
+            "expected": "\"\""
+          },
+          {
+            "id": "case-5",
+            "label": "한글 반복",
+            "arguments": [
+              "\"가\"",
+              "3"
+            ],
+            "expected": "\"가가가\""
+          },
+          {
+            "id": "case-6",
+            "label": "공백 반복",
+            "arguments": [
+              "\"  \"",
+              "2"
+            ],
+            "expected": "\"    \""
+          },
+          {
+            "id": "case-7",
+            "label": "두 글자 네 번",
+            "arguments": [
+              "\"01\"",
+              "4"
+            ],
+            "expected": "\"01010101\""
+          }
+        ]
+      }
+    },
+    {
+      "id": 35,
+      "mode": "java",
+      "stage": "메서드·문자열",
+      "title": "모든 문자열 치환",
+      "question": "문자열 text에서 비어 있지 않은 target이 등장하는 모든 부분을 replacement로 바꿔 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static String solve(String text, String target, String replacement) {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {\n    public static String solve(String text, String target, String replacement) {\n        return text.replace(target, replacement);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "text = \"banana\", target = \"a\", replacement = \"o\"",
+          "output": "bonono"
+        }
+      ],
+      "hints": [
+        "정규식이 아니라 문자열 그대로 모든 위치를 바꾸는 메서드를 사용하세요.",
+        "비슷한 예시: sentence.replace(\"old\", \"new\")",
+        "replacement가 빈 문자열이면 target이 제거됩니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "한 글자 치환",
+            "arguments": [
+              "\"banana\"",
+              "\"a\"",
+              "\"o\""
+            ],
+            "expected": "\"bonono\""
+          },
+          {
+            "id": "case-2",
+            "label": "대상이 없음",
+            "arguments": [
+              "\"hello\"",
+              "\"x\"",
+              "\"y\""
+            ],
+            "expected": "\"hello\""
+          },
+          {
+            "id": "case-3",
+            "label": "두 글자씩 치환",
+            "arguments": [
+              "\"aaaa\"",
+              "\"aa\"",
+              "\"b\""
+            ],
+            "expected": "\"bb\""
+          },
+          {
+            "id": "case-4",
+            "label": "문자열 제거",
+            "arguments": [
+              "\"a-b-c\"",
+              "\"-\"",
+              "\"\""
+            ],
+            "expected": "\"abc\""
+          },
+          {
+            "id": "case-5",
+            "label": "점 문자를 그대로 치환",
+            "arguments": [
+              "\"a.b.c\"",
+              "\".\"",
+              "\"/\""
+            ],
+            "expected": "\"a/b/c\""
+          },
+          {
+            "id": "case-6",
+            "label": "공백 치환",
+            "arguments": [
+              "\"a b a\"",
+              "\" \"",
+              "\"_\""
+            ],
+            "expected": "\"a_b_a\""
+          },
+          {
+            "id": "case-7",
+            "label": "단어 치환",
+            "arguments": [
+              "\"hello world\"",
+              "\"world\"",
+              "\"java\""
+            ],
+            "expected": "\"hello java\""
+          }
+        ]
+      }
+    },
+    {
+      "id": 36,
+      "mode": "java",
+      "stage": "배열·컬렉션",
+      "title": "배열 원소 두 배",
+      "question": "정수 배열 numbers의 각 원소를 두 배로 만든 새 int 배열을 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int[] solve(int[] numbers) {\n        return new int[0];\n    }\n}",
+      "answer": "public class Solution {\n    public static int[] solve(int[] numbers) {\n        int[] doubled = new int[numbers.length];\n        for (int index = 0; index < numbers.length; index++) {\n            doubled[index] = numbers[index] * 2;\n        }\n        return doubled;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [1, 2, 3]",
+          "output": "[2, 4, 6]"
+        }
+      ],
+      "hints": [
+        "입력과 같은 길이의 새 배열이 필요합니다.",
+        "비슷한 예시: result[index] = source[index] + 1;",
+        "인덱스를 사용하면 같은 위치의 입력값과 결과값을 연결할 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "양수 배열",
+            "arguments": [
+              "new int[]{1, 2, 3}"
+            ],
+            "expected": "new int[]{2, 4, 6}"
+          },
+          {
+            "id": "case-2",
+            "label": "음수 배열",
+            "arguments": [
+              "new int[]{-1, -3}"
+            ],
+            "expected": "new int[]{-2, -6}"
+          },
+          {
+            "id": "case-3",
+            "label": "빈 배열",
+            "arguments": [
+              "new int[]{}"
+            ],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-4",
+            "label": "0 포함",
+            "arguments": [
+              "new int[]{0, 5}"
+            ],
+            "expected": "new int[]{0, 10}"
+          },
+          {
+            "id": "case-5",
+            "label": "한 원소",
+            "arguments": [
+              "new int[]{7}"
+            ],
+            "expected": "new int[]{14}"
+          },
+          {
+            "id": "case-6",
+            "label": "양수와 음수",
+            "arguments": [
+              "new int[]{-4, 2, 0}"
+            ],
+            "expected": "new int[]{-8, 4, 0}"
+          },
+          {
+            "id": "case-7",
+            "label": "큰 절댓값",
+            "arguments": [
+              "new int[]{-1000, 1000}"
+            ],
+            "expected": "new int[]{-2000, 2000}"
+          }
+        ]
+      }
+    },
+    {
+      "id": 37,
+      "mode": "java",
+      "stage": "배열·컬렉션",
+      "title": "오름차순 복사",
+      "question": "정수 배열 numbers를 변경하지 않고 오름차순으로 정렬한 새 int 배열을 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] numbers) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] numbers) {\n        int[] sorted = numbers.clone();\n        Arrays.sort(sorted);\n        return sorted;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [3, 1, 2]",
+          "output": "[1, 2, 3]"
+        }
+      ],
+      "hints": [
+        "clone으로 원본과 별개의 배열을 만들 수 있습니다.",
+        "비슷한 예시: int[] copy = values.clone();",
+        "Arrays 클래스의 정렬 메서드는 전달받은 배열 자체를 변경합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "일반 배열",
+            "arguments": [
+              "new int[]{3, 1, 2}"
+            ],
+            "expected": "new int[]{1, 2, 3}"
+          },
+          {
+            "id": "case-2",
+            "label": "이미 정렬됨",
+            "arguments": [
+              "new int[]{1, 2, 3}"
+            ],
+            "expected": "new int[]{1, 2, 3}"
+          },
+          {
+            "id": "case-3",
+            "label": "역순",
+            "arguments": [
+              "new int[]{5, 4, 3, 2}"
+            ],
+            "expected": "new int[]{2, 3, 4, 5}"
+          },
+          {
+            "id": "case-4",
+            "label": "중복 원소",
+            "arguments": [
+              "new int[]{2, 1, 2, 1}"
+            ],
+            "expected": "new int[]{1, 1, 2, 2}"
+          },
+          {
+            "id": "case-5",
+            "label": "음수와 0",
+            "arguments": [
+              "new int[]{0, -3, 2, -1}"
+            ],
+            "expected": "new int[]{-3, -1, 0, 2}"
+          },
+          {
+            "id": "case-6",
+            "label": "빈 배열",
+            "arguments": [
+              "new int[]{}"
+            ],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-7",
+            "label": "한 원소",
+            "arguments": [
+              "new int[]{9}"
+            ],
+            "expected": "new int[]{9}"
+          },
+          {
+            "id": "case-8",
+            "label": "원본 보존과 새 배열",
+            "contract": "preserve-source-new-result",
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int[] source = {3, 1, 2}; int[] original = source.clone(); int[] result = Solution.solve(source); return result != source && java.util.Arrays.equals(source, original) && java.util.Arrays.equals(result, new int[]{1, 2, 3}); }).get()",
+            "expected": "true"
+          },
+          {
+            "id": "case-9",
+            "label": "빈 입력도 새 배열",
+            "contract": "empty-new-result",
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int[] source = {}; return Solution.solve(source) != source; }).get()",
+            "expected": "true"
+          }
+        ]
+      }
+    },
+    {
+      "id": 38,
+      "mode": "java",
+      "stage": "배열·컬렉션",
+      "title": "서로 다른 값 개수",
+      "question": "정수 배열 numbers에 들어 있는 서로 다른 값의 개수를 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int solve(int[] numbers) {\n        return 0;\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int solve(int[] numbers) {\n        Set<Integer> unique = new HashSet<>();\n        for (int number : numbers) unique.add(number);\n        return unique.size();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [1, 2, 1, 3]",
+          "output": "3"
+        }
+      ],
+      "hints": [
+        "Set은 같은 값을 여러 번 추가해도 하나만 보관합니다.",
+        "비슷한 예시: Set<String> uniqueNames = new HashSet<>();",
+        "모든 값을 추가한 뒤 Set의 크기를 확인하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "중복 포함",
+            "arguments": [
+              "new int[]{1, 2, 1, 3}"
+            ],
+            "expected": "3"
+          },
+          {
+            "id": "case-2",
+            "label": "빈 배열",
+            "arguments": [
+              "new int[]{}"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-3",
+            "label": "모두 같은 값",
+            "arguments": [
+              "new int[]{7, 7, 7}"
+            ],
+            "expected": "1"
+          },
+          {
+            "id": "case-4",
+            "label": "음수와 양수",
+            "arguments": [
+              "new int[]{-1, 0, 1, -1}"
+            ],
+            "expected": "3"
+          },
+          {
+            "id": "case-5",
+            "label": "모두 다름",
+            "arguments": [
+              "new int[]{4, 5, 6, 7}"
+            ],
+            "expected": "4"
+          },
+          {
+            "id": "case-6",
+            "label": "0 반복",
+            "arguments": [
+              "new int[]{0, 0, 0, 1}"
+            ],
+            "expected": "2"
+          },
+          {
+            "id": "case-7",
+            "label": "int 경계값",
+            "arguments": [
+              "new int[]{Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE}"
+            ],
+            "expected": "2"
+          }
+        ]
+      }
+    },
+    {
+      "id": 39,
+      "mode": "java",
+      "stage": "배열·컬렉션",
+      "title": "짝수만 추출",
+      "question": "정수 배열 numbers에서 짝수만 처음 등장한 순서대로 담은 새 int 배열을 반환하세요. 0도 짝수입니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] numbers) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] numbers) {\n        List<Integer> evens = new ArrayList<>();\n        for (int number : numbers) {\n            if (number % 2 == 0) evens.add(number);\n        }\n        return evens.stream().mapToInt(Integer::intValue).toArray();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [1, 2, 4, 5]",
+          "output": "[2, 4]"
+        }
+      ],
+      "hints": [
+        "결과 길이를 미리 알기 어렵다면 List에 값을 모을 수 있습니다.",
+        "비슷한 예시: List<Integer> selected = new ArrayList<>();",
+        "마지막에는 List<Integer>를 int[]로 변환해야 합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "홀짝 혼합",
+            "arguments": [
+              "new int[]{1, 2, 4, 5}"
+            ],
+            "expected": "new int[]{2, 4}"
+          },
+          {
+            "id": "case-2",
+            "label": "홀수만 있음",
+            "arguments": [
+              "new int[]{1, 3, 5}"
+            ],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-3",
+            "label": "짝수만 있음",
+            "arguments": [
+              "new int[]{2, 4, 6}"
+            ],
+            "expected": "new int[]{2, 4, 6}"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 배열",
+            "arguments": [
+              "new int[]{}"
+            ],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-5",
+            "label": "0 포함",
+            "arguments": [
+              "new int[]{0, 1, 2}"
+            ],
+            "expected": "new int[]{0, 2}"
+          },
+          {
+            "id": "case-6",
+            "label": "음의 짝수",
+            "arguments": [
+              "new int[]{-4, -3, -2}"
+            ],
+            "expected": "new int[]{-4, -2}"
+          },
+          {
+            "id": "case-7",
+            "label": "중복 순서 유지",
+            "arguments": [
+              "new int[]{2, 1, 2, 4}"
+            ],
+            "expected": "new int[]{2, 2, 4}"
+          }
+        ]
+      }
+    },
+    {
+      "id": 40,
+      "mode": "java",
+      "stage": "배열·컬렉션",
+      "title": "두 배열 이어 붙이기",
+      "question": "정수 배열 first 뒤에 second의 모든 원소를 이어 붙인 새 int 배열을 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int[] solve(int[] first, int[] second) {\n        return new int[0];\n    }\n}",
+      "answer": "public class Solution {\n    public static int[] solve(int[] first, int[] second) {\n        int[] joined = new int[first.length + second.length];\n        System.arraycopy(first, 0, joined, 0, first.length);\n        System.arraycopy(second, 0, joined, first.length, second.length);\n        return joined;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "first = [1, 2], second = [3, 4]",
+          "output": "[1, 2, 3, 4]"
+        }
+      ],
+      "hints": [
+        "결과 배열의 길이는 두 입력 배열 길이의 합입니다.",
+        "비슷한 예시: System.arraycopy(source, 0, target, offset, source.length);",
+        "second는 결과 배열에서 first.length 위치부터 복사해야 합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "일반 배열 두 개",
+            "arguments": [
+              "new int[]{1, 2}",
+              "new int[]{3, 4}"
+            ],
+            "expected": "new int[]{1, 2, 3, 4}"
+          },
+          {
+            "id": "case-2",
+            "label": "첫 배열이 비어 있음",
+            "arguments": [
+              "new int[]{}",
+              "new int[]{1, 2}"
+            ],
+            "expected": "new int[]{1, 2}"
+          },
+          {
+            "id": "case-3",
+            "label": "둘째 배열이 비어 있음",
+            "arguments": [
+              "new int[]{1, 2}",
+              "new int[]{}"
+            ],
+            "expected": "new int[]{1, 2}"
+          },
+          {
+            "id": "case-4",
+            "label": "두 배열 모두 비어 있음",
+            "arguments": [
+              "new int[]{}",
+              "new int[]{}"
+            ],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-5",
+            "label": "중복 원소 유지",
+            "arguments": [
+              "new int[]{1, 1}",
+              "new int[]{1}"
+            ],
+            "expected": "new int[]{1, 1, 1}"
+          },
+          {
+            "id": "case-6",
+            "label": "음수와 0",
+            "arguments": [
+              "new int[]{-2, 0}",
+              "new int[]{3, -1}"
+            ],
+            "expected": "new int[]{-2, 0, 3, -1}"
+          },
+          {
+            "id": "case-7",
+            "label": "int 경계값",
+            "arguments": [
+              "new int[]{Integer.MIN_VALUE}",
+              "new int[]{Integer.MAX_VALUE}"
+            ],
+            "expected": "new int[]{Integer.MIN_VALUE, Integer.MAX_VALUE}"
+          }
+        ]
+      }
+    },
+    {
+      "id": 41,
+      "mode": "java",
+      "stage": "변수·연산자",
+      "title": "정수 기준값에 소수 보정 더하기",
+      "question": "정수 base를 double 변수에 저장한 뒤 adjustment를 더해 반환하세요. int에서 double로의 자동 확대 형변환을 사용하고 명시적 형변환은 하지 않습니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static double solve(int base, double adjustment) {\n        return 0.0;\n    }\n}",
+      "answer": "public class Solution {\n    public static double solve(int base, double adjustment) {\n        double adjusted = base;\n        return adjusted + adjustment;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "base = 10, adjustment = 0.5",
+          "output": "10.5"
+        }
+      ],
+      "constraints": [
+        "base는 int 범위의 정수입니다.",
+        "adjustment는 -1,000.0 이상 1,000.0 이하이며 0.25 단위로 주어집니다.",
+        "int 값은 정보 손실 없이 double로 자동 확대 변환됩니다."
+      ],
+      "hints": [
+        "더 넓은 범위를 표현하는 실수형 변수에는 정수를 바로 저장할 수 있습니다.",
+        "비슷한 예시: double measured = count;",
+        "자동 형변환된 값과 adjustment를 실수 덧셈으로 계산하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "양수와 0.5 보정",
+            "arguments": [
+              "10",
+              "0.5"
+            ],
+            "expected": "10.5"
+          },
+          {
+            "id": "case-2",
+            "label": "음수 기준값",
+            "arguments": [
+              "-4",
+              "0.25"
+            ],
+            "expected": "-3.75"
+          },
+          {
+            "id": "case-3",
+            "label": "0과 음수 보정",
+            "arguments": [
+              "0",
+              "-0.5"
+            ],
+            "expected": "-0.5"
+          },
+          {
+            "id": "case-4",
+            "label": "int 최댓값 자동 변환",
+            "arguments": [
+              "Integer.MAX_VALUE",
+              "0.5"
+            ],
+            "expected": "2147483647.5"
+          },
+          {
+            "id": "case-5",
+            "label": "int 최솟값 자동 변환",
+            "arguments": [
+              "Integer.MIN_VALUE",
+              "0.25"
+            ],
+            "expected": "-2147483647.75"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "int 값을 double 변수에 대입하면 Java가 자동으로 확대 변환하므로 소수 보정값과 안전하게 계산할 수 있습니다.",
+        "keyPoints": [
+          "int에서 double로의 확대 변환에는 명시적 캐스트가 필요하지 않습니다.",
+          "한 피연산자가 double이면 덧셈 결과도 double입니다."
+        ],
+        "alternative": "base + adjustment를 바로 반환해도 자동 형변환이 일어나지만, 중간 변수를 두면 변환 시점을 관찰하기 쉽습니다.",
+        "complexity": "시간 O(1), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 42,
+      "mode": "java",
+      "stage": "변수·연산자",
+      "title": "문자 변환 여부 표시",
+      "question": "영문자 letter를 upper가 true이면 대문자로, false이면 소문자로 바꾸세요. 변환된 char와 원래 문자에서 실제로 달라졌는지를 '문자:true/false' 형식으로 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static String solve(char letter, boolean upper) {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {\n    public static String solve(char letter, boolean upper) {\n        char normalized = upper ? Character.toUpperCase(letter) : Character.toLowerCase(letter);\n        boolean unchanged = normalized == letter;\n        return normalized + \":\" + !unchanged;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "letter = 'a', upper = true",
+          "output": "A:true"
+        }
+      ],
+      "constraints": [
+        "letter는 영문 대문자 A~Z 또는 소문자 a~z입니다.",
+        "반환 문자열의 true는 원래 문자와 결과 문자가 달라졌음을 뜻합니다.",
+        "문자 대소문자 변환에는 Character 메서드를 사용할 수 있습니다."
+      ],
+      "hints": [
+        "삼항 연산자는 boolean 값에 따라 두 문자 변환 중 하나를 고를 수 있습니다.",
+        "비슷한 예시: char mark = enabled ? 'Y' : 'N';",
+        "같음을 나타내는 boolean을 만든 뒤 ! 연산자로 의미를 뒤집을 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "소문자를 대문자로 변경",
+            "arguments": [
+              "'a'",
+              "true"
+            ],
+            "expected": "\"A:true\""
+          },
+          {
+            "id": "case-2",
+            "label": "이미 대문자인 문자",
+            "arguments": [
+              "'A'",
+              "true"
+            ],
+            "expected": "\"A:false\""
+          },
+          {
+            "id": "case-3",
+            "label": "대문자를 소문자로 변경",
+            "arguments": [
+              "'Z'",
+              "false"
+            ],
+            "expected": "\"z:true\""
+          },
+          {
+            "id": "case-4",
+            "label": "이미 소문자인 문자",
+            "arguments": [
+              "'m'",
+              "false"
+            ],
+            "expected": "\"m:false\""
+          }
+        ]
+      },
+      "solution": {
+        "summary": "char와 boolean 지역 변수를 선언하고 삼항 연산자, 비교 연산자, 논리 부정 연산자를 차례로 적용합니다.",
+        "keyPoints": [
+          "삼항 연산자는 조건에 따라 하나의 값을 선택하는 표현식입니다.",
+          "! 연산자는 boolean 값의 참과 거짓을 반대로 바꿉니다."
+        ],
+        "alternative": "if/else로 변환할 문자를 정하고 normalized != letter를 바로 반환 문자열에 연결할 수도 있습니다.",
+        "complexity": "시간 O(1), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 43,
+      "mode": "java",
+      "stage": "변수·연산자",
+      "title": "좌표 이동 되돌리기",
+      "question": "좌표 변화량 displacement와 반대 방향의 변화량을 반환하세요. 양수는 음수로, 음수는 양수로 바꾸고 0은 그대로 반환합니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int displacement) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int displacement) {\n        return -displacement;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "displacement = 7",
+          "output": "-7"
+        }
+      ],
+      "constraints": [
+        "-1,000,000,000 ≤ displacement ≤ 1,000,000,000",
+        "0의 반대 방향 변화량은 0입니다.",
+        "단항 부호 연산자를 사용해 값의 부호를 바꿀 수 있습니다."
+      ],
+      "hints": [
+        "뺄셈의 두 피연산자를 만들 필요 없이 값 하나 앞에 부호 연산자를 붙일 수 있습니다.",
+        "비슷한 예시: int opposite = -velocity;",
+        "입력 범위에는 부호를 바꿀 수 없는 Integer.MIN_VALUE가 포함되지 않습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "양수 이동",
+            "arguments": [
+              "7"
+            ],
+            "expected": "-7"
+          },
+          {
+            "id": "case-2",
+            "label": "음수 이동",
+            "arguments": [
+              "-12"
+            ],
+            "expected": "12"
+          },
+          {
+            "id": "case-3",
+            "label": "이동 없음",
+            "arguments": [
+              "0"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-4",
+            "label": "허용 최댓값",
+            "arguments": [
+              "1000000000"
+            ],
+            "expected": "-1000000000"
+          },
+          {
+            "id": "case-5",
+            "label": "허용 최솟값",
+            "arguments": [
+              "-1000000000"
+            ],
+            "expected": "1000000000"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "피연산자 하나에 적용하는 단항 - 연산자로 정수의 부호를 반전합니다.",
+        "keyPoints": [
+          "단항 -는 뺄셈 연산과 달리 피연산자가 하나입니다.",
+          "int 최솟값은 부호 반전 시 오버플로되므로 입력 범위에서 제외했습니다."
+        ],
+        "alternative": "0 - displacement로도 같은 범위의 결과를 만들 수 있지만 단항 부호 연산자가 의도를 더 직접적으로 표현합니다.",
+        "complexity": "시간 O(1), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 44,
+      "mode": "java",
+      "stage": "조건문·반복문",
+      "title": "배터리 상태 문구",
+      "question": "배터리 percent가 80 이상이면 '충분', 20 이상 80 미만이면 '주의', 20 미만이면 '충전 필요'를 반환하세요. if, else if, else 흐름을 사용해 세 구간을 구분합니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static String solve(int percent) {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {\n    public static String solve(int percent) {\n        if (percent >= 80) {\n            return \"충분\";\n        } else if (percent >= 20) {\n            return \"주의\";\n        } else {\n            return \"충전 필요\";\n        }\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "percent = 85",
+          "output": "충분"
+        }
+      ],
+      "constraints": [
+        "0 ≤ percent ≤ 100",
+        "80과 20은 각각 위쪽 구간에 포함됩니다.",
+        "더 높은 기준부터 검사하면 구간 조건을 중복해서 작성하지 않아도 됩니다."
+      ],
+      "hints": [
+        "첫 조건이 거짓일 때만 다음 else if 조건을 검사합니다.",
+        "비슷한 예시: if (age >= 19) { ... } else if (age >= 13) { ... } else { ... }",
+        "마지막 else는 앞의 두 조건에 해당하지 않는 값을 처리합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "충분 구간",
+            "arguments": [
+              "85"
+            ],
+            "expected": "\"충분\""
+          },
+          {
+            "id": "case-2",
+            "label": "충분 경계",
+            "arguments": [
+              "80"
+            ],
+            "expected": "\"충분\""
+          },
+          {
+            "id": "case-3",
+            "label": "주의 상단",
+            "arguments": [
+              "79"
+            ],
+            "expected": "\"주의\""
+          },
+          {
+            "id": "case-4",
+            "label": "주의 경계",
+            "arguments": [
+              "20"
+            ],
+            "expected": "\"주의\""
+          },
+          {
+            "id": "case-5",
+            "label": "충전 필요 상단",
+            "arguments": [
+              "19"
+            ],
+            "expected": "\"충전 필요\""
+          },
+          {
+            "id": "case-6",
+            "label": "최솟값",
+            "arguments": [
+              "0"
+            ],
+            "expected": "\"충전 필요\""
+          },
+          {
+            "id": "case-7",
+            "label": "최댓값",
+            "arguments": [
+              "100"
+            ],
+            "expected": "\"충분\""
+          }
+        ]
+      },
+      "solution": {
+        "summary": "서로 겹치지 않는 세 범위를 높은 기준부터 if, else if, else로 나누면 경계값을 명확히 처리할 수 있습니다.",
+        "keyPoints": [
+          "앞 조건이 참이면 뒤 분기는 실행되지 않습니다.",
+          "경계값을 어느 구간에 포함할지 비교 연산자에서 분명히 해야 합니다."
+        ],
+        "alternative": "switch의 가드 조건이나 삼항 연산자 중첩도 가능하지만, 세 구간은 if 계열이 읽기 쉽습니다.",
+        "complexity": "시간 O(1), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 45,
+      "mode": "java",
+      "stage": "조건문·반복문",
+      "title": "센서 종료 표시 전 합계",
+      "question": "readings를 앞에서부터 더하다가 종료 표시 -1을 처음 만나면 즉시 반복을 끝내고 그 앞의 합계를 반환하세요. -1이 없으면 모든 값을 더합니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int[] readings) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int[] readings) {\n        int total = 0;\n        for (int reading : readings) {\n            if (reading == -1) {\n                break;\n            }\n            total += reading;\n        }\n        return total;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "readings = [4, 7, -1, 100]",
+          "output": "11"
+        }
+      ],
+      "constraints": [
+        "0 ≤ readings.length ≤ 1,000",
+        "각 원소는 종료 표시 -1 또는 0 이상 1,000 이하입니다.",
+        "합계는 int 범위를 넘지 않습니다."
+      ],
+      "hints": [
+        "종료 표시를 검사한 뒤 합계에 포함하지 않고 반복문 밖으로 나가야 합니다.",
+        "비슷한 예시: if (command.equals(\"quit\")) { break; }",
+        "break 이후 배열에 값이 남아 있어도 현재 반복은 다시 실행되지 않습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "중간에 종료 표시",
+            "arguments": [
+              "new int[]{4, 7, -1, 100}"
+            ],
+            "expected": "11"
+          },
+          {
+            "id": "case-2",
+            "label": "첫 원소가 종료 표시",
+            "arguments": [
+              "new int[]{-1, 5, 6}"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-3",
+            "label": "종료 표시 없음",
+            "arguments": [
+              "new int[]{2, 3, 5}"
+            ],
+            "expected": "10"
+          },
+          {
+            "id": "case-4",
+            "label": "마지막 종료 표시",
+            "arguments": [
+              "new int[]{9, 0, -1}"
+            ],
+            "expected": "9"
+          },
+          {
+            "id": "case-5",
+            "label": "빈 배열",
+            "arguments": [
+              "new int[]{}"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-6",
+            "label": "종료 표시 뒤 값 무시",
+            "arguments": [
+              "new int[]{1, -1, 1000, 1000}"
+            ],
+            "expected": "1"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "종료 표시를 만난 시점에 break를 실행하면 현재 반복문 전체가 즉시 종료됩니다.",
+        "keyPoints": [
+          "-1을 합계에 더하기 전에 검사해야 합니다.",
+          "break는 if문이 아니라 가장 가까운 반복문을 빠져나갑니다."
+        ],
+        "alternative": "인덱스로 -1의 위치를 먼저 찾은 뒤 앞부분을 합산할 수도 있지만 배열을 두 번 살펴볼 수 있습니다.",
+        "complexity": "종료 표시 위치를 k라 할 때 시간 O(k), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 46,
+      "mode": "java",
+      "stage": "조건문·반복문",
+      "title": "결측 측정값 제외하기",
+      "question": "measurements에서 음수는 결측값이므로 현재 반복만 건너뛰고, 0 이상의 측정값 개수를 반환하세요. 결측값 뒤의 정상 값도 계속 확인해야 합니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int[] measurements) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int[] measurements) {\n        int validCount = 0;\n        for (int measurement : measurements) {\n            if (measurement < 0) {\n                continue;\n            }\n            validCount++;\n        }\n        return validCount;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "measurements = [3, -1, 0, 8]",
+          "output": "3"
+        }
+      ],
+      "constraints": [
+        "0 ≤ measurements.length ≤ 1,000",
+        "각 원소는 -1,000 이상 1,000 이하입니다.",
+        "0은 정상 측정값으로 셉니다."
+      ],
+      "hints": [
+        "continue는 반복문을 끝내지 않고 현재 원소의 남은 처리만 건너뜁니다.",
+        "비슷한 예시: if (line.isBlank()) { continue; }",
+        "음수 뒤에 오는 원소도 세어야 하므로 break와 구분하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "중간 결측값",
+            "arguments": [
+              "new int[]{3, -1, 0, 8}"
+            ],
+            "expected": "3"
+          },
+          {
+            "id": "case-2",
+            "label": "모두 정상",
+            "arguments": [
+              "new int[]{1, 2, 3}"
+            ],
+            "expected": "3"
+          },
+          {
+            "id": "case-3",
+            "label": "모두 결측",
+            "arguments": [
+              "new int[]{-1, -2, -3}"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-4",
+            "label": "0 경계 포함",
+            "arguments": [
+              "new int[]{0, -1, 0}"
+            ],
+            "expected": "2"
+          },
+          {
+            "id": "case-5",
+            "label": "첫 결측 뒤 정상값",
+            "arguments": [
+              "new int[]{-1000, 5, 6}"
+            ],
+            "expected": "2"
+          },
+          {
+            "id": "case-6",
+            "label": "빈 배열",
+            "arguments": [
+              "new int[]{}"
+            ],
+            "expected": "0"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "음수에서 continue를 실행해 현재 반복의 나머지만 생략하고 다음 측정값 검사를 이어갑니다.",
+        "keyPoints": [
+          "continue와 break는 각각 현재 회차 건너뛰기와 반복 전체 종료라는 차이가 있습니다.",
+          "0은 조건 measurement < 0을 통과하므로 정상 값으로 집계됩니다."
+        ],
+        "alternative": "음수가 아닐 때만 개수를 늘리는 if 조건으로도 같은 결과를 만들 수 있습니다.",
+        "complexity": "측정값 수를 n이라 할 때 시간 O(n), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 47,
+      "mode": "java",
+      "stage": "조건문·반복문",
+      "title": "양수 처리 건수와 합계",
+      "question": "values의 양수만 처리해 처리 건수와 합계를 차례대로 담은 int 배열을 반환하세요. 건수에는 증감 연산자, 합계에는 복합 대입 연산자를 사용해 갱신하는 흐름을 연습합니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int[] solve(int[] values) {\n        return new int[0];\n    }\n}",
+      "answer": "public class Solution {\n    public static int[] solve(int[] values) {\n        int count = 0;\n        int total = 0;\n        for (int value : values) {\n            if (value > 0) {\n                count++;\n                total += value;\n            }\n        }\n        return new int[]{count, total};\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "values = [4, -2, 3, 0]",
+          "output": "[2, 7]"
+        }
+      ],
+      "constraints": [
+        "0 ≤ values.length ≤ 1,000",
+        "각 원소는 -1,000 이상 1,000 이하입니다.",
+        "합계는 int 범위를 넘지 않습니다."
+      ],
+      "hints": [
+        "양수를 발견할 때마다 건수 변수와 합계 변수를 각각 갱신하세요.",
+        "비슷한 예시: matched++; score += point;",
+        "반환 배열의 0번 인덱스는 건수, 1번 인덱스는 합계입니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "양수와 다른 값 혼합",
+            "arguments": [
+              "new int[]{4, -2, 3, 0}"
+            ],
+            "expected": "new int[]{2, 7}"
+          },
+          {
+            "id": "case-2",
+            "label": "모두 양수",
+            "arguments": [
+              "new int[]{1, 2, 3}"
+            ],
+            "expected": "new int[]{3, 6}"
+          },
+          {
+            "id": "case-3",
+            "label": "양수 없음",
+            "arguments": [
+              "new int[]{0, -1, -5}"
+            ],
+            "expected": "new int[]{0, 0}"
+          },
+          {
+            "id": "case-4",
+            "label": "양수 하나",
+            "arguments": [
+              "new int[]{-3, 1000, -2}"
+            ],
+            "expected": "new int[]{1, 1000}"
+          },
+          {
+            "id": "case-5",
+            "label": "빈 배열",
+            "arguments": [
+              "new int[]{}"
+            ],
+            "expected": "new int[]{0, 0}"
+          },
+          {
+            "id": "case-6",
+            "label": "경계 양수 반복",
+            "arguments": [
+              "new int[]{1000, 1000, -1000, 1}"
+            ],
+            "expected": "new int[]{3, 2001}"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "조건을 만족할 때 count++로 건수를 하나 늘리고 total += value로 기존 합계에 값을 누적합니다.",
+        "keyPoints": [
+          "증감 연산자는 변수 값을 정확히 1만큼 바꿉니다.",
+          "a += b는 a = a + b와 같은 누적 의도를 간결하게 표현합니다."
+        ],
+        "alternative": "count = count + 1과 total = total + value로 풀어 써도 결과는 같습니다.",
+        "complexity": "원소 수를 n이라 할 때 시간 O(n), 추가 공간 O(1)"
+      }
+    }
+  ]
+}

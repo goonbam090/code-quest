@@ -1,0 +1,2970 @@
+{
+  "id": "algorithm",
+  "name": "Algorithm Quest",
+  "description": "배열·컬렉션·탐색·정렬의 기본 구현을 숨은 테스트로 검증하는 37문제",
+  "problems": [
+    {
+      "id": 1,
+      "mode": "algorithm",
+      "stage": "완전탐색·구현",
+      "title": "두 원소의 차이 목록",
+      "question": "정수 배열 numbers에서 서로 다른 두 인덱스의 원소를 골라 만들 수 있는 모든 절댓값 차이를 중복 없이 오름차순 배열로 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] numbers) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] numbers) {\n        Set<Integer> differences = new TreeSet<>();\n        for (int first = 0; first < numbers.length; first++) {\n            for (int second = first + 1; second < numbers.length; second++) {\n                differences.add(Math.abs(numbers[first] - numbers[second]));\n            }\n        }\n        return differences.stream().mapToInt(Integer::intValue).toArray();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [2, 1, 3, 1]",
+          "output": "[0, 1, 2]"
+        }
+      ],
+      "constraints": [
+        "2 ≤ numbers의 길이 ≤ 100",
+        "-100 ≤ numbers의 각 원소 ≤ 100",
+        "같은 값이라도 인덱스가 다르면 함께 선택할 수 있습니다."
+      ],
+      "hints": [
+        "첫 인덱스보다 뒤에 있는 인덱스만 고르면 같은 쌍을 두 번 확인하지 않습니다.",
+        "비슷한 예시: for (int j = i + 1; j < values.length; j++)",
+        "중복 제거와 오름차순 정렬을 동시에 지원하는 Set 구현을 고려해 보세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "중복 원소 포함",
+            "arguments": [
+              "new int[]{2, 1, 3, 1}"
+            ],
+            "expected": "new int[]{0, 1, 2}"
+          },
+          {
+            "id": "case-2",
+            "label": "차이 중복 제거",
+            "arguments": [
+              "new int[]{5, 0, 2, 7}"
+            ],
+            "expected": "new int[]{2, 3, 5, 7}"
+          },
+          {
+            "id": "case-3",
+            "label": "같은 값 두 개",
+            "arguments": [
+              "new int[]{1, 1}"
+            ],
+            "expected": "new int[]{0}"
+          },
+          {
+            "id": "case-4",
+            "label": "음수와 양수",
+            "arguments": [
+              "new int[]{-2, 0, 2}"
+            ],
+            "expected": "new int[]{2, 4}"
+          },
+          {
+            "id": "case-5",
+            "label": "서로 다른 세 값",
+            "arguments": [
+              "new int[]{1, 4, 10}"
+            ],
+            "expected": "new int[]{3, 6, 9}"
+          },
+          {
+            "id": "case-6",
+            "label": "범위 양끝",
+            "arguments": [
+              "new int[]{-100, 100}"
+            ],
+            "expected": "new int[]{200}"
+          },
+          {
+            "id": "case-7",
+            "label": "음수 중복",
+            "arguments": [
+              "new int[]{-3, -1, -3}"
+            ],
+            "expected": "new int[]{0, 2}"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "mode": "algorithm",
+      "stage": "완전탐색·구현",
+      "title": "세 원소의 목표 합",
+      "question": "정수 배열 numbers에서 서로 다른 세 인덱스의 원소 합이 target이 되는 인덱스 조합의 개수를 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int[] numbers, int target) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int[] numbers, int target) {\n        int count = 0;\n        for (int first = 0; first < numbers.length - 2; first++) {\n            for (int second = first + 1; second < numbers.length - 1; second++) {\n                for (int third = second + 1; third < numbers.length; third++) {\n                    if (numbers[first] + numbers[second] + numbers[third] == target) count++;\n                }\n            }\n        }\n        return count;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [-2, 3, 0, 2, -5], target = 0",
+          "output": "2"
+        }
+      ],
+      "constraints": [
+        "3 ≤ numbers의 길이 ≤ 30",
+        "-100 ≤ numbers의 각 원소 ≤ 100",
+        "-300 ≤ target ≤ 300",
+        "값이 같아도 인덱스 조합이 다르면 각각 셉니다."
+      ],
+      "hints": [
+        "세 인덱스를 항상 first < second < third 순서로 선택해 보세요.",
+        "비슷한 예시: for (int second = first + 1; second < length; second++)",
+        "같은 값 세 개가 여러 인덱스에 있다면 서로 다른 조합이 여러 개 생길 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "두 조합",
+            "arguments": [
+              "new int[]{-2, 3, 0, 2, -5}",
+              "0"
+            ],
+            "expected": "2"
+          },
+          {
+            "id": "case-2",
+            "label": "세 원소 전부",
+            "arguments": [
+              "new int[]{1, 2, 3}",
+              "6"
+            ],
+            "expected": "1"
+          },
+          {
+            "id": "case-3",
+            "label": "같은 값의 여러 조합",
+            "arguments": [
+              "new int[]{0, 0, 0, 0}",
+              "0"
+            ],
+            "expected": "4"
+          },
+          {
+            "id": "case-4",
+            "label": "만들 수 없음",
+            "arguments": [
+              "new int[]{1, 1, 1}",
+              "2"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-5",
+            "label": "중복 음수 인덱스",
+            "arguments": [
+              "new int[]{-1, 0, 1, 2, -1, -4}",
+              "0"
+            ],
+            "expected": "3"
+          },
+          {
+            "id": "case-6",
+            "label": "양수와 음수지만 불일치",
+            "arguments": [
+              "new int[]{5, -5, 10, -10}",
+              "0"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-7",
+            "label": "동일한 네 값",
+            "arguments": [
+              "new int[]{2, 2, 2, 2}",
+              "6"
+            ],
+            "expected": "4"
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "mode": "algorithm",
+      "stage": "완전탐색·구현",
+      "title": "가장 가까운 같은 문자",
+      "question": "소문자 문자열 text의 각 위치마다, 앞쪽에서 가장 가깝게 등장한 같은 문자까지의 거리를 반환하세요. 앞에 같은 문자가 없으면 -1입니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(String text) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(String text) {\n        int[] distances = new int[text.length()];\n        Map<Character, Integer> lastIndex = new HashMap<>();\n        for (int index = 0; index < text.length(); index++) {\n            char letter = text.charAt(index);\n            distances[index] = lastIndex.containsKey(letter) ? index - lastIndex.get(letter) : -1;\n            lastIndex.put(letter, index);\n        }\n        return distances;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "text = \"banana\"",
+          "output": "[-1, -1, -1, 2, 2, 2]"
+        }
+      ],
+      "constraints": [
+        "1 ≤ text의 길이 ≤ 10,000",
+        "text는 소문자 영문자로만 구성됩니다.",
+        "거리는 현재 인덱스와 가장 최근의 같은 문자 인덱스 차이입니다."
+      ],
+      "hints": [
+        "각 문자가 마지막으로 등장한 인덱스를 저장하면 앞부분을 매번 다시 찾지 않아도 됩니다.",
+        "비슷한 예시: Map<Character, Integer> lastSeen = new HashMap<>();",
+        "현재 거리 계산을 마친 뒤 해당 문자의 마지막 위치를 현재 인덱스로 갱신하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "여러 문자 반복",
+            "arguments": [
+              "\"banana\""
+            ],
+            "expected": "new int[]{-1, -1, -1, 2, 2, 2}"
+          },
+          {
+            "id": "case-2",
+            "label": "모두 다른 문자",
+            "arguments": [
+              "\"abc\""
+            ],
+            "expected": "new int[]{-1, -1, -1}"
+          },
+          {
+            "id": "case-3",
+            "label": "한 문자 반복",
+            "arguments": [
+              "\"aaaa\""
+            ],
+            "expected": "new int[]{-1, 1, 1, 1}"
+          },
+          {
+            "id": "case-4",
+            "label": "멀리 떨어진 반복",
+            "arguments": [
+              "\"abca\""
+            ],
+            "expected": "new int[]{-1, -1, -1, 3}"
+          },
+          {
+            "id": "case-5",
+            "label": "긴 고유 문자열",
+            "arguments": [
+              "\"algorithm\""
+            ],
+            "expected": "new int[]{-1, -1, -1, -1, -1, -1, -1, -1, -1}"
+          },
+          {
+            "id": "case-6",
+            "label": "거리 갱신",
+            "arguments": [
+              "\"ccacc\""
+            ],
+            "expected": "new int[]{-1, 1, -1, 2, 1}"
+          },
+          {
+            "id": "case-7",
+            "label": "한 글자",
+            "arguments": [
+              "\"x\""
+            ],
+            "expected": "new int[]{-1}"
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "mode": "algorithm",
+      "stage": "완전탐색·구현",
+      "title": "약수 개수",
+      "question": "1 이상의 정수 n의 양의 약수 개수를 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int n) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int n) {\n        int count = 0;\n        for (int divisor = 1; divisor * divisor <= n; divisor++) {\n            if (n % divisor != 0) continue;\n            count += divisor * divisor == n ? 1 : 2;\n        }\n        return count;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "n = 12",
+          "output": "6"
+        }
+      ],
+      "constraints": [
+        "1 ≤ n ≤ 1,000,000,000",
+        "양의 약수만 개수에 포함합니다."
+      ],
+      "hints": [
+        "약수는 곱해서 n이 되는 짝으로 나타납니다.",
+        "비슷한 예시: if (number % divisor == 0) ...",
+        "제곱근까지 확인할 때 완전제곱수의 약수는 한 번만 세어야 합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "합성수",
+            "arguments": [
+              "12"
+            ],
+            "expected": "6"
+          },
+          {
+            "id": "case-2",
+            "label": "1",
+            "arguments": [
+              "1"
+            ],
+            "expected": "1"
+          },
+          {
+            "id": "case-3",
+            "label": "소수",
+            "arguments": [
+              "13"
+            ],
+            "expected": "2"
+          },
+          {
+            "id": "case-4",
+            "label": "완전제곱수",
+            "arguments": [
+              "36"
+            ],
+            "expected": "9"
+          },
+          {
+            "id": "case-5",
+            "label": "큰 소수",
+            "arguments": [
+              "9973"
+            ],
+            "expected": "2"
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "mode": "algorithm",
+      "stage": "완전탐색·구현",
+      "title": "빈도 우선 정렬",
+      "question": "정수 배열 numbers의 모든 원소를 등장 횟수가 많은 값부터 정렬해 반환하세요. 등장 횟수가 같으면 값이 작은 수가 먼저 옵니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] numbers) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] numbers) {\n        Map<Integer, Integer> frequencies = new HashMap<>();\n        for (int number : numbers) frequencies.merge(number, 1, Integer::sum);\n        return Arrays.stream(numbers)\n                .boxed()\n                .sorted((first, second) -> {\n                    int byFrequency = Integer.compare(frequencies.get(second), frequencies.get(first));\n                    return byFrequency != 0 ? byFrequency : Integer.compare(first, second);\n                })\n                .mapToInt(Integer::intValue)\n                .toArray();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [3, 1, 3, 2, 1, 3]",
+          "output": "[3, 3, 3, 1, 1, 2]"
+        }
+      ],
+      "constraints": [
+        "1 ≤ numbers의 길이 ≤ 100",
+        "-100 ≤ numbers의 각 원소 ≤ 100",
+        "같은 값의 원소는 등장한 횟수만큼 결과에도 모두 포함됩니다."
+      ],
+      "hints": [
+        "먼저 Map으로 각 값의 등장 횟수를 계산하세요.",
+        "비슷한 예시: counts.merge(value, 1, Integer::sum);",
+        "정렬 비교에서는 빈도를 먼저 비교하고, 빈도가 같을 때만 값 자체를 비교하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "빈도가 모두 다름",
+            "arguments": [
+              "new int[]{3, 1, 3, 2, 1, 3}"
+            ],
+            "expected": "new int[]{3, 3, 3, 1, 1, 2}"
+          },
+          {
+            "id": "case-2",
+            "label": "빈도 동률",
+            "arguments": [
+              "new int[]{4, 2, 4, 2}"
+            ],
+            "expected": "new int[]{2, 2, 4, 4}"
+          },
+          {
+            "id": "case-3",
+            "label": "한 원소",
+            "arguments": [
+              "new int[]{5}"
+            ],
+            "expected": "new int[]{5}"
+          },
+          {
+            "id": "case-4",
+            "label": "음수와 빈도 차이",
+            "arguments": [
+              "new int[]{-1, 2, -1, 2, 0}"
+            ],
+            "expected": "new int[]{-1, -1, 2, 2, 0}"
+          },
+          {
+            "id": "case-5",
+            "label": "모두 같은 값",
+            "arguments": [
+              "new int[]{0, 0, 0}"
+            ],
+            "expected": "new int[]{0, 0, 0}"
+          },
+          {
+            "id": "case-6",
+            "label": "모두 한 번 등장",
+            "arguments": [
+              "new int[]{3, 1, 2}"
+            ],
+            "expected": "new int[]{1, 2, 3}"
+          },
+          {
+            "id": "case-7",
+            "label": "음수 빈도 우선",
+            "arguments": [
+              "new int[]{-2, -1, -2, -1, -1}"
+            ],
+            "expected": "new int[]{-1, -1, -1, -2, -2}"
+          }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "mode": "algorithm",
+      "stage": "문자열·배열",
+      "title": "애너그램 판별",
+      "question": "소문자 영문 문자열 first와 second가 문자 구성과 개수가 같은 애너그램이면 true를 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static boolean solve(String first, String second) {\n        return false;\n    }\n}",
+      "answer": "public class Solution {\n    public static boolean solve(String first, String second) {\n        if (first.length() != second.length()) return false;\n        int[] counts = new int[26];\n        for (int i = 0; i < first.length(); i++) {\n            counts[first.charAt(i) - 'a']++;\n            counts[second.charAt(i) - 'a']--;\n        }\n        for (int count : counts) if (count != 0) return false;\n        return true;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "first = \"listen\", second = \"silent\"",
+          "output": "true"
+        }
+      ],
+      "constraints": [
+        "0 ≤ first와 second의 길이 ≤ 100,000",
+        "두 문자열은 소문자 영문자로만 구성됩니다.",
+        "두 문자열의 길이는 서로 다를 수 있습니다."
+      ],
+      "hints": [
+        "길이가 다르면 바로 false입니다.",
+        "비슷한 예시: int[] counts = new int[26];",
+        "한 문자열은 개수를 더하고 다른 문자열은 빼면 마지막에 모두 0이어야 합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "애너그램",
+            "arguments": [
+              "\"listen\"",
+              "\"silent\""
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-2",
+            "label": "구성이 다름",
+            "arguments": [
+              "\"hello\"",
+              "\"world\""
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-3",
+            "label": "중복 개수가 다름",
+            "arguments": [
+              "\"aab\"",
+              "\"abb\""
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 문자열 두 개",
+            "arguments": [
+              "\"\"",
+              "\"\""
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-5",
+            "label": "한 글자",
+            "arguments": [
+              "\"x\"",
+              "\"x\""
+            ],
+            "expected": "true"
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "mode": "algorithm",
+      "stage": "문자열·배열",
+      "title": "배열 왼쪽 회전",
+      "question": "비어 있지 않은 정수 배열 numbers를 왼쪽으로 k칸 회전한 새 배열을 반환하세요. k는 배열 길이보다 클 수 있습니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int[] solve(int[] numbers, int k) {\n        return new int[0];\n    }\n}",
+      "answer": "public class Solution {\n    public static int[] solve(int[] numbers, int k) {\n        int length = numbers.length;\n        k %= length;\n        int[] rotated = new int[length];\n        for (int index = 0; index < length; index++) {\n            rotated[index] = numbers[(index + k) % length];\n        }\n        return rotated;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [1, 2, 3, 4, 5], k = 2",
+          "output": "[3, 4, 5, 1, 2]"
+        }
+      ],
+      "constraints": [
+        "1 ≤ numbers의 길이 ≤ 100,000",
+        "0 ≤ k ≤ 1,000,000,000",
+        "numbers의 각 원소는 int 범위의 정수입니다."
+      ],
+      "hints": [
+        "실제 이동 칸은 k를 배열 길이로 나눈 나머지입니다.",
+        "비슷한 예시: source[(index + offset) % length]",
+        "원본과 같은 길이의 새 배열을 만들어도 됩니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "두 칸 회전",
+            "arguments": [
+              "new int[]{1, 2, 3, 4, 5}",
+              "2"
+            ],
+            "expected": "new int[]{3, 4, 5, 1, 2}"
+          },
+          {
+            "id": "case-2",
+            "label": "길이보다 큰 k",
+            "arguments": [
+              "new int[]{1, 2, 3}",
+              "4"
+            ],
+            "expected": "new int[]{2, 3, 1}"
+          },
+          {
+            "id": "case-3",
+            "label": "0칸 회전",
+            "arguments": [
+              "new int[]{7, 8}",
+              "0"
+            ],
+            "expected": "new int[]{7, 8}"
+          },
+          {
+            "id": "case-4",
+            "label": "한 원소",
+            "arguments": [
+              "new int[]{9}",
+              "100"
+            ],
+            "expected": "new int[]{9}"
+          },
+          {
+            "id": "case-5",
+            "label": "여러 최대 길이 성능과 새 배열 계약",
+            "scaleTest": true,
+            "scaleRuns": 12,
+            "expression": "((java.util.function.BooleanSupplier) () -> { int size = 100000; int[] rotations = {999999999, 999999983, 999999937, 999999929, 999999893, 999999883, 999999797, 999999761, 999999757, 999999733, 999999677, 999999667}; for (int trial = 0; trial < rotations.length; trial++) { int[] source = new int[size]; for (int index = 0; index < size; index++) source[index] = index * 1103515245 ^ trial * 12345; int[] snapshot = source.clone(); int[] result = Solution.solve(source, rotations[trial]); if (result == null || result == source || result.length != size || !java.util.Arrays.equals(source, snapshot)) return false; int offset = rotations[trial] % size; for (int index = 0; index < size; index++) if (result[index] != snapshot[(index + offset) % size]) return false; } return true; }).getAsBoolean()",
+            "expected": "true"
+          },
+          {
+            "id": "case-6",
+            "label": "최대 회전 횟수",
+            "arguments": [
+              "new int[]{1, 2, 3, 4, 5, 6}",
+              "1000000000"
+            ],
+            "expected": "new int[]{5, 6, 1, 2, 3, 4}"
+          }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "mode": "algorithm",
+      "stage": "문자열·배열",
+      "title": "두 번째로 큰 값",
+      "question": "서로 다른 값이 두 개 이상인 정수 배열 numbers에서 두 번째로 큰 서로 다른 값을 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int[] numbers) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int[] numbers) {\n        long largest = Long.MIN_VALUE;\n        long second = Long.MIN_VALUE;\n        for (int number : numbers) {\n            if (number > largest) {\n                second = largest;\n                largest = number;\n            } else if (number < largest && number > second) {\n                second = number;\n            }\n        }\n        return (int) second;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [5, 1, 5, 3]",
+          "output": "3"
+        }
+      ],
+      "constraints": [
+        "2 ≤ numbers의 길이 ≤ 100,000",
+        "numbers에는 서로 다른 값이 두 개 이상 존재합니다.",
+        "각 원소는 int 범위의 정수이며 중복될 수 있습니다."
+      ],
+      "hints": [
+        "최댓값과 두 번째 최댓값을 따로 관리하세요.",
+        "비슷한 예시: if (value > largest) { second = largest; largest = value; }",
+        "최댓값과 같은 중복 값은 두 번째 값으로 세지 않습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "최댓값 중복",
+            "arguments": [
+              "new int[]{5, 1, 5, 3}"
+            ],
+            "expected": "3"
+          },
+          {
+            "id": "case-2",
+            "label": "내림차순",
+            "arguments": [
+              "new int[]{9, 7, 4}"
+            ],
+            "expected": "7"
+          },
+          {
+            "id": "case-3",
+            "label": "모두 음수",
+            "arguments": [
+              "new int[]{-10, -2, -7}"
+            ],
+            "expected": "-7"
+          },
+          {
+            "id": "case-4",
+            "label": "두 값",
+            "arguments": [
+              "new int[]{1, 2}"
+            ],
+            "expected": "1"
+          },
+          {
+            "id": "case-5",
+            "label": "최솟값 포함",
+            "arguments": [
+              "new int[]{Integer.MIN_VALUE, 0, 1}"
+            ],
+            "expected": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "mode": "algorithm",
+      "stage": "문자열·배열",
+      "title": "두 배열의 공통 원소",
+      "question": "정수 배열 first와 second에 모두 존재하는 값을 중복 없이 오름차순 배열로 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] first, int[] second) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] first, int[] second) {\n        Set<Integer> firstValues = new HashSet<>();\n        for (int value : first) firstValues.add(value);\n        Set<Integer> common = new TreeSet<>();\n        for (int value : second) {\n            if (firstValues.contains(value)) common.add(value);\n        }\n        return common.stream().mapToInt(Integer::intValue).toArray();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "first = [1, 2, 2, 3], second = [2, 2, 4]",
+          "output": "[2]"
+        }
+      ],
+      "constraints": [
+        "0 ≤ first와 second의 길이 ≤ 100,000",
+        "각 원소는 int 범위의 정수입니다.",
+        "입력 배열에는 중복 원소가 있을 수 있지만 결과에는 한 번만 포함합니다."
+      ],
+      "hints": [
+        "한 배열의 값을 Set에 저장하면 다른 배열의 원소가 공통인지 빠르게 확인할 수 있습니다.",
+        "비슷한 예시: if (known.contains(value)) selected.add(value);",
+        "결과는 중복 제거뿐 아니라 오름차순 정렬도 필요합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "중복된 공통값",
+            "arguments": [
+              "new int[]{1, 2, 2, 3}",
+              "new int[]{2, 2, 4}"
+            ],
+            "expected": "new int[]{2}"
+          },
+          {
+            "id": "case-2",
+            "label": "여러 공통값 정렬",
+            "arguments": [
+              "new int[]{5, 1, 3, 5}",
+              "new int[]{3, 5, 7, 1}"
+            ],
+            "expected": "new int[]{1, 3, 5}"
+          },
+          {
+            "id": "case-3",
+            "label": "공통값 없음",
+            "arguments": [
+              "new int[]{1, 2}",
+              "new int[]{3, 4}"
+            ],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-4",
+            "label": "첫 배열이 비어 있음",
+            "arguments": [
+              "new int[]{}",
+              "new int[]{1, 2}"
+            ],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-5",
+            "label": "둘째 배열이 비어 있음",
+            "arguments": [
+              "new int[]{1, 2}",
+              "new int[]{}"
+            ],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-6",
+            "label": "음수와 0",
+            "arguments": [
+              "new int[]{-2, 0, 3}",
+              "new int[]{0, -2, 5}"
+            ],
+            "expected": "new int[]{-2, 0}"
+          },
+          {
+            "id": "case-7",
+            "label": "int 경계값",
+            "arguments": [
+              "new int[]{Integer.MIN_VALUE, 0}",
+              "new int[]{Integer.MAX_VALUE, Integer.MIN_VALUE}"
+            ],
+            "expected": "new int[]{Integer.MIN_VALUE}"
+          }
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "mode": "algorithm",
+      "stage": "문자열·배열",
+      "title": "문자열 압축",
+      "question": "영문 문자열 text의 연속된 같은 문자를 '문자+개수'로 압축해 반환하세요. 빈 문자열은 빈 문자열을 반환합니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static String solve(String text) {\n        return \"\";\n    }\n}",
+      "answer": "public class Solution {\n    public static String solve(String text) {\n        if (text.isEmpty()) return \"\";\n        StringBuilder result = new StringBuilder();\n        int count = 1;\n        for (int index = 1; index <= text.length(); index++) {\n            if (index < text.length() && text.charAt(index) == text.charAt(index - 1)) {\n                count++;\n            } else {\n                result.append(text.charAt(index - 1)).append(count);\n                count = 1;\n            }\n        }\n        return result.toString();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "text = \"aaabbc\"",
+          "output": "a3b2c1"
+        }
+      ],
+      "constraints": [
+        "0 ≤ text의 길이 ≤ 100,000",
+        "text는 영문 대소문자로만 구성됩니다.",
+        "대문자와 소문자는 서로 다른 문자로 취급합니다."
+      ],
+      "hints": [
+        "현재 문자가 이전 문자와 같은 동안 개수를 증가시키세요.",
+        "비슷한 예시: result.append(letter).append(count);",
+        "마지막 묶음도 결과에 추가되도록 반복 범위를 설계하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "여러 묶음",
+            "arguments": [
+              "\"aaabbc\""
+            ],
+            "expected": "\"a3b2c1\""
+          },
+          {
+            "id": "case-2",
+            "label": "모두 다른 문자",
+            "arguments": [
+              "\"abc\""
+            ],
+            "expected": "\"a1b1c1\""
+          },
+          {
+            "id": "case-3",
+            "label": "한 문자",
+            "arguments": [
+              "\"x\""
+            ],
+            "expected": "\"x1\""
+          },
+          {
+            "id": "case-4",
+            "label": "빈 문자열",
+            "arguments": [
+              "\"\""
+            ],
+            "expected": "\"\""
+          },
+          {
+            "id": "case-5",
+            "label": "두 자리 개수",
+            "arguments": [
+              "\"aaaaaaaaaaa\""
+            ],
+            "expected": "\"a11\""
+          }
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "mode": "algorithm",
+      "stage": "정렬·탐색",
+      "title": "이진 탐색",
+      "question": "오름차순이며 중복이 없는 배열 numbers에서 target의 인덱스를 이진 탐색으로 찾아 반환하세요. 없으면 -1입니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int[] numbers, int target) {\n        return -1;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int[] numbers, int target) {\n        int left = 0;\n        int right = numbers.length - 1;\n        while (left <= right) {\n            int middle = left + (right - left) / 2;\n            if (numbers[middle] == target) return middle;\n            if (numbers[middle] < target) left = middle + 1;\n            else right = middle - 1;\n        }\n        return -1;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [1, 4, 7, 10], target = 7",
+          "output": "2"
+        }
+      ],
+      "constraints": [
+        "0 ≤ numbers의 길이 ≤ 100,000",
+        "numbers는 오름차순이며 중복 원소가 없습니다.",
+        "numbers의 각 원소와 target은 int 범위의 정수입니다."
+      ],
+      "hints": [
+        "탐색 구간의 가운데 값을 target과 비교하세요.",
+        "비슷한 예시: int mid = left + (right - left) / 2;",
+        "target이 더 크면 왼쪽 경계를, 더 작으면 오른쪽 경계를 이동합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "가운데 값",
+            "arguments": [
+              "new int[]{1, 4, 7, 10}",
+              "7"
+            ],
+            "expected": "2"
+          },
+          {
+            "id": "case-2",
+            "label": "존재하지 않음",
+            "arguments": [
+              "new int[]{1, 4, 7, 10}",
+              "6"
+            ],
+            "expected": "-1"
+          },
+          {
+            "id": "case-3",
+            "label": "첫 원소",
+            "arguments": [
+              "new int[]{-5, 0, 9}",
+              "-5"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-4",
+            "label": "마지막 원소",
+            "arguments": [
+              "new int[]{2, 8, 15}",
+              "15"
+            ],
+            "expected": "2"
+          },
+          {
+            "id": "case-5",
+            "label": "빈 배열",
+            "arguments": [
+              "new int[]{}",
+              "3"
+            ],
+            "expected": "-1"
+          }
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "mode": "algorithm",
+      "stage": "정렬·탐색",
+      "title": "정렬 배열 병합",
+      "question": "각각 오름차순인 정수 배열 first와 second를 하나의 오름차순 배열로 병합해 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int[] solve(int[] first, int[] second) {\n        return new int[0];\n    }\n}",
+      "answer": "public class Solution {\n    public static int[] solve(int[] first, int[] second) {\n        int[] merged = new int[first.length + second.length];\n        int left = 0, right = 0, index = 0;\n        while (left < first.length && right < second.length) {\n            merged[index++] = first[left] <= second[right] ? first[left++] : second[right++];\n        }\n        while (left < first.length) merged[index++] = first[left++];\n        while (right < second.length) merged[index++] = second[right++];\n        return merged;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "first = [1, 4, 8], second = [2, 3, 9]",
+          "output": "[1, 2, 3, 4, 8, 9]"
+        }
+      ],
+      "constraints": [
+        "0 ≤ first와 second의 길이 ≤ 100,000",
+        "두 배열의 전체 길이 합은 200,000 이하입니다.",
+        "각 배열은 오름차순이며 중복 원소가 있을 수 있습니다."
+      ],
+      "hints": [
+        "두 배열의 현재 원소 중 작은 쪽부터 결과에 넣으세요.",
+        "비슷한 예시: while (left < a.length && right < b.length)",
+        "한쪽 배열이 먼저 끝나면 다른 쪽의 남은 값을 모두 복사합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "길이가 같은 배열",
+            "arguments": [
+              "new int[]{1, 4, 8}",
+              "new int[]{2, 3, 9}"
+            ],
+            "expected": "new int[]{1, 2, 3, 4, 8, 9}"
+          },
+          {
+            "id": "case-2",
+            "label": "한쪽이 빈 배열",
+            "arguments": [
+              "new int[]{}",
+              "new int[]{1, 2}"
+            ],
+            "expected": "new int[]{1, 2}"
+          },
+          {
+            "id": "case-3",
+            "label": "중복 값",
+            "arguments": [
+              "new int[]{1, 3}",
+              "new int[]{1, 2}"
+            ],
+            "expected": "new int[]{1, 1, 2, 3}"
+          },
+          {
+            "id": "case-4",
+            "label": "음수 포함",
+            "arguments": [
+              "new int[]{-5, 0}",
+              "new int[]{-3, 4}"
+            ],
+            "expected": "new int[]{-5, -3, 0, 4}"
+          }
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "mode": "algorithm",
+      "stage": "정렬·탐색",
+      "title": "k번째 작은 수",
+      "question": "정수 배열 numbers에서 k번째로 작은 값을 반환하세요. k는 1부터 배열 길이 사이입니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int solve(int[] numbers, int k) {\n        return 0;\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int solve(int[] numbers, int k) {\n        int[] copy = numbers.clone();\n        Arrays.sort(copy);\n        return copy[k - 1];\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [7, 2, 9, 4], k = 3",
+          "output": "7"
+        }
+      ],
+      "constraints": [
+        "1 ≤ numbers의 길이 ≤ 100,000",
+        "1 ≤ k ≤ numbers의 길이",
+        "numbers의 각 원소는 int 범위의 정수이며 중복될 수 있습니다."
+      ],
+      "hints": [
+        "정렬한 뒤 배열 인덱스와 k의 차이를 확인하세요.",
+        "비슷한 예시: Arrays.sort(copy);",
+        "k는 1부터 시작하지만 배열 인덱스는 0부터 시작합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "세 번째 값",
+            "arguments": [
+              "new int[]{7, 2, 9, 4}",
+              "3"
+            ],
+            "expected": "7"
+          },
+          {
+            "id": "case-2",
+            "label": "첫 번째 값",
+            "arguments": [
+              "new int[]{5, 1, 3}",
+              "1"
+            ],
+            "expected": "1"
+          },
+          {
+            "id": "case-3",
+            "label": "마지막 값",
+            "arguments": [
+              "new int[]{5, 1, 3}",
+              "3"
+            ],
+            "expected": "5"
+          },
+          {
+            "id": "case-4",
+            "label": "중복 포함",
+            "arguments": [
+              "new int[]{4, 2, 2, 8}",
+              "2"
+            ],
+            "expected": "2"
+          },
+          {
+            "id": "case-5",
+            "label": "음수 포함",
+            "arguments": [
+              "new int[]{-1, -7, 3}",
+              "2"
+            ],
+            "expected": "-1"
+          }
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "mode": "algorithm",
+      "stage": "정렬·탐색",
+      "title": "Lower Bound",
+      "question": "오름차순 배열 numbers에서 target 이상인 첫 원소의 인덱스를 반환하세요. 모든 원소가 작으면 배열 길이를 반환합니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int[] numbers, int target) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int[] numbers, int target) {\n        int left = 0;\n        int right = numbers.length;\n        while (left < right) {\n            int middle = left + (right - left) / 2;\n            if (numbers[middle] < target) left = middle + 1;\n            else right = middle;\n        }\n        return left;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [1, 3, 3, 7], target = 3",
+          "output": "1"
+        }
+      ],
+      "constraints": [
+        "0 ≤ numbers의 길이 ≤ 100,000",
+        "numbers는 오름차순이며 중복 원소가 있을 수 있습니다.",
+        "numbers의 각 원소와 target은 int 범위의 정수입니다."
+      ],
+      "hints": [
+        "정답 후보 구간을 [left, right) 형태로 관리해 보세요.",
+        "비슷한 예시: if (value < target) left = mid + 1; else right = mid;",
+        "target과 같은 값이 여러 개면 가장 왼쪽 인덱스여야 합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "중복값의 첫 위치",
+            "arguments": [
+              "new int[]{1, 3, 3, 7}",
+              "3"
+            ],
+            "expected": "1"
+          },
+          {
+            "id": "case-2",
+            "label": "사이에 삽입",
+            "arguments": [
+              "new int[]{1, 3, 7}",
+              "5"
+            ],
+            "expected": "2"
+          },
+          {
+            "id": "case-3",
+            "label": "모든 값보다 작음",
+            "arguments": [
+              "new int[]{2, 4}",
+              "1"
+            ],
+            "expected": "0"
+          },
+          {
+            "id": "case-4",
+            "label": "모든 값보다 큼",
+            "arguments": [
+              "new int[]{2, 4}",
+              "9"
+            ],
+            "expected": "2"
+          },
+          {
+            "id": "case-5",
+            "label": "빈 배열",
+            "arguments": [
+              "new int[]{}",
+              "3"
+            ],
+            "expected": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": 15,
+      "mode": "algorithm",
+      "stage": "정렬·탐색",
+      "title": "삽입 정렬",
+      "question": "정수 배열 numbers를 복사한 뒤, solve(int[]) 본문에서 현재 값을 임시 보관하고 앞쪽의 더 큰 원소를 오른쪽으로 한 칸씩 이동한 후 빈 위치에 현재 값을 삽입하여 오름차순 정렬한 새 배열을 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int[] solve(int[] numbers) {\n        int[] sorted = numbers.clone();\n        return sorted;\n    }\n}",
+      "answer": "public class Solution {\n    public static int[] solve(int[] numbers) {\n        int[] sorted = numbers.clone();\n        for (int index = 1; index < sorted.length; index++) {\n            int current = sorted[index];\n            int position = index - 1;\n            while (position >= 0 && sorted[position] > current) {\n                sorted[position + 1] = sorted[position];\n                position--;\n            }\n            sorted[position + 1] = current;\n        }\n        return sorted;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [5, 2, 4, 1]",
+          "output": "[1, 2, 4, 5]"
+        }
+      ],
+      "constraints": [
+        "0 ≤ numbers의 길이 ≤ 2,000",
+        "-1,000,000 ≤ numbers의 각 원소 ≤ 1,000,000",
+        "원본 배열을 변경하지 않고 새 배열을 반환해야 합니다.",
+        "표준 sort·stream 정렬·TreeSet·PriorityQueue 대신 삽입 이동 과정을 직접 구현합니다.",
+        "삽입 이동 반복문은 solve(int[]) 본문에 직접 작성하며 별도 helper로 위임하지 않습니다."
+      ],
+      "hints": [
+        "왼쪽 부분이 이미 정렬됐다고 생각하고 현재 값을 알맞은 위치에 삽입하세요.",
+        "비슷한 예시: while (position >= 0 && values[position] > current)",
+        "큰 값을 오른쪽으로 한 칸씩 민 뒤 current를 빈 위치에 넣습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "sourceContract": "insertion-sort",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "일반 배열",
+            "arguments": [
+              "new int[]{5, 2, 4, 1}"
+            ],
+            "expected": "new int[]{1, 2, 4, 5}"
+          },
+          {
+            "id": "case-2",
+            "label": "이미 정렬됨",
+            "arguments": [
+              "new int[]{1, 2, 3}"
+            ],
+            "expected": "new int[]{1, 2, 3}"
+          },
+          {
+            "id": "case-3",
+            "label": "역순",
+            "arguments": [
+              "new int[]{4, 3, 2, 1}"
+            ],
+            "expected": "new int[]{1, 2, 3, 4}"
+          },
+          {
+            "id": "case-4",
+            "label": "중복과 음수",
+            "arguments": [
+              "new int[]{0, -2, 0, 3}"
+            ],
+            "expected": "new int[]{-2, 0, 0, 3}"
+          },
+          {
+            "id": "case-5",
+            "label": "빈 배열",
+            "arguments": [
+              "new int[]{}"
+            ],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-6",
+            "label": "원본 보존과 새 배열",
+            "contract": "preserve-source-new-result",
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int[] source = {5, 2, 4, 1}; int[] original = source.clone(); int[] result = Solution.solve(source); return result != source && java.util.Arrays.equals(source, original) && java.util.Arrays.equals(result, new int[]{1, 2, 4, 5}); }).get()",
+            "expected": "true"
+          },
+          {
+            "id": "case-7",
+            "label": "빈 입력도 새 배열",
+            "contract": "empty-new-result",
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int[] source = {}; int[] result = Solution.solve(source); return result != source && result != null && result.length == 0; }).get()",
+            "expected": "true"
+          }
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "mode": "algorithm",
+      "stage": "자료구조·누적합",
+      "title": "올바른 괄호",
+      "question": "문자열 text에 (), [], {} 괄호만 주어질 때 모든 괄호의 종류와 순서가 올바르면 true를 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static boolean solve(String text) {\n        return false;\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static boolean solve(String text) {\n        Deque<Character> stack = new ArrayDeque<>();\n        for (char bracket : text.toCharArray()) {\n            if (bracket == '(' || bracket == '[' || bracket == '{') {\n                stack.push(bracket);\n                continue;\n            }\n            if (stack.isEmpty()) return false;\n            char open = stack.pop();\n            if ((bracket == ')' && open != '(') ||\n                (bracket == ']' && open != '[') ||\n                (bracket == '}' && open != '{')) return false;\n        }\n        return stack.isEmpty();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "text = \"{[()]}\"",
+          "output": "true"
+        }
+      ],
+      "constraints": [
+        "0 ≤ text의 길이 ≤ 100,000",
+        "text는 (, ), [, ], {, } 문자로만 구성됩니다.",
+        "빈 문자열은 올바른 괄호 문자열입니다."
+      ],
+      "hints": [
+        "여는 괄호는 스택에 넣고 닫는 괄호에서 가장 최근 값을 확인하세요.",
+        "비슷한 예시: Deque<Character> stack = new ArrayDeque<>();",
+        "반복이 끝난 뒤 스택이 비어 있어야 모든 여는 괄호가 닫힌 것입니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "중첩 괄호",
+            "arguments": [
+              "\"{[()]}\""
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-2",
+            "label": "종류 불일치",
+            "arguments": [
+              "\"([)]\""
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-3",
+            "label": "닫는 괄호가 먼저",
+            "arguments": [
+              "\")(\""
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 문자열",
+            "arguments": [
+              "\"\""
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-5",
+            "label": "닫히지 않은 괄호",
+            "arguments": [
+              "\"(()\""
+            ],
+            "expected": "false"
+          }
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "mode": "algorithm",
+      "stage": "자료구조·누적합",
+      "title": "오른쪽의 첫 큰 수",
+      "question": "각 원소마다 오른쪽에서 처음 만나는 더 큰 값을 반환하세요. 없으면 -1을 사용합니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] numbers) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] numbers) {\n        int[] answer = new int[numbers.length];\n        Arrays.fill(answer, -1);\n        Deque<Integer> stack = new ArrayDeque<>();\n        for (int index = 0; index < numbers.length; index++) {\n            while (!stack.isEmpty() && numbers[stack.peek()] < numbers[index]) {\n                answer[stack.pop()] = numbers[index];\n            }\n            stack.push(index);\n        }\n        return answer;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [2, 1, 5, 3]",
+          "output": "[5, 5, -1, -1]"
+        }
+      ],
+      "constraints": [
+        "0 ≤ numbers의 길이 ≤ 100,000",
+        "numbers의 각 원소는 int 범위의 정수입니다.",
+        "같은 값은 더 큰 값으로 취급하지 않습니다."
+      ],
+      "hints": [
+        "아직 더 큰 값을 찾지 못한 원소의 인덱스를 스택에 저장하세요.",
+        "비슷한 예시: while (!stack.isEmpty() && values[stack.peek()] < current)",
+        "현재 값이 더 크다면 스택에서 조건을 만족하는 인덱스를 연속해서 해결할 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "일반 배열",
+            "arguments": [
+              "new int[]{2, 1, 5, 3}"
+            ],
+            "expected": "new int[]{5, 5, -1, -1}"
+          },
+          {
+            "id": "case-2",
+            "label": "오름차순",
+            "arguments": [
+              "new int[]{1, 2, 3}"
+            ],
+            "expected": "new int[]{2, 3, -1}"
+          },
+          {
+            "id": "case-3",
+            "label": "내림차순",
+            "arguments": [
+              "new int[]{3, 2, 1}"
+            ],
+            "expected": "new int[]{-1, -1, -1}"
+          },
+          {
+            "id": "case-4",
+            "label": "중복값",
+            "arguments": [
+              "new int[]{2, 2, 3}"
+            ],
+            "expected": "new int[]{3, 3, -1}"
+          },
+          {
+            "id": "case-5",
+            "label": "빈 배열",
+            "arguments": [
+              "new int[]{}"
+            ],
+            "expected": "new int[]{}"
+          }
+        ]
+      }
+    },
+    {
+      "id": 18,
+      "mode": "algorithm",
+      "stage": "자료구조·누적합",
+      "title": "구간 합",
+      "question": "정수 배열 numbers에서 left 이상 right 이하 인덱스 구간의 합을 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int[] numbers, int left, int right) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int[] numbers, int left, int right) {\n        int[] prefix = new int[numbers.length + 1];\n        for (int index = 0; index < numbers.length; index++) {\n            prefix[index + 1] = prefix[index] + numbers[index];\n        }\n        return prefix[right + 1] - prefix[left];\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [3, 1, 4, 1, 5], left = 1, right = 3",
+          "output": "6"
+        }
+      ],
+      "constraints": [
+        "1 ≤ numbers의 길이 ≤ 100,000",
+        "-10,000 ≤ numbers의 각 원소 ≤ 10,000",
+        "0 ≤ left ≤ right < numbers의 길이",
+        "모든 구간 합은 int 범위 안에 있습니다."
+      ],
+      "hints": [
+        "prefix[i]를 0번부터 i-1번까지의 합으로 정의해 보세요.",
+        "비슷한 예시: prefix[i + 1] = prefix[i] + values[i];",
+        "구간 합은 두 누적합의 차이로 구할 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "중간 구간",
+            "arguments": [
+              "new int[]{3, 1, 4, 1, 5}",
+              "1",
+              "3"
+            ],
+            "expected": "6"
+          },
+          {
+            "id": "case-2",
+            "label": "전체 구간",
+            "arguments": [
+              "new int[]{2, 4, 6}",
+              "0",
+              "2"
+            ],
+            "expected": "12"
+          },
+          {
+            "id": "case-3",
+            "label": "한 원소 구간",
+            "arguments": [
+              "new int[]{7, -2, 5}",
+              "1",
+              "1"
+            ],
+            "expected": "-2"
+          },
+          {
+            "id": "case-4",
+            "label": "음수 포함",
+            "arguments": [
+              "new int[]{-3, 8, -1, 2}",
+              "0",
+              "2"
+            ],
+            "expected": "4"
+          }
+        ]
+      }
+    },
+    {
+      "id": 19,
+      "mode": "algorithm",
+      "stage": "자료구조·누적합",
+      "title": "최대 연속 부분합",
+      "question": "비어 있지 않은 정수 배열 numbers에서 연속한 하나 이상의 원소로 만들 수 있는 최대 합을 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int[] numbers) {\n        return 0;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int[] numbers) {\n        int current = numbers[0];\n        int best = numbers[0];\n        for (int index = 1; index < numbers.length; index++) {\n            current = Math.max(numbers[index], current + numbers[index]);\n            best = Math.max(best, current);\n        }\n        return best;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [-2, 1, -3, 4, -1, 2, 1]",
+          "output": "6"
+        }
+      ],
+      "constraints": [
+        "1 ≤ numbers의 길이 ≤ 100,000",
+        "-10,000 ≤ numbers의 각 원소 ≤ 10,000",
+        "정답은 int 범위 안에 있습니다."
+      ],
+      "hints": [
+        "현재 위치에서 새로 시작할지 이전 합에 이어 붙일지 선택하세요.",
+        "비슷한 예시: current = Math.max(value, current + value);",
+        "모두 음수인 배열도 있으므로 초깃값을 0으로 두지 마세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "중간 최대 구간",
+            "arguments": [
+              "new int[]{-2, 1, -3, 4, -1, 2, 1}"
+            ],
+            "expected": "6"
+          },
+          {
+            "id": "case-2",
+            "label": "모두 음수",
+            "arguments": [
+              "new int[]{-8, -3, -5}"
+            ],
+            "expected": "-3"
+          },
+          {
+            "id": "case-3",
+            "label": "모두 양수",
+            "arguments": [
+              "new int[]{1, 2, 3}"
+            ],
+            "expected": "6"
+          },
+          {
+            "id": "case-4",
+            "label": "한 원소",
+            "arguments": [
+              "new int[]{7}"
+            ],
+            "expected": "7"
+          },
+          {
+            "id": "case-5",
+            "label": "0 포함",
+            "arguments": [
+              "new int[]{-1, 0, -2}"
+            ],
+            "expected": "0"
+          }
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "mode": "algorithm",
+      "stage": "자료구조·누적합",
+      "title": "두 수의 합 존재",
+      "question": "정수 배열 numbers에서 서로 다른 두 인덱스의 합이 target이 되는 쌍이 있으면 true를 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static boolean solve(int[] numbers, int target) {\n        return false;\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static boolean solve(int[] numbers, int target) {\n        Set<Integer> seen = new HashSet<>();\n        for (int number : numbers) {\n            if (seen.contains(target - number)) return true;\n            seen.add(number);\n        }\n        return false;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [2, 7, 11, 15], target = 9",
+          "output": "true"
+        }
+      ],
+      "constraints": [
+        "0 ≤ numbers의 길이 ≤ 100,000",
+        "-100,000,000 ≤ numbers의 각 원소 ≤ 100,000,000",
+        "-200,000,000 ≤ target ≤ 200,000,000",
+        "같은 인덱스의 원소를 두 번 사용할 수 없습니다."
+      ],
+      "hints": [
+        "현재 값과 짝이 되는 target - current가 이전에 나왔는지 확인하세요.",
+        "비슷한 예시: Set<Integer> seen = new HashSet<>();",
+        "같은 원소 하나를 두 번 사용할 수 없으므로 검사한 뒤 현재 값을 저장하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "쌍이 존재",
+            "arguments": [
+              "new int[]{2, 7, 11, 15}",
+              "9"
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-2",
+            "label": "쌍이 없음",
+            "arguments": [
+              "new int[]{1, 2, 3}",
+              "10"
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-3",
+            "label": "중복값 두 개 사용",
+            "arguments": [
+              "new int[]{3, 3}",
+              "6"
+            ],
+            "expected": "true"
+          },
+          {
+            "id": "case-4",
+            "label": "한 원소는 재사용 불가",
+            "arguments": [
+              "new int[]{3}",
+              "6"
+            ],
+            "expected": "false"
+          },
+          {
+            "id": "case-5",
+            "label": "음수 포함",
+            "arguments": [
+              "new int[]{-4, 1, 5}",
+              "1"
+            ],
+            "expected": "true"
+          }
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "mode": "algorithm",
+      "stage": "Array·List",
+      "title": "기준을 통과한 값 모으기",
+      "question": "정수 배열 numbers를 앞에서부터 확인해 threshold 이상인 값만 원래 순서대로 담은 새 배열을 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] numbers, int threshold) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] numbers, int threshold) {\n        List<Integer> selected = new ArrayList<>();\n        for (int number : numbers) {\n            if (number >= threshold) selected.add(number);\n        }\n        int[] result = new int[selected.size()];\n        for (int index = 0; index < selected.size(); index++) result[index] = selected.get(index);\n        return result;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [4, 1, 7, 3, 7], threshold = 4",
+          "output": "[4, 7, 7]"
+        }
+      ],
+      "constraints": [
+        "0 ≤ numbers의 길이 ≤ 100,000",
+        "numbers의 각 원소와 threshold는 int 범위입니다.",
+        "원본 배열의 순서를 유지하고 원본 배열을 변경하지 않습니다."
+      ],
+      "hints": [
+        "결과 크기를 미리 알 수 없을 때는 ArrayList에 값을 차례로 추가할 수 있습니다.",
+        "비슷한 예시: List<Integer> picked = new ArrayList<>();",
+        "목록을 완성한 뒤 같은 크기의 배열을 만들고 인덱스로 옮겨 보세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "경계값과 중복 보존",
+            "arguments": ["new int[]{4,1,7,3,7}", "4"],
+            "expected": "new int[]{4,7,7}"
+          },
+          {
+            "id": "case-2",
+            "label": "선택되는 값 없음",
+            "arguments": ["new int[]{-3,-1,0}", "1"],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-3",
+            "label": "빈 배열",
+            "arguments": ["new int[]{}", "0"],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-4",
+            "label": "순서 유지",
+            "arguments": ["new int[]{9,5,8,5}", "5"],
+            "expected": "new int[]{9,5,8,5}"
+          },
+          {
+            "id": "case-5",
+            "label": "원본 보존과 새 결과",
+            "contract": "preserve-source-new-result",
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int[] source = {3,1,4}; int[] snapshot = source.clone(); int[] result = Solution.solve(source, 2); return result != source && java.util.Arrays.equals(source, snapshot) && java.util.Arrays.equals(result, new int[]{3,4}); }).get()",
+            "expected": "true"
+          },
+          {
+            "id": "case-6",
+            "label": "모든 값 선택 시에도 새 배열",
+            "contract": "preserve-source-new-result",
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int[] source = {9,5,8,5}; int[] snapshot = source.clone(); int[] result = Solution.solve(source, 5); return result != source && java.util.Arrays.equals(source, snapshot) && java.util.Arrays.equals(result, snapshot); }).get()",
+            "expected": "true"
+          },
+          {
+            "id": "case-7",
+            "label": "최대 길이 선형 선택",
+            "scaleTest": true,
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int size = 100000; int[] source = new int[size]; for (int index = 0; index < size; index++) source[index] = index; int[] snapshot = source.clone(); for (int repetition = 0; repetition < 3; repetition++) { for (int trial = 1; trial <= 3; trial++) { int threshold = trial * 25000; int[] result = Solution.solve(source, threshold); if (result == source || result.length != size - threshold || result[0] != threshold || result[result.length - 1] != size - 1) return false; } } return java.util.Arrays.equals(source, snapshot); }).get()",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "조건을 통과하는 값만 크기가 유동적인 List에 모은 뒤 결과 배열로 변환합니다.",
+        "keyPoints": [
+          "배열은 생성할 때 길이가 고정되지만 ArrayList는 선택되는 값의 수에 맞춰 늘어납니다.",
+          "값을 앞에서부터 추가하면 별도 정렬 없이 입력 순서가 유지됩니다."
+        ],
+        "alternative": "첫 순회에서 통과한 원소 수를 센 뒤 정확한 크기의 배열을 만들고 두 번째 순회에서 채울 수 있습니다.",
+        "complexity": "입력 길이 n, 선택된 값 수 k에 대해 시간 O(n), 결과를 제외한 보조 공간 O(k)"
+      }
+    },
+    {
+      "id": 22,
+      "mode": "algorithm",
+      "stage": "Array·List",
+      "title": "숫자를 거꾸로 펼치기",
+      "question": "0 이상의 정수 number를 일의 자리부터 차례대로 담은 int 배열로 반환하세요. number가 0이면 [0]을 반환합니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int number) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int number) {\n        if (number == 0) return new int[]{0};\n        List<Integer> digits = new ArrayList<>();\n        while (number > 0) {\n            digits.add(number % 10);\n            number /= 10;\n        }\n        int[] result = new int[digits.size()];\n        for (int index = 0; index < digits.size(); index++) result[index] = digits.get(index);\n        return result;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "number = 42031",
+          "output": "[1, 3, 0, 2, 4]"
+        }
+      ],
+      "constraints": [
+        "0 ≤ number ≤ 1,000,000,000",
+        "각 배열 원소는 한 자리 숫자입니다.",
+        "문자열 변환 없이 나머지와 나눗셈으로 풀 수 있습니다."
+      ],
+      "hints": [
+        "10으로 나눈 나머지는 현재 가장 오른쪽의 한 자리입니다.",
+        "비슷한 예시: int digit = value % 10;",
+        "한 자리를 저장한 뒤 10으로 나누어 다음 자리를 준비하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "중간에 0 포함",
+            "arguments": ["42031"],
+            "expected": "new int[]{1,3,0,2,4}"
+          },
+          {
+            "id": "case-2",
+            "label": "0",
+            "arguments": ["0"],
+            "expected": "new int[]{0}"
+          },
+          {
+            "id": "case-3",
+            "label": "한 자리",
+            "arguments": ["7"],
+            "expected": "new int[]{7}"
+          },
+          {
+            "id": "case-4",
+            "label": "끝자리 0 여러 개",
+            "arguments": ["12000"],
+            "expected": "new int[]{0,0,0,2,1}"
+          },
+          {
+            "id": "case-5",
+            "label": "상한값",
+            "arguments": ["1000000000"],
+            "expected": "new int[]{0,0,0,0,0,0,0,0,0,1}"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "10으로 나눈 나머지를 차례로 저장하고 몫으로 다음 자리를 준비해 숫자를 역순 자릿수 배열로 바꿉니다.",
+        "keyPoints": [
+          "number % 10은 현재 일의 자리이고 number / 10은 그 자리를 제거한 값입니다.",
+          "0은 반복문에 들어가지 않으므로 [0]을 반환하는 경계를 별도로 처리합니다."
+        ],
+        "alternative": "숫자를 문자열로 변환해 뒤에서부터 문자 숫자를 읽을 수도 있지만 나눗셈 방식이 숫자와 자릿수의 관계를 직접 보여 줍니다.",
+        "complexity": "자릿수 d에 대해 시간 O(d), 반환 배열과 임시 목록 공간 O(d)"
+      }
+    },
+    {
+      "id": 23,
+      "mode": "algorithm",
+      "stage": "Array·List",
+      "title": "가장 큰 값의 첫 자리",
+      "question": "비어 있지 않은 정수 배열 numbers에서 최댓값이 처음 등장하는 인덱스를 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static int solve(int[] numbers) {\n        return -1;\n    }\n}",
+      "answer": "public class Solution {\n    public static int solve(int[] numbers) {\n        int bestIndex = 0;\n        for (int index = 1; index < numbers.length; index++) {\n            if (numbers[index] > numbers[bestIndex]) bestIndex = index;\n        }\n        return bestIndex;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [3, 9, 4, 9, 2]",
+          "output": "1"
+        }
+      ],
+      "constraints": [
+        "1 ≤ numbers의 길이 ≤ 100,000",
+        "numbers의 각 원소는 int 범위입니다.",
+        "최댓값이 여러 번 나오면 가장 앞의 인덱스를 반환합니다."
+      ],
+      "hints": [
+        "최댓값 자체와 그 위치를 함께 갱신하거나, 현재 최적 인덱스를 저장할 수 있습니다.",
+        "비슷한 예시: if (values[index] > values[bestIndex])",
+        "같은 값에서 인덱스를 바꾸지 않으려면 비교 연산자를 주의하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "최댓값 중복",
+            "arguments": ["new int[]{3,9,4,9,2}"],
+            "expected": "1"
+          },
+          {
+            "id": "case-2",
+            "label": "한 원소",
+            "arguments": ["new int[]{-7}"],
+            "expected": "0"
+          },
+          {
+            "id": "case-3",
+            "label": "첫 원소가 최대",
+            "arguments": ["new int[]{5,4,3}"],
+            "expected": "0"
+          },
+          {
+            "id": "case-4",
+            "label": "모두 같은 값",
+            "arguments": ["new int[]{2,2,2}"],
+            "expected": "0"
+          },
+          {
+            "id": "case-5",
+            "label": "정수 최솟값 포함",
+            "arguments": ["new int[]{Integer.MIN_VALUE,-1,Integer.MIN_VALUE}"],
+            "expected": "1"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "현재 최댓값의 인덱스를 유지하며 배열을 한 번 순회하고 더 큰 값을 만났을 때만 인덱스를 갱신합니다.",
+        "keyPoints": [
+          "값과 위치를 따로 복사하기보다 bestIndex를 통해 둘을 함께 추적할 수 있습니다.",
+          "같은 최댓값에서는 갱신하지 않아 가장 앞의 인덱스가 보존됩니다."
+        ],
+        "alternative": "최댓값과 최댓값 인덱스를 두 변수로 함께 관리해도 같은 한 번의 순회로 해결할 수 있습니다.",
+        "complexity": "입력 길이 n에 대해 시간 O(n), 보조 공간 O(1)"
+      }
+    },
+    {
+      "id": 24,
+      "mode": "algorithm",
+      "stage": "Array·List",
+      "title": "좌석 번호 구성 확인",
+      "question": "길이가 n인 정수 배열 seats가 1부터 n까지의 번호를 각각 정확히 한 번씩 포함하면 true를 반환하세요.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static boolean solve(int[] seats) {\n        return false;\n    }\n}",
+      "answer": "public class Solution {\n    public static boolean solve(int[] seats) {\n        boolean[] seen = new boolean[seats.length + 1];\n        for (int seat : seats) {\n            if (seat < 1 || seat > seats.length || seen[seat]) return false;\n            seen[seat] = true;\n        }\n        return true;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "seats = [3, 1, 4, 2]",
+          "output": "true"
+        }
+      ],
+      "constraints": [
+        "1 ≤ seats의 길이 ≤ 100,000",
+        "seats의 각 원소는 int 범위입니다.",
+        "순서는 상관없지만 범위를 벗어나거나 중복된 번호가 있으면 false입니다."
+      ],
+      "hints": [
+        "번호를 인덱스로 사용할 수 있는 방문 배열을 준비해 보세요.",
+        "비슷한 예시: boolean[] seen = new boolean[length + 1];",
+        "배열에 접근하기 전에 번호가 1부터 n 사이인지 먼저 확인하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "순서가 섞인 정상 구성",
+            "arguments": ["new int[]{3,1,4,2}"],
+            "expected": "true"
+          },
+          {
+            "id": "case-2",
+            "label": "중복으로 하나 누락",
+            "arguments": ["new int[]{1,2,2,4}"],
+            "expected": "false"
+          },
+          {
+            "id": "case-3",
+            "label": "0 포함",
+            "arguments": ["new int[]{0,1,2}"],
+            "expected": "false"
+          },
+          {
+            "id": "case-4",
+            "label": "상한 초과",
+            "arguments": ["new int[]{1,2,4}"],
+            "expected": "false"
+          },
+          {
+            "id": "case-5",
+            "label": "최소 길이",
+            "arguments": ["new int[]{1}"],
+            "expected": "true"
+          },
+          {
+            "id": "case-6",
+            "label": "합계가 같은 중복과 누락",
+            "arguments": ["new int[]{1,1,4,4}"],
+            "expected": "false"
+          },
+          {
+            "id": "case-7",
+            "label": "최대 길이 순열 세 번 검증",
+            "scaleTest": true,
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int size = 100000; int[] seats = new int[size]; for (int index = 0; index < size; index++) seats[index] = size - index; for (int trial = 0; trial < 3; trial++) { if (!Solution.solve(seats)) return false; int first = seats[0]; System.arraycopy(seats, 1, seats, 0, size - 1); seats[size - 1] = first; } return true; }).get()",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "번호 범위를 먼저 검사한 뒤 방문 배열로 각 번호가 이미 등장했는지 확인합니다.",
+        "keyPoints": [
+          "배열 인덱스로 사용하기 전에 1부터 n 사이인지 검사해야 범위 오류를 막을 수 있습니다.",
+          "길이가 n인데 범위 안의 번호가 중복되지 않으면 1부터 n까지가 각각 한 번씩 있다는 뜻입니다."
+        ],
+        "alternative": "원본을 복사해 정렬한 뒤 각 인덱스의 값이 index + 1인지 확인할 수 있지만 시간 복잡도가 더 큽니다.",
+        "complexity": "입력 길이 n에 대해 시간 O(n), 방문 배열 공간 O(n)"
+      }
+    },
+    {
+      "id": 25,
+      "mode": "algorithm",
+      "stage": "Map",
+      "title": "수량이 달라진 코드 찾기",
+      "question": "정수 배열 before와 after에 기록된 코드별 등장 횟수를 비교해, 횟수가 달라진 코드를 중복 없이 오름차순 배열로 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] before, int[] after) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] before, int[] after) {\n        Map<Integer, Integer> balance = new HashMap<>();\n        for (int code : before) balance.merge(code, 1, Integer::sum);\n        for (int code : after) balance.merge(code, -1, Integer::sum);\n        return balance.entrySet().stream()\n                .filter(entry -> entry.getValue() != 0)\n                .mapToInt(Map.Entry::getKey)\n                .sorted()\n                .toArray();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "before = [4, 2, 4, 9], after = [2, 4, 7, 7]",
+          "output": "[4, 7, 9]"
+        }
+      ],
+      "constraints": [
+        "0 ≤ before와 after의 길이 ≤ 100,000",
+        "각 코드는 int 범위이며 같은 코드가 여러 번 등장할 수 있습니다.",
+        "두 입력 배열을 변경하지 않습니다."
+      ],
+      "hints": [
+        "코드를 key, 등장 횟수의 차이를 value로 저장해 보세요.",
+        "비슷한 예시: counts.merge(code, 1, Integer::sum);",
+        "한쪽 기록은 더하고 다른 쪽 기록은 빼면 value가 0이 아닌 key만 찾을 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "양쪽에 중복과 새 코드",
+            "arguments": ["new int[]{4,2,4,9}", "new int[]{2,4,7,7}"],
+            "expected": "new int[]{4,7,9}"
+          },
+          {
+            "id": "case-2",
+            "label": "순서만 다름",
+            "arguments": ["new int[]{3,1,3,2}", "new int[]{2,3,1,3}"],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-3",
+            "label": "빈 기록 두 개",
+            "arguments": ["new int[]{}", "new int[]{}"],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-4",
+            "label": "같은 종류지만 수량 다름",
+            "arguments": ["new int[]{5,5,5}", "new int[]{5}"],
+            "expected": "new int[]{5}"
+          },
+          {
+            "id": "case-5",
+            "label": "음수 코드 정렬",
+            "arguments": ["new int[]{-2,8}", "new int[]{-3,8,8}"],
+            "expected": "new int[]{-3,-2,8}"
+          },
+          {
+            "id": "case-6",
+            "label": "입력 보존",
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int[] first = {2,2,1}; int[] second = {2,3}; int[] firstCopy = first.clone(); int[] secondCopy = second.clone(); Solution.solve(first, second); return java.util.Arrays.equals(first, firstCopy) && java.util.Arrays.equals(second, secondCopy); }).get()",
+            "expected": "true"
+          },
+          {
+            "id": "case-7",
+            "label": "최대 길이 코드별 수량 비교",
+            "scaleTest": true,
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int size = 100000; int[] before = new int[size]; int[] after = new int[size]; for (int index = 0; index < size; index++) { before[index] = index; after[index] = index + 1; } for (int trial = 0; trial < 3; trial++) if (!java.util.Arrays.equals(Solution.solve(before, after), new int[]{0,100000})) return false; return true; }).get()",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "before의 등장은 더하고 after의 등장은 빼는 Map을 만든 뒤 차이가 0이 아닌 코드만 정렬해 반환합니다.",
+        "keyPoints": [
+          "Map의 key는 코드, value는 두 기록 사이의 등장 횟수 차이를 나타냅니다.",
+          "코드의 포함 여부만 비교하지 않고 value를 누적해야 같은 종류의 수량 차이도 찾을 수 있습니다."
+        ],
+        "alternative": "두 배열의 복사본을 각각 정렬한 뒤 투 포인터로 같은 값을 소거할 수 있습니다.",
+        "complexity": "두 배열의 전체 길이 n+m, 서로 다른 코드 수 u에 대해 시간 O(n+m+u log u), Map과 결과 후보 공간 O(u)"
+      }
+    },
+    {
+      "id": 26,
+      "mode": "algorithm",
+      "stage": "Map",
+      "title": "분류별 선택 조합",
+      "question": "각 원소가 물품의 분류 번호인 categoryIds가 주어집니다. 분류마다 물품을 하나까지 선택할 수 있을 때, 아무것도 선택하지 않는 경우를 제외한 조합 수를 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static long solve(int[] categoryIds) {\n        return 0L;\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static long solve(int[] categoryIds) {\n        Map<Integer, Integer> counts = new HashMap<>();\n        for (int categoryId : categoryIds) counts.merge(categoryId, 1, Integer::sum);\n        long combinations = 1L;\n        for (int count : counts.values()) combinations *= count + 1L;\n        return combinations - 1L;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "categoryIds = [10, 10, 20, 30, 30]",
+          "output": "17"
+        }
+      ],
+      "constraints": [
+        "0 ≤ categoryIds의 길이 ≤ 50",
+        "분류는 최대 10종이며 각 분류의 물품은 최대 5개입니다.",
+        "같은 분류에서는 물품을 하나만 선택하거나 선택하지 않을 수 있습니다.",
+        "결과는 long 범위 안입니다."
+      ],
+      "hints": [
+        "먼저 Map으로 분류별 물품 개수를 세어 보세요.",
+        "비슷한 예시: counts.merge(categoryId, 1, Integer::sum);",
+        "어떤 분류에 count개가 있으면 그 분류에서는 선택하지 않기까지 count + 1가지입니다.",
+        "모든 분류의 경우의 수를 곱한 뒤 전체 미선택 한 가지를 구분하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "세 분류",
+            "arguments": ["new int[]{10,10,20,30,30}"],
+            "expected": "17L"
+          },
+          {
+            "id": "case-2",
+            "label": "한 분류만 존재",
+            "arguments": ["new int[]{4,4,4}"],
+            "expected": "3L"
+          },
+          {
+            "id": "case-3",
+            "label": "모두 다른 분류",
+            "arguments": ["new int[]{1,2,3,4}"],
+            "expected": "15L"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 배열",
+            "arguments": ["new int[]{}"],
+            "expected": "0L"
+          },
+          {
+            "id": "case-5",
+            "label": "분류 번호 음수 포함",
+            "arguments": ["new int[]{-1,-1,0,0,0}"],
+            "expected": "11L"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "Map으로 분류별 물품 수를 센 뒤 각 분류의 미선택을 포함한 선택 수를 곱하고 전체 미선택 한 가지를 뺍니다.",
+        "keyPoints": [
+          "물품이 count개인 한 분류에서는 아무것도 고르지 않는 경우까지 count + 1가지입니다.",
+          "분류별 선택은 서로 독립이므로 곱셈 원리를 적용하고 마지막에 전부 미선택인 경우를 제외합니다."
+        ],
+        "alternative": "분류 번호의 범위가 작고 고정되어 있다면 HashMap 대신 빈도 배열을 사용할 수 있습니다.",
+        "complexity": "물품 수 n, 분류 수 c에 대해 시간 O(n+c), Map 공간 O(c)"
+      }
+    },
+    {
+      "id": 27,
+      "mode": "algorithm",
+      "stage": "Set",
+      "title": "등록 코드 유효성 검사",
+      "question": "정수 배열 codes의 모든 값이 min 이상 max 이하이고 서로 중복되지 않으면 true를 반환하세요. 빈 배열은 유효합니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static boolean solve(int[] codes, int min, int max) {\n        return false;\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static boolean solve(int[] codes, int min, int max) {\n        Set<Integer> used = new HashSet<>();\n        for (int code : codes) {\n            if (code < min || code > max || !used.add(code)) return false;\n        }\n        return true;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "codes = [14, 11, 19], min = 10, max = 20",
+          "output": "true"
+        }
+      ],
+      "constraints": [
+        "0 ≤ codes의 길이 ≤ 100,000",
+        "min ≤ max이며 모든 인자는 int 범위입니다.",
+        "범위 경계인 min과 max는 허용됩니다."
+      ],
+      "hints": [
+        "HashSet.add는 처음 저장한 값이면 true, 이미 있던 값이면 false를 반환합니다.",
+        "비슷한 예시: if (!seen.add(value)) { ... }",
+        "Set에 넣기 전이나 동시에 범위도 검사하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "유효한 코드",
+            "arguments": ["new int[]{14,11,19}", "10", "20"],
+            "expected": "true"
+          },
+          {
+            "id": "case-2",
+            "label": "중복",
+            "arguments": ["new int[]{3,5,3}", "1", "9"],
+            "expected": "false"
+          },
+          {
+            "id": "case-3",
+            "label": "하한 미만",
+            "arguments": ["new int[]{0,1,2}", "1", "3"],
+            "expected": "false"
+          },
+          {
+            "id": "case-4",
+            "label": "양쪽 경계",
+            "arguments": ["new int[]{-2,2}", "-2", "2"],
+            "expected": "true"
+          },
+          {
+            "id": "case-5",
+            "label": "빈 배열",
+            "arguments": ["new int[]{}", "5", "5"],
+            "expected": "true"
+          },
+          {
+            "id": "case-6",
+            "label": "상한 초과",
+            "arguments": ["new int[]{1,4}", "1", "3"],
+            "expected": "false"
+          },
+          {
+            "id": "case-7",
+            "label": "최대 길이 고유 코드",
+            "scaleTest": true,
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int size = 100000; int[] codes = new int[size]; for (int index = 0; index < size; index++) codes[index] = index; for (int trial = 0; trial < 3; trial++) if (!Solution.solve(codes, 0, size - 1)) return false; return true; }).get()",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "각 코드의 범위를 검사하고 HashSet.add의 반환값으로 이전에 사용된 코드인지 동시에 판별합니다.",
+        "keyPoints": [
+          "HashSet은 값의 포함 여부를 평균 O(1)에 확인해 전체 중복 검사를 한 번의 순회로 끝냅니다.",
+          "min과 max는 포함되는 경계이므로 미만과 초과만 거부합니다."
+        ],
+        "alternative": "허용 범위가 충분히 작다면 code - min을 인덱스로 하는 boolean 배열로 방문 여부를 관리할 수 있습니다.",
+        "complexity": "코드 수 n, 고유 코드 수 u에 대해 평균 시간 O(n), Set 공간 O(u)"
+      }
+    },
+    {
+      "id": 28,
+      "mode": "algorithm",
+      "stage": "Set",
+      "title": "두 명단 합치기",
+      "question": "정수 배열 first와 second 중 하나 이상에 등장하는 모든 값을 중복 없이 오름차순 배열로 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] first, int[] second) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] first, int[] second) {\n        Set<Integer> union = new TreeSet<>();\n        for (int value : first) union.add(value);\n        for (int value : second) union.add(value);\n        return union.stream().mapToInt(Integer::intValue).toArray();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "first = [4, 1, 4], second = [3, 1, 2]",
+          "output": "[1, 2, 3, 4]"
+        }
+      ],
+      "constraints": [
+        "0 ≤ first와 second의 길이 ≤ 100,000",
+        "각 원소는 int 범위입니다.",
+        "입력 배열 안의 중복과 두 배열 사이의 중복을 모두 제거합니다."
+      ],
+      "hints": [
+        "두 배열의 모든 값을 하나의 Set에 추가하면 합집합을 만들 수 있습니다.",
+        "비슷한 예시: Set<Integer> values = new TreeSet<>();",
+        "오름차순 결과가 필요하므로 정렬되는 Set 또는 마지막 정렬을 고려하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "양쪽 중복",
+            "arguments": ["new int[]{4,1,4}", "new int[]{3,1,2}"],
+            "expected": "new int[]{1,2,3,4}"
+          },
+          {
+            "id": "case-2",
+            "label": "한쪽 빈 배열",
+            "arguments": ["new int[]{}", "new int[]{2,2,-1}"],
+            "expected": "new int[]{-1,2}"
+          },
+          {
+            "id": "case-3",
+            "label": "둘 다 빈 배열",
+            "arguments": ["new int[]{}", "new int[]{}"],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-4",
+            "label": "완전히 같은 집합",
+            "arguments": ["new int[]{1,2}", "new int[]{2,1}"],
+            "expected": "new int[]{1,2}"
+          },
+          {
+            "id": "case-5",
+            "label": "정수 경계",
+            "arguments": ["new int[]{Integer.MAX_VALUE}", "new int[]{Integer.MIN_VALUE}"],
+            "expected": "new int[]{Integer.MIN_VALUE,Integer.MAX_VALUE}"
+          },
+          {
+            "id": "case-6",
+            "label": "큰 서로소 명단 합집합",
+            "scaleTest": true,
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int half = 50000; int[] first = new int[half]; int[] second = new int[half]; for (int index = 0; index < half; index++) { first[index] = index * 2; second[index] = index * 2 + 1; } for (int trial = 0; trial < 3; trial++) { int[] result = Solution.solve(first, second); if (result.length != 100000) return false; for (int index = 0; index < result.length; index++) if (result[index] != index) return false; } return true; }).get()",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "두 배열의 모든 값을 TreeSet 하나에 추가해 중복 제거와 오름차순 정렬을 동시에 수행합니다.",
+        "keyPoints": [
+          "합집합은 두 입력 중 적어도 한쪽에 포함된 고유 값 전체입니다.",
+          "TreeSet은 추가할 때 정렬 상태를 유지하므로 별도의 정렬 단계 없이 순서대로 꺼낼 수 있습니다."
+        ],
+        "alternative": "HashSet으로 합집합을 만든 뒤 int 배열로 옮겨 Arrays.sort를 적용할 수 있습니다.",
+        "complexity": "두 배열의 전체 길이 n+m, 합집합 크기 u에 대해 시간 O((n+m) log u), Set 공간 O(u)"
+      }
+    },
+    {
+      "id": 29,
+      "mode": "algorithm",
+      "stage": "Set",
+      "title": "첫 명단에만 남은 값",
+      "question": "정수 배열 first에는 있고 second에는 없는 값을 중복 없이 오름차순 배열로 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] first, int[] second) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] first, int[] second) {\n        Set<Integer> remaining = new TreeSet<>();\n        for (int value : first) remaining.add(value);\n        for (int value : second) remaining.remove(value);\n        return remaining.stream().mapToInt(Integer::intValue).toArray();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "first = [8, 3, 8, 1, 5], second = [3, 7, 1]",
+          "output": "[5, 8]"
+        }
+      ],
+      "constraints": [
+        "0 ≤ first와 second의 길이 ≤ 100,000",
+        "각 원소는 int 범위입니다.",
+        "같은 값의 개수가 아니라 포함 여부를 기준으로 차집합을 구합니다."
+      ],
+      "hints": [
+        "first의 고유 값을 Set에 담고 second에서 만난 값을 제거해 보세요.",
+        "비슷한 예시: remaining.remove(value);",
+        "결과의 중복 제거와 오름차순 조건도 함께 확인하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "일부만 제거",
+            "arguments": ["new int[]{8,3,8,1,5}", "new int[]{3,7,1}"],
+            "expected": "new int[]{5,8}"
+          },
+          {
+            "id": "case-2",
+            "label": "모두 제거",
+            "arguments": ["new int[]{1,2,2}", "new int[]{2,1}"],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-3",
+            "label": "second가 빈 배열",
+            "arguments": ["new int[]{3,1,3}", "new int[]{}"],
+            "expected": "new int[]{1,3}"
+          },
+          {
+            "id": "case-4",
+            "label": "first가 빈 배열",
+            "arguments": ["new int[]{}", "new int[]{1}"],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-5",
+            "label": "개수 차이가 아닌 포함 여부",
+            "arguments": ["new int[]{4,4,4,6}", "new int[]{4}"],
+            "expected": "new int[]{6}"
+          },
+          {
+            "id": "case-6",
+            "label": "큰 명단 차집합",
+            "scaleTest": true,
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int size = 100000; int[] first = new int[size]; int[] second = new int[size / 2]; for (int index = 0; index < size; index++) first[index] = index; for (int index = 0; index < second.length; index++) second[index] = index * 2; for (int trial = 0; trial < 3; trial++) { int[] result = Solution.solve(first, second); if (result.length != size / 2) return false; for (int index = 0; index < result.length; index++) if (result[index] != index * 2 + 1) return false; } return true; }).get()",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "first의 고유 값을 TreeSet에 넣고 second에서 등장한 값을 제거해 첫 집합에만 남은 값을 구합니다.",
+        "keyPoints": [
+          "차집합은 원소 개수가 아니라 포함 여부를 기준으로 하므로 second에 한 번만 나와도 해당 값을 제거합니다.",
+          "TreeSet을 사용하면 중복 제거와 오름차순 결과 조건을 함께 만족합니다."
+        ],
+        "alternative": "HashSet에서 제거한 뒤 남은 값을 배열로 바꾸고 정렬할 수 있습니다.",
+        "complexity": "두 배열의 전체 길이 n+m, first의 고유 값 수 u에 대해 시간 O((n+m) log u), Set 공간 O(u)"
+      }
+    },
+    {
+      "id": 30,
+      "mode": "algorithm",
+      "stage": "Set",
+      "title": "연속 기록 한 번만 남기기",
+      "question": "정수 배열 records에서 바로 앞 값과 같은 연속 중복만 제거하고, 처음 등장한 순서를 유지한 새 배열을 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] records) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] records) {\n        List<Integer> compact = new ArrayList<>();\n        for (int record : records) {\n            if (compact.isEmpty() || compact.get(compact.size() - 1) != record) compact.add(record);\n        }\n        return compact.stream().mapToInt(Integer::intValue).toArray();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "records = [1, 1, 3, 3, 1, 2, 2]",
+          "output": "[1, 3, 1, 2]"
+        }
+      ],
+      "constraints": [
+        "0 ≤ records의 길이 ≤ 100,000",
+        "records의 각 원소는 int 범위입니다.",
+        "서로 떨어져 있는 같은 값은 각각 남겨야 합니다.",
+        "입력 배열을 변경하지 않습니다."
+      ],
+      "hints": [
+        "전체 중복을 없애는 Set이 아니라 결과의 마지막 값과 현재 값을 비교하세요.",
+        "비슷한 예시: result.isEmpty() || result.get(result.size() - 1) != current",
+        "첫 원소는 비교할 앞 값이 없다는 경계를 따로 고려하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "떨어진 같은 값 보존",
+            "arguments": ["new int[]{1,1,3,3,1,2,2}"],
+            "expected": "new int[]{1,3,1,2}"
+          },
+          {
+            "id": "case-2",
+            "label": "모두 같은 값",
+            "arguments": ["new int[]{5,5,5}"],
+            "expected": "new int[]{5}"
+          },
+          {
+            "id": "case-3",
+            "label": "연속 중복 없음",
+            "arguments": ["new int[]{2,1,2,1}"],
+            "expected": "new int[]{2,1,2,1}"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 배열",
+            "arguments": ["new int[]{}"],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-5",
+            "label": "원본 보존",
+            "contract": "preserve-source-new-result",
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int[] source = {1,1,2,1}; int[] copy = source.clone(); int[] result = Solution.solve(source); return result != source && java.util.Arrays.equals(source, copy) && java.util.Arrays.equals(result, new int[]{1,2,1}); }).get()",
+            "expected": "true"
+          },
+          {
+            "id": "case-6",
+            "label": "중복이 없어도 새 배열",
+            "contract": "preserve-source-new-result",
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int[] source = {2,1,2,1}; int[] snapshot = source.clone(); int[] result = Solution.solve(source); return result != source && java.util.Arrays.equals(source, snapshot) && java.util.Arrays.equals(result, snapshot); }).get()",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "결과 목록의 마지막 값과 현재 값을 비교해 서로 다를 때만 추가함으로써 연속 중복만 제거합니다.",
+        "keyPoints": [
+          "HashSet을 쓰면 떨어져 다시 등장한 값까지 사라지므로 이 문제의 연속 중복 조건과 다릅니다.",
+          "빈 결과에서는 마지막 원소가 없으므로 isEmpty 검사를 먼저 해야 합니다."
+        ],
+        "alternative": "입력 길이의 임시 배열과 쓰기 인덱스를 사용한 뒤 실제 길이만큼 Arrays.copyOf로 잘라낼 수 있습니다.",
+        "complexity": "입력 길이 n에 대해 시간 O(n), 반환 배열을 포함한 목록 공간 O(n)"
+      }
+    },
+    {
+      "id": 31,
+      "mode": "algorithm",
+      "stage": "Stack·Queue·Deque",
+      "title": "앞 작업과 함께 내보내기",
+      "question": "작업은 배열 순서대로만 내보낼 수 있고 앞 작업을 추월할 수 없습니다. 각 작업이 준비되는 날짜 readyDays가 주어질 때, 내보내는 날마다 묶이는 작업 개수를 배열로 반환하세요. 앞 작업의 출고일까지 이미 준비된 뒤 작업은 같은 묶음에 포함됩니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] readyDays) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] readyDays) {\n        Queue<Integer> waiting = new ArrayDeque<>();\n        for (int day : readyDays) waiting.add(day);\n        List<Integer> batches = new ArrayList<>();\n        while (!waiting.isEmpty()) {\n            int releaseDay = waiting.remove();\n            int count = 1;\n            while (!waiting.isEmpty() && waiting.peek() <= releaseDay) {\n                waiting.remove();\n                count++;\n            }\n            batches.add(count);\n        }\n        return batches.stream().mapToInt(Integer::intValue).toArray();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "readyDays = [4, 2, 7, 6, 8]",
+          "output": "[2, 2, 1]"
+        }
+      ],
+      "constraints": [
+        "0 ≤ readyDays의 길이 ≤ 100,000",
+        "0 ≤ 각 준비 날짜 ≤ 1,000,000",
+        "작업은 입력 순서를 바꾸지 않으며 한 작업은 정확히 한 번 내보냅니다."
+      ],
+      "hints": [
+        "Queue의 맨 앞 작업이 현재 묶음의 출고 날짜를 결정합니다.",
+        "비슷한 예시: int releaseDay = waiting.remove();",
+        "다음 작업의 준비 날짜가 releaseDay 이하인 동안 같은 묶음으로 꺼내 보세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "여러 묶음",
+            "arguments": ["new int[]{4,2,7,6,8}"],
+            "expected": "new int[]{2,2,1}"
+          },
+          {
+            "id": "case-2",
+            "label": "뒤 작업이 모두 먼저 준비",
+            "arguments": ["new int[]{5,4,3,2}"],
+            "expected": "new int[]{4}"
+          },
+          {
+            "id": "case-3",
+            "label": "각각 다른 날 출고",
+            "arguments": ["new int[]{1,2,3}"],
+            "expected": "new int[]{1,1,1}"
+          },
+          {
+            "id": "case-4",
+            "label": "같은 준비 날짜",
+            "arguments": ["new int[]{3,3,3}"],
+            "expected": "new int[]{3}"
+          },
+          {
+            "id": "case-5",
+            "label": "빈 대기열",
+            "arguments": ["new int[]{}"],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-6",
+            "label": "최대 길이 단일 출고 묶음",
+            "scaleTest": true,
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int size = 100000; int[] readyDays = new int[size]; for (int index = 0; index < size; index++) readyDays[index] = size - index; for (int trial = 0; trial < 6; trial++) if (!java.util.Arrays.equals(Solution.solve(readyDays), new int[]{size})) return false; return true; }).get()",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "Queue의 맨 앞 준비 날짜를 현재 출고일로 정하고, 그날까지 준비된 연속한 뒤 작업을 함께 꺼내 묶음 크기를 기록합니다.",
+        "keyPoints": [
+          "뒤 작업은 앞 작업을 추월할 수 없으므로 대기열의 선입선출 순서가 문제 조건과 일치합니다.",
+          "각 작업은 Queue에 한 번 들어가고 한 번 나오므로 중첩 반복문처럼 보여도 전체 제거 횟수는 n번입니다."
+        ],
+        "alternative": "배열 인덱스와 현재 묶음의 출고일을 유지해 추가 Queue 없이 같은 순차 처리를 구현할 수 있습니다.",
+        "complexity": "작업 수 n에 대해 시간 O(n), Queue와 결과 목록 공간 O(n)"
+      }
+    },
+    {
+      "id": 32,
+      "mode": "algorithm",
+      "stage": "Stack·Queue·Deque",
+      "title": "양방향 대기열 명령",
+      "question": "commands의 각 행은 [type, value]입니다. type 1은 앞에 value 추가, 2는 뒤에 추가, 3은 앞에서 제거, 4는 뒤에서 제거입니다. 제거 명령마다 제거된 값을 순서대로 반환하고, 비어 있으면 -1을 기록하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[][] commands) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[][] commands) {\n        Deque<Integer> deque = new ArrayDeque<>();\n        List<Integer> removed = new ArrayList<>();\n        for (int[] command : commands) {\n            int type = command[0];\n            if (type == 1) deque.addFirst(command[1]);\n            else if (type == 2) deque.addLast(command[1]);\n            else if (type == 3) removed.add(deque.isEmpty() ? -1 : deque.removeFirst());\n            else removed.add(deque.isEmpty() ? -1 : deque.removeLast());\n        }\n        return removed.stream().mapToInt(Integer::intValue).toArray();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "commands = [[1,4],[2,7],[1,2],[4,0],[3,0],[3,0]]",
+          "output": "[7, 2, 4]"
+        }
+      ],
+      "constraints": [
+        "0 ≤ commands의 길이 ≤ 100,000",
+        "각 행의 길이는 2이고 type은 1부터 4 사이입니다.",
+        "type 1과 2에서 value는 int 범위이며 type 3과 4의 두 번째 값은 사용하지 않습니다.",
+        "입력 배열을 변경하지 않습니다."
+      ],
+      "hints": [
+        "Deque는 addFirst, addLast, removeFirst, removeLast로 양쪽 끝을 다룰 수 있습니다.",
+        "비슷한 예시: Deque<Integer> deque = new ArrayDeque<>();",
+        "제거하기 전 isEmpty로 빈 상태를 확인하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "양쪽 추가와 제거",
+            "arguments": ["new int[][]{{1,4},{2,7},{1,2},{4,0},{3,0},{3,0}}"],
+            "expected": "new int[]{7,2,4}"
+          },
+          {
+            "id": "case-2",
+            "label": "빈 상태에서 양쪽 제거",
+            "arguments": ["new int[][]{{3,0},{4,0}}"],
+            "expected": "new int[]{-1,-1}"
+          },
+          {
+            "id": "case-3",
+            "label": "앞뒤 순서 구분",
+            "arguments": ["new int[][]{{2,1},{2,2},{1,3},{3,0},{4,0},{3,0}}"],
+            "expected": "new int[]{3,2,1}"
+          },
+          {
+            "id": "case-4",
+            "label": "제거 명령 없음",
+            "arguments": ["new int[][]{{1,-5},{2,9}}"],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-5",
+            "label": "입력 보존",
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int[][] source = {{1,3},{2,4},{3,0}}; int[][] copy = java.util.Arrays.stream(source).map(int[]::clone).toArray(int[][]::new); Solution.solve(source); return java.util.Arrays.deepEquals(source, copy); }).get()",
+            "expected": "true"
+          },
+          {
+            "id": "case-6",
+            "label": "최대 길이 선입선출",
+            "scaleTest": true,
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int half = 50000; int[][] commands = new int[half * 2][2]; for (int index = 0; index < half; index++) { commands[index][0] = 2; commands[index][1] = index; commands[half + index][0] = 3; } for (int trial = 0; trial < 20; trial++) { int[] result = Solution.solve(commands); if (result.length != half) return false; for (int index = 0; index < half; index++) if (result[index] != index) return false; } return true; }).get()",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "ArrayDeque에 명령을 그대로 대응시켜 양쪽 추가·제거를 처리하고 제거 결과만 별도 목록에 기록합니다.",
+        "keyPoints": [
+          "Deque는 앞과 뒤의 추가·제거를 모두 O(1)에 지원해 네 명령을 한 자료구조로 처리합니다.",
+          "removeFirst나 removeLast를 호출하기 전에 빈 상태를 검사해야 예외 대신 -1을 기록할 수 있습니다."
+        ],
+        "alternative": "고정 크기 원형 배열과 head·tail 인덱스를 직접 관리해 양방향 큐를 구현할 수 있습니다.",
+        "complexity": "명령 수 c에 대해 시간 O(c), 대기 값과 제거 결과를 위한 공간 O(c)"
+      }
+    },
+    {
+      "id": 33,
+      "mode": "algorithm",
+      "stage": "Stack·Queue·Deque",
+      "title": "긴급도 순서의 내 차례",
+      "question": "대기 순서대로 긴급도 priorities가 주어집니다. 맨 앞 요청보다 긴급도가 높은 요청이 남아 있으면 맨 앞 요청을 뒤로 보내고, 아니면 처리합니다. targetIndex의 요청이 몇 번째로 처리되는지 1부터 시작하는 순번으로 반환하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int solve(int[] priorities, int targetIndex) {\n        return 0;\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int solve(int[] priorities, int targetIndex) {\n        Queue<Integer> waiting = new ArrayDeque<>();\n        PriorityQueue<Integer> remaining = new PriorityQueue<>(Comparator.reverseOrder());\n        for (int index = 0; index < priorities.length; index++) {\n            waiting.add(index);\n            remaining.add(priorities[index]);\n        }\n        int order = 0;\n        while (!waiting.isEmpty()) {\n            int current = waiting.remove();\n            if (priorities[current] < remaining.peek()) {\n                waiting.add(current);\n                continue;\n            }\n            remaining.remove();\n            order++;\n            if (current == targetIndex) return order;\n        }\n        return order;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "priorities = [2, 1, 3, 2], targetIndex = 0",
+          "output": "3"
+        }
+      ],
+      "constraints": [
+        "1 ≤ priorities의 길이 ≤ 100,000",
+        "1 ≤ 각 긴급도 ≤ 9",
+        "0 ≤ targetIndex < priorities의 길이",
+        "긴급도가 같으면 현재 대기열에서 앞선 요청이 먼저 처리됩니다."
+      ],
+      "hints": [
+        "Queue에는 요청 인덱스를, 최대 힙에는 아직 남은 긴급도를 저장할 수 있습니다.",
+        "비슷한 예시: PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Comparator.reverseOrder());",
+        "실제로 처리할 때만 최대 힙에서도 값을 하나 제거하세요."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "앞 요청이 뒤로 이동",
+            "arguments": ["new int[]{2,1,3,2}", "0"],
+            "expected": "3"
+          },
+          {
+            "id": "case-2",
+            "label": "같은 최대 긴급도",
+            "arguments": ["new int[]{9,1,9}", "2"],
+            "expected": "2"
+          },
+          {
+            "id": "case-3",
+            "label": "모두 같은 긴급도",
+            "arguments": ["new int[]{4,4,4}", "2"],
+            "expected": "3"
+          },
+          {
+            "id": "case-4",
+            "label": "한 요청",
+            "arguments": ["new int[]{1}", "0"],
+            "expected": "1"
+          },
+          {
+            "id": "case-5",
+            "label": "긴급도가 오름차순",
+            "arguments": ["new int[]{1,2,3,4}", "0"],
+            "expected": "4"
+          },
+          {
+            "id": "case-6",
+            "label": "최대 길이 동일 긴급도",
+            "scaleTest": true,
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int size = 100000; int[] priorities = new int[size]; java.util.Arrays.fill(priorities, 5); int[] targets = {size - 1, size / 2, 0}; for (int target : targets) if (Solution.solve(priorities, target) != target + 1) return false; return true; }).get()",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "Queue로 현재 대기 순서를 유지하고 최대 힙으로 남은 요청의 최고 긴급도를 확인해 처리 또는 재배치를 결정합니다.",
+        "keyPoints": [
+          "Queue에는 인덱스를 저장해야 같은 긴급도의 요청 중 targetIndex를 정확히 추적할 수 있습니다.",
+          "요청이 실제 처리될 때만 최대 힙에서도 하나를 제거해야 두 자료구조의 남은 원소가 일치합니다."
+        ],
+        "alternative": "긴급도가 1부터 9로 제한되므로 크기 10의 빈도 배열에서 현재 최고 긴급도를 찾아 최대 힙을 대체할 수 있습니다.",
+        "complexity": "요청 수 n에 대해 긴급도 종류가 9개로 고정되어 시간 O(n log n), Queue와 힙 공간 O(n)"
+      }
+    },
+    {
+      "id": 34,
+      "mode": "algorithm",
+      "stage": "선형 탐색",
+      "title": "겹치는 시작 코드 검사",
+      "question": "문자열 배열 codes에서 어떤 코드가 다른 인덱스 코드의 접두어이면 false를 반환하고, 그런 쌍이 없으면 true를 반환하세요. 같은 코드가 두 번 나온 경우도 충돌입니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static boolean solve(String[] codes) {\n        return false;\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static boolean solve(String[] codes) {\n        Set<String> all = new HashSet<>();\n        for (String code : codes) {\n            if (!all.add(code)) return false;\n        }\n        for (String code : codes) {\n            for (int length = 1; length < code.length(); length++) {\n                if (all.contains(code.substring(0, length))) return false;\n            }\n        }\n        return true;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "codes = [\"ax\", \"ax7\", \"b3\"]",
+          "output": "false"
+        }
+      ],
+      "constraints": [
+        "0 ≤ codes의 길이 ≤ 100,000",
+        "각 코드는 1개 이상 30개 이하의 영문 소문자와 숫자로 구성됩니다.",
+        "접두어는 문자열의 첫 문자부터 연속한 부분입니다.",
+        "입력 배열의 순서와 문자열을 변경하지 않습니다."
+      ],
+      "hints": [
+        "모든 코드를 Set에 넣고 각 코드의 앞부분이 Set에 존재하는지 확인할 수 있습니다.",
+        "비슷한 예시: code.substring(0, length)",
+        "완전히 같은 두 코드는 부분 접두어 반복문과 별도로 탐지해야 합니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "앞 코드가 접두어",
+            "arguments": ["new String[]{\"ax\",\"ax7\",\"b3\"}"],
+            "expected": "false"
+          },
+          {
+            "id": "case-2",
+            "label": "뒤에 짧은 코드",
+            "arguments": ["new String[]{\"river9\",\"sky\",\"river\"}"],
+            "expected": "false"
+          },
+          {
+            "id": "case-3",
+            "label": "충돌 없음",
+            "arguments": ["new String[]{\"ab\",\"ac\",\"b1\"}"],
+            "expected": "true"
+          },
+          {
+            "id": "case-4",
+            "label": "완전 중복",
+            "arguments": ["new String[]{\"x2\",\"x2\"}"],
+            "expected": "false"
+          },
+          {
+            "id": "case-5",
+            "label": "빈 배열",
+            "arguments": ["new String[]{}"],
+            "expected": "true"
+          },
+          {
+            "id": "case-6",
+            "label": "입력 순서 보존",
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { String[] source = {\"river9\",\"sky\",\"river\"}; String[] snapshot = source.clone(); boolean result = Solution.solve(source); return !result && java.util.Arrays.equals(source, snapshot); }).get()",
+            "expected": "true"
+          },
+          {
+            "id": "case-7",
+            "label": "큰 접두어 없는 코드 집합",
+            "scaleTest": true,
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int size = 50000; String[] codes = new String[size]; for (int index = 0; index < size; index++) codes[index] = \"p\" + index + \"x\"; return Solution.solve(codes); }).get()",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "모든 코드를 HashSet에 저장하고 각 코드의 가능한 앞부분을 만들어 Set에 있는지 확인합니다.",
+        "keyPoints": [
+          "접두어는 문자열의 시작 인덱스가 0인 부분 문자열만 확인하면 됩니다.",
+          "서로 같은 두 코드는 전체 길이보다 짧은 접두어 검사로 잡히지 않으므로 Set 삽입 실패로 따로 탐지합니다."
+        ],
+        "alternative": "코드 복사본을 사전순 정렬하면 접두어 관계가 있는 두 문자열은 인접하므로 이웃끼리 startsWith를 검사할 수 있습니다.",
+        "complexity": "코드별 길이를 li, 최대 길이를 k라 할 때 현재 substring 생성까지 시간 O(Σli²), 문자열과 Set 공간 O(Σli); k는 최대 30입니다."
+      }
+    },
+    {
+      "id": 35,
+      "mode": "algorithm",
+      "stage": "선형 탐색",
+      "title": "두 문자의 출현 균형",
+      "question": "문자열 text에서 영문 대소문자를 구분하지 않고 문자 first와 second의 등장 횟수가 같으면 true를 반환하세요. 두 문자 모두 없으면 true입니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static boolean solve(String text, char first, char second) {\n        return false;\n    }\n}",
+      "answer": "public class Solution {\n    public static boolean solve(String text, char first, char second) {\n        char normalizedFirst = Character.toLowerCase(first);\n        char normalizedSecond = Character.toLowerCase(second);\n        int balance = 0;\n        for (int index = 0; index < text.length(); index++) {\n            char current = Character.toLowerCase(text.charAt(index));\n            if (current == normalizedFirst) balance++;\n            else if (current == normalizedSecond) balance--;\n        }\n        return balance == 0;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "text = \"Peep\", first = 'p', second = 'e'",
+          "output": "true"
+        }
+      ],
+      "constraints": [
+        "0 ≤ text의 길이 ≤ 100,000",
+        "text는 영문자와 공백으로 구성됩니다.",
+        "first와 second는 서로 다른 영문자입니다.",
+        "first와 second 자체의 대소문자도 구분하지 않습니다."
+      ],
+      "hints": [
+        "비교 전에 Character.toLowerCase로 세 문자를 같은 기준으로 바꿔 보세요.",
+        "비슷한 예시: char current = Character.toLowerCase(text.charAt(index));",
+        "한 문자를 만나면 1을 더하고 다른 문자를 만나면 1을 빼는 balance도 사용할 수 있습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "대소문자 혼합 균형",
+            "arguments": ["\"Peep\"", "'p'", "'e'"],
+            "expected": "true"
+          },
+          {
+            "id": "case-2",
+            "label": "개수 불일치",
+            "arguments": ["\"Paper plane\"", "'p'", "'a'"],
+            "expected": "false"
+          },
+          {
+            "id": "case-3",
+            "label": "두 문자 모두 없음",
+            "arguments": ["\"hello world\"", "'x'", "'z'"],
+            "expected": "true"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 문자열",
+            "arguments": ["\"\"", "'a'", "'b'"],
+            "expected": "true"
+          },
+          {
+            "id": "case-5",
+            "label": "인자도 대문자",
+            "arguments": ["\"AaBbA\"", "'A'", "'B'"],
+            "expected": "false"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "문자를 소문자로 정규화한 뒤 first는 balance를 늘리고 second는 줄여 마지막 값이 0인지 확인합니다.",
+        "keyPoints": [
+          "입력 문자와 비교 대상 문자를 같은 대소문자 기준으로 바꿔야 대소문자 혼합 입력을 올바르게 셉니다.",
+          "두 문자 모두 없을 때도 balance가 0이므로 요구한 true 결과가 자연스럽게 나옵니다."
+        ],
+        "alternative": "두 개의 독립된 count 변수를 사용해 각각 센 뒤 마지막에 같은지 비교할 수 있습니다.",
+        "complexity": "문자열 길이 n에 대해 시간 O(n), 보조 공간 O(1)"
+      }
+    },
+    {
+      "id": 36,
+      "mode": "algorithm",
+      "stage": "선형 탐색",
+      "title": "선행 단계 준수 확인",
+      "question": "서로 다른 문자로 된 rule은 지켜야 할 단계 순서입니다. activity를 왼쪽부터 보며 rule에 속한 단계가 빠짐없이 선행 순서대로만 나타나면 true를 반환하세요. rule에 없는 문자는 무시합니다.",
+      "html": "",
+      "starterCode": "public class Solution {\n    public static boolean solve(String rule, String activity) {\n        return false;\n    }\n}",
+      "answer": "public class Solution {\n    public static boolean solve(String rule, String activity) {\n        int next = 0;\n        for (int index = 0; index < activity.length(); index++) {\n            char step = activity.charAt(index);\n            if (rule.indexOf(step) < 0) continue;\n            if (next >= rule.length() || step != rule.charAt(next)) return false;\n            next++;\n        }\n        return true;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "rule = \"ABC\", activity = \"XAYBZC\"",
+          "output": "true"
+        }
+      ],
+      "constraints": [
+        "0 ≤ rule의 길이 ≤ 26",
+        "0 ≤ activity의 길이 ≤ 100,000",
+        "두 문자열은 영문 대문자로 구성되고 rule 안의 문자는 서로 다릅니다.",
+        "rule의 뒤 단계는 생략할 수 있지만 앞 단계를 건너뛴 채 등장할 수 없습니다."
+      ],
+      "hints": [
+        "다음에 나와야 하는 rule의 인덱스를 하나만 유지해도 됩니다.",
+        "비슷한 예시: if (rule.indexOf(step) < 0) continue;",
+        "rule에 속한 문자를 만났는데 현재 기대한 문자와 다르면 순서 위반입니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "무관한 문자 사이 정상 순서",
+            "arguments": ["\"ABC\"", "\"XAYBZC\""],
+            "expected": "true"
+          },
+          {
+            "id": "case-2",
+            "label": "첫 단계보다 둘째가 먼저",
+            "arguments": ["\"ABC\"", "\"BAC\""],
+            "expected": "false"
+          },
+          {
+            "id": "case-3",
+            "label": "중간 단계 건너뜀",
+            "arguments": ["\"ABC\"", "\"AXC\""],
+            "expected": "false"
+          },
+          {
+            "id": "case-4",
+            "label": "관련 단계 없음",
+            "arguments": ["\"QRS\"", "\"ABCD\""],
+            "expected": "true"
+          },
+          {
+            "id": "case-5",
+            "label": "빈 규칙",
+            "arguments": ["\"\"", "\"ANYTHING\""],
+            "expected": "true"
+          },
+          {
+            "id": "case-6",
+            "label": "이미 지난 단계 반복",
+            "arguments": ["\"AB\"", "\"AAB\""],
+            "expected": "false"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "activity를 한 번 훑으며 rule에 속한 문자를 만날 때만 다음 기대 단계와 비교하고 기대 인덱스를 전진시킵니다.",
+        "keyPoints": [
+          "rule에 없는 문자는 단계 순서에 영향을 주지 않으므로 건너뜁니다.",
+          "앞 단계를 생략하고 뒤 단계가 나타나거나 이미 지난 단계가 반복되면 현재 기대 문자와 달라 즉시 실패합니다."
+        ],
+        "alternative": "문자별 rule 위치를 크기 26의 배열에 저장하면 indexOf 탐색 없이 각 문자의 관련 여부를 O(1)에 판단할 수 있습니다.",
+        "complexity": "activity 길이 n, rule 길이 r에 대해 시간 O(n·r), 보조 공간 O(1); r은 최대 26입니다."
+      }
+    },
+    {
+      "id": 37,
+      "mode": "algorithm",
+      "stage": "정렬",
+      "title": "가장 낮은 기록 모두 제외",
+      "question": "정수 배열 numbers에서 최솟값과 같은 모든 원소를 제외하고 나머지 원소를 원래 순서대로 담은 새 배열을 반환하세요. 빈 배열이거나 모두 최솟값이면 빈 배열을 반환합니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] numbers) {\n        return new int[0];\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {\n    public static int[] solve(int[] numbers) {\n        if (numbers.length == 0) return new int[0];\n        int minimum = numbers[0];\n        for (int number : numbers) minimum = Math.min(minimum, number);\n        List<Integer> kept = new ArrayList<>();\n        for (int number : numbers) if (number != minimum) kept.add(number);\n        return kept.stream().mapToInt(Integer::intValue).toArray();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "numbers = [4, 1, 3, 1, 2]",
+          "output": "[4, 3, 2]"
+        }
+      ],
+      "constraints": [
+        "0 ≤ numbers의 길이 ≤ 100,000",
+        "numbers의 각 원소는 int 범위입니다.",
+        "최솟값이 여러 번이면 모두 제외합니다.",
+        "입력 배열을 변경하지 않습니다."
+      ],
+      "hints": [
+        "첫 순회에서 최솟값을 찾고 두 번째 순회에서 다른 값만 모을 수 있습니다.",
+        "비슷한 예시: minimum = Math.min(minimum, current);",
+        "최솟값의 인덱스 하나만 제외하면 중복 최솟값 테스트를 통과할 수 없습니다."
+      ],
+      "required": {
+        "className": "Solution",
+        "methodName": "solve",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "중복 최솟값 모두 제거",
+            "arguments": ["new int[]{4,1,3,1,2}"],
+            "expected": "new int[]{4,3,2}"
+          },
+          {
+            "id": "case-2",
+            "label": "한 원소",
+            "arguments": ["new int[]{7}"],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-3",
+            "label": "모두 같은 값",
+            "arguments": ["new int[]{2,2,2}"],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 배열",
+            "arguments": ["new int[]{}"],
+            "expected": "new int[]{}"
+          },
+          {
+            "id": "case-5",
+            "label": "음수 최솟값",
+            "arguments": ["new int[]{-2,0,-3,-3}"],
+            "expected": "new int[]{-2,0}"
+          },
+          {
+            "id": "case-6",
+            "label": "원본 보존과 새 결과",
+            "contract": "preserve-source-new-result",
+            "expression": "((java.util.function.Supplier<Boolean>) () -> { int[] source = {3,1,2}; int[] copy = source.clone(); int[] result = Solution.solve(source); return result != source && java.util.Arrays.equals(source, copy) && java.util.Arrays.equals(result, new int[]{3,2}); }).get()",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "첫 순회에서 전체 최솟값을 찾고 두 번째 순회에서 그 값과 다른 원소만 원래 순서대로 모읍니다.",
+        "keyPoints": [
+          "최솟값의 위치 하나가 아니라 값과 같은 모든 원소를 제외해야 합니다.",
+          "원본 배열을 정렬하거나 덮어쓰지 않아 입력 순서와 입력 불변성을 모두 지킵니다."
+        ],
+        "alternative": "최솟값이 아닌 원소 수를 먼저 세어 정확한 길이의 배열을 만들면 ArrayList 없이 결과를 채울 수 있습니다.",
+        "complexity": "입력 길이 n에 대해 시간 O(n), 반환 결과와 임시 목록 공간 O(n)"
+      }
+    }
+  ]
+}

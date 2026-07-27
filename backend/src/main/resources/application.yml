@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/codequest}
+    username: ${SPRING_DATASOURCE_USERNAME:codequest}
+    password: ${SPRING_DATASOURCE_PASSWORD:codequest-local}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    baseline-on-migrate: ${FLYWAY_BASELINE_ON_MIGRATE:false}
+    baseline-version: 0
+  jackson:
+    default-property-inclusion: non_null
+server:
+  error:
+    include-message: never
+    include-stacktrace: never
+codequest:
+  catalog:
+    expected-count: 343
+  renderer:
+    url: ${CSS_RENDERER_URL:http://localhost:3001}
+  java-runner:
+    url: ${JAVA_RUNNER_URL:http://localhost:3002}
+    token: ${JAVA_RUNNER_TOKEN}
+  javascript-runner:
+    url: ${JAVASCRIPT_RUNNER_URL:http://localhost:3003}
+    token: ${JAVASCRIPT_RUNNER_TOKEN}
