@@ -3,6 +3,50 @@
 현재 Code Quest는 HTML부터 알고리즘까지 순서대로 실습하는 오픈소스 웹 학습 플랫폼입니다.
 입문자가 직접 코드를 작성하고 즉시 결과와 피드백을 받는 용도로 설계되어 있습니다.
 
+## 가장 쉬운 실행 방법
+
+필요한 것은 실행 중인 **Docker Desktop**뿐입니다. 토큰이나 `.env`를 직접 만들 필요가 없습니다.
+운영체제에 맞는 시작 파일이 안전한 로컬 비밀번호와 서로 다른 runner token을 자동 생성하고,
+전체 서비스를 빌드한 뒤 <http://localhost:3000>을 엽니다.
+
+| 운영체제 | 압축을 풀거나 저장소를 복제한 뒤 |
+|---|---|
+| macOS | `start.command`를 더블클릭하거나 터미널에서 `./start.sh` 실행 |
+| Windows | `start.cmd`를 더블클릭 |
+| Linux | 터미널에서 `./start.sh` 실행 |
+
+macOS가 파일 실행을 막거나 macOS·Linux에서 실행 권한이 사라진 경우에는 프로젝트 폴더에서
+다음 명령을 사용하면 됩니다.
+
+```bash
+bash start.sh
+```
+
+GitHub에서 내려받을 때는 다음 명령만 실행하면 됩니다.
+
+```bash
+git clone https://github.com/goonbam090/code-quest.git
+cd code-quest
+
+# macOS·Linux
+./start.sh
+
+# Windows에서는 start.cmd를 더블클릭
+```
+
+첫 실행은 Chromium과 Java 이미지를 내려받고 빌드하므로 인터넷 환경에 따라 몇 분 걸릴 수 있습니다.
+이후 실행은 Docker 캐시를 사용해 더 빠릅니다. 자동 생성된 `.env`는 Git에서 제외되며 비밀번호와
+토큰을 화면이나 로그에 출력하지 않습니다. 정상적인 기존 `.env`는 그대로 사용하고, 잘못된
+runner token만 발견되면 원본을 `.env.backup-*`으로 보관한 뒤 해당 token만 자동 복구합니다.
+
+종료해도 학습 진도를 유지하려면 다음 명령을 사용합니다.
+
+```bash
+docker compose down
+```
+
+처음 실행하는 사람을 위한 짧은 안내는 [`START_HERE.md`](START_HERE.md)에서도 확인할 수 있습니다.
+
 ## 학습 구성
 
 첫 방문 시 `HTML Quest → 문서 구조 → 1번 문제`로 시작합니다. 상단 학습 흐름은
@@ -210,25 +254,37 @@ javascript-runner`로 명시적으로 중지한 경우에는 자동 재시작하
 > 서비스에서는 요청별 일회용 컨테이너와 gVisor·Kata Containers·Firecracker 같은 별도 커널
 > 또는 microVM 격리를 추가해야 합니다.
 
-## 실행
+## 상세 실행과 문제 해결
 
-Docker Desktop이 실행된 상태에서:
+권장 방법은 Docker Desktop을 실행한 뒤 운영체제에 맞는 시작 파일을 사용하는 것입니다.
 
 ```bash
-cp .env.example .env
-# 서로 다른 32바이트 난수(64자리 hex)를 생성해 각 token 값으로 복사
-# 첫 번째 값: JAVA_RUNNER_TOKEN
-openssl rand -hex 32
-# 두 번째 값: JAVASCRIPT_RUNNER_TOKEN
-openssl rand -hex 32
-# .env의 POSTGRES_PASSWORD도 로컬 고유 값으로 변경
-docker compose up --build
+# macOS·Linux
+./start.sh
+
+# Windows
+start.cmd
 ```
 
-`.env`는 Git에서 제외됩니다. 예시 placeholder는 runner가 거부하므로 그대로 사용할 수 없으며,
-백엔드와 각 runner에는 Compose가 해당 `JAVA_RUNNER_TOKEN`과 `JAVASCRIPT_RUNNER_TOKEN`을
-전달합니다. 두 값은 서로 달라야 하며 로컬 서비스 간 인증용으로만 사용하고 브라우저에는 전달하지
-않습니다.
+시작 파일은 다음 작업을 순서대로 수행합니다.
+
+1. Docker CLI, Docker Compose와 Docker Engine 상태를 확인합니다.
+2. `.env`가 없으면 암호학적으로 안전한 PostgreSQL 비밀번호와 64자리 token 두 개를 생성합니다.
+3. Compose 구성을 검사합니다.
+4. 모든 서비스를 빌드하고 health check가 통과할 때까지 기다립니다.
+5. 브라우저에서 Code Quest를 엽니다.
+
+직접 실행해야 하는 환경에서는 먼저 `.env.example`을 `.env`로 복사하고
+`POSTGRES_PASSWORD`, `JAVA_RUNNER_TOKEN`, `JAVASCRIPT_RUNNER_TOKEN`을 교체한 뒤 다음 명령을
+사용할 수도 있습니다.
+
+```bash
+docker compose up --detach --build --wait
+```
+
+예시 placeholder는 runner가 거부합니다. 두 token은 각각 32바이트 이상이어야 하고 서로 달라야
+합니다. `.env`는 Git에서 제외되며 token은 로컬 서비스 간 인증용으로만 사용하고 브라우저에는
+전달하지 않습니다.
 
 - 웹: <http://localhost:3000>
 - API 예시: <http://localhost:8080/api/problems?category=java>
@@ -251,6 +307,12 @@ docker compose down
 
 로컬 DB 볼륨까지 지우는 `docker compose down --volumes`는 학습 진도를 모두 삭제하므로
 초기화가 필요한 경우에만 사용하세요.
+
+`.env`를 삭제했지만 기존 `codequest-data` 볼륨이 남아 있다면 새로 생성한 PostgreSQL
+비밀번호와 기존 볼륨의 비밀번호가 달라질 수 있으므로 시작 파일이 자동 실행을 중단합니다. 학습
+진도를 유지해야 한다면 기존 `.env` 또는 `.env.backup-*`을 복원하세요. 진도가 필요 없는 새
+설치라면 위 경고를 확인한 뒤 Docker Desktop에서 `code-quest_codequest-data` 볼륨을 삭제하고
+시작 파일을 다시 실행할 수 있습니다.
 
 ### Flyway 도입 전 데이터 볼륨을 이어서 쓰는 경우
 

@@ -24,6 +24,22 @@ jobs:
           node-version: "22.22.0"
       - run: node tools/audit-problems.mjs
 
+  bootstrap-unix:
+    name: One-click startup (Unix)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - run: bash tools/test-bootstrap-scripts.sh
+
+  bootstrap-windows:
+    name: One-click startup (Windows PowerShell 5.1)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Run start.cmd through Windows PowerShell 5.1
+        shell: cmd
+        run: powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File tools\test-bootstrap-windows.ps1
+
   backend:
     name: Spring Boot
     runs-on: ubuntu-latest

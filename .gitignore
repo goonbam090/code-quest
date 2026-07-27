@@ -7,6 +7,7 @@ coverage/
 .idea/
 .vscode/
 .DS_Store
+/code-quest.zip
 .env
 .env.*
 !.env.example

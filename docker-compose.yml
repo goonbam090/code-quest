@@ -39,9 +39,9 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-codequest-local}
       CSS_RENDERER_URL: http://renderer:3001
       JAVA_RUNNER_URL: http://java-runner:3002
-      JAVA_RUNNER_TOKEN: ${JAVA_RUNNER_TOKEN:?Copy .env.example to .env and set JAVA_RUNNER_TOKEN}
+      JAVA_RUNNER_TOKEN: ${JAVA_RUNNER_TOKEN:?Run start.command/start.sh on macOS or Linux, or start.cmd on Windows}
       JAVASCRIPT_RUNNER_URL: http://javascript-runner:3003
-      JAVASCRIPT_RUNNER_TOKEN: ${JAVASCRIPT_RUNNER_TOKEN:?Copy .env.example to .env and set JAVASCRIPT_RUNNER_TOKEN}
+      JAVASCRIPT_RUNNER_TOKEN: ${JAVASCRIPT_RUNNER_TOKEN:?Run start.command/start.sh on macOS or Linux, or start.cmd on Windows}
     ports:
       - "127.0.0.1:8080:8080"
     healthcheck:
@@ -110,7 +110,7 @@ services:
     security_opt:
       - no-new-privileges:true
     environment:
-      JAVA_RUNNER_TOKEN: ${JAVA_RUNNER_TOKEN:?Copy .env.example to .env and set JAVA_RUNNER_TOKEN}
+      JAVA_RUNNER_TOKEN: ${JAVA_RUNNER_TOKEN:?Run start.command/start.sh on macOS or Linux, or start.cmd on Windows}
     expose:
       - "3002"
     healthcheck:
@@ -140,7 +140,7 @@ services:
     security_opt:
       - no-new-privileges:true
     environment:
-      JAVASCRIPT_RUNNER_TOKEN: ${JAVASCRIPT_RUNNER_TOKEN:?Copy .env.example to .env and set JAVASCRIPT_RUNNER_TOKEN}
+      JAVASCRIPT_RUNNER_TOKEN: ${JAVASCRIPT_RUNNER_TOKEN:?Run start.command/start.sh on macOS or Linux, or start.cmd on Windows}
     expose:
       - "3003"
     healthcheck:
