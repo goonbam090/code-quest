@@ -78,6 +78,11 @@ export type Submission = {
     keyPoints: string[]
     alternative: string
     complexity: string
+    referenceAnswer?: string | null
+    selectorBreakdown?: Array<{
+      fragment: string
+      explanation: string
+    }>
   }
 }
 

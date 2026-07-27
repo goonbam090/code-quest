@@ -15,9 +15,9 @@
         "display": "flex"
       },
       "hints": [
-        "Flexbox 관련 속성을 사용합니다.",
-        "Flexbox는 부모의 주축과 교차축을 기준으로 자식 배치를 제어합니다.",
-        "필요한 속성을 속성: 값; 형태로 작성하세요."
+        "부모에 Flex 레이아웃 문맥을 만들면 직계 자식이 Flex 아이템이 됩니다.",
+        "비슷한 코드 예시: .sample { display: inline-flex; }",
+        "Flex 컨테이너는 주축과 교차축을 기준으로 자식 배치와 정렬을 제어합니다."
       ]
     },
     {
@@ -49,9 +49,9 @@
         "flex-direction": "column"
       },
       "hints": [
-        "Flexbox 관련 속성을 사용합니다.",
-        "Flexbox는 부모의 주축과 교차축을 기준으로 자식 배치를 제어합니다.",
-        "필요한 속성을 속성: 값; 형태로 작성하세요."
+        "flex-direction은 Flex 컨테이너의 주축 방향을 바꿉니다.",
+        "비슷한 코드 예시: .sample { flex-direction: row-reverse; }",
+        "column 계열 값은 주축을 세로로 바꾸고 아이템을 위아래 방향으로 배치합니다."
       ]
     },
     {
@@ -66,9 +66,9 @@
         "justify-content": "center"
       },
       "hints": [
-        "Flexbox 관련 속성을 사용합니다.",
-        "Flexbox는 부모의 주축과 교차축을 기준으로 자식 배치를 제어합니다.",
-        "필요한 속성을 속성: 값; 형태로 작성하세요."
+        "justify-content는 주축에서 남는 공간을 어떻게 나눌지 정합니다.",
+        "비슷한 코드 예시: .sample { justify-content: flex-end; }",
+        "주축 중앙 정렬은 남는 공간을 아이템 묶음의 앞뒤에 같은 크기로 배치합니다."
       ]
     },
     {
@@ -83,9 +83,9 @@
         "justify-content": "space-between"
       },
       "hints": [
-        "Flexbox 관련 속성을 사용합니다.",
-        "Flexbox는 부모의 주축과 교차축을 기준으로 자식 배치를 제어합니다.",
-        "필요한 속성을 속성: 값; 형태로 작성하세요."
+        "justify-content의 공간 분배 값을 사용하면 주축의 아이템 간격을 조절할 수 있습니다.",
+        "비슷한 코드 예시: .sample { justify-content: space-around; }",
+        "space-between은 첫 항목과 마지막 항목을 양끝에 붙이고 항목 사이에만 남는 공간을 나눕니다."
       ]
     },
     {
@@ -100,9 +100,9 @@
         "align-items": "center"
       },
       "hints": [
-        "Flexbox 관련 속성을 사용합니다.",
-        "Flexbox는 부모의 주축과 교차축을 기준으로 자식 배치를 제어합니다.",
-        "필요한 속성을 속성: 값; 형태로 작성하세요."
+        "align-items는 한 줄에 있는 모든 Flex 아이템의 교차축 정렬을 정합니다.",
+        "비슷한 코드 예시: .sample { align-items: baseline; }",
+        "교차축 중앙 정렬은 크기가 다른 아이템도 각자 영역의 가운데에 맞춥니다."
       ]
     },
     {
@@ -117,9 +117,9 @@
         "flex-wrap": "wrap"
       },
       "hints": [
-        "Flexbox 관련 속성을 사용합니다.",
-        "Flexbox는 부모의 주축과 교차축을 기준으로 자식 배치를 제어합니다.",
-        "필요한 속성을 속성: 값; 형태로 작성하세요."
+        "flex-wrap은 한 줄에 아이템이 모두 들어가지 않을 때 새 줄을 허용할지 정합니다.",
+        "비슷한 코드 예시: .sample { flex-wrap: nowrap; }",
+        "줄바꿈을 허용하면 넘치는 아이템이 교차축 방향의 다음 줄로 이동합니다."
       ]
     },
     {
@@ -134,9 +134,9 @@
         "gap": "16px"
       },
       "hints": [
-        "Flexbox 관련 속성을 사용합니다.",
-        "Flexbox는 부모의 주축과 교차축을 기준으로 자식 배치를 제어합니다.",
-        "필요한 속성을 속성: 값; 형태로 작성하세요."
+        "gap은 Flex 아이템 사이에 일정한 간격을 만듭니다.",
+        "비슷한 코드 예시: .sample { gap: 12px; }",
+        "바깥쪽 여백을 따로 계산하지 않아도 행과 열 사이 간격을 일관되게 유지할 수 있습니다."
       ]
     },
     {
@@ -151,9 +151,9 @@
         "align-self": "flex-end"
       },
       "hints": [
-        "Flexbox 관련 속성을 사용합니다.",
-        "Flexbox는 부모의 주축과 교차축을 기준으로 자식 배치를 제어합니다.",
-        "필요한 속성을 속성: 값; 형태로 작성하세요."
+        "align-self는 한 Flex 아이템만 부모의 align-items와 다른 위치에 정렬합니다.",
+        "비슷한 코드 예시: .sample { align-self: center; }",
+        "개별 아이템에 적용하며 해당 아이템의 교차축 위치만 덮어씁니다."
       ]
     },
     {
@@ -168,9 +168,9 @@
         "order": "-1"
       },
       "hints": [
-        "Flexbox 관련 속성을 사용합니다.",
-        "Flexbox는 부모의 주축과 교차축을 기준으로 자식 배치를 제어합니다.",
-        "필요한 속성을 속성: 값; 형태로 작성하세요."
+        "order는 Flex 아이템의 시각적 배치 순서를 조절합니다.",
+        "비슷한 코드 예시: .sample { order: 2; }",
+        "화면의 순서만 바뀌고 DOM과 키보드 탐색 순서는 그대로이므로 의미 있는 순서는 HTML에서 먼저 정합니다."
       ]
     },
     {
@@ -185,9 +185,9 @@
         "flex-grow": "1"
       },
       "hints": [
-        "Flexbox 관련 속성을 사용합니다.",
-        "Flexbox는 부모의 주축과 교차축을 기준으로 자식 배치를 제어합니다.",
-        "필요한 속성을 속성: 값; 형태로 작성하세요."
+        "flex-grow는 주축의 남는 공간을 아이템이 가져가는 비율을 정합니다.",
+        "비슷한 코드 예시: .sample { flex-grow: 2; }",
+        "값이 큰 아이템은 다른 아이템보다 남는 공간을 더 큰 비율로 확장합니다."
       ]
     },
     {
@@ -202,9 +202,9 @@
         "flex-shrink": "0"
       },
       "hints": [
-        "Flexbox 관련 속성을 사용합니다.",
-        "Flexbox는 부모의 주축과 교차축을 기준으로 자식 배치를 제어합니다.",
-        "필요한 속성을 속성: 값; 형태로 작성하세요."
+        "flex-shrink는 공간이 부족할 때 아이템이 줄어드는 비율을 정합니다.",
+        "비슷한 코드 예시: .sample { flex-shrink: 1; }",
+        "축소 비율을 0으로 두면 해당 아이템은 자신의 기준 크기보다 작아지지 않습니다."
       ]
     },
     {
@@ -219,9 +219,9 @@
         "flex-basis": "200px"
       },
       "hints": [
-        "Flexbox 관련 속성을 사용합니다.",
-        "Flexbox는 부모의 주축과 교차축을 기준으로 자식 배치를 제어합니다.",
-        "필요한 속성을 속성: 값; 형태로 작성하세요."
+        "flex-basis는 남는 공간을 나누기 전에 사용할 아이템의 주축 기준 크기입니다.",
+        "비슷한 코드 예시: .sample { flex-basis: 12rem; }",
+        "이 기준 크기를 바탕으로 flex-grow와 flex-shrink가 최종 크기를 조절합니다."
       ]
     },
     {
@@ -236,9 +236,9 @@
         "margin-left": "auto"
       },
       "hints": [
-        "한 아이템의 여백만 조정해 형제와의 위치 관계를 바꿔 보세요.",
-        "비슷한 코드 예시: .sample { margin-left: -1rem; }",
-        "음수 바깥 여백은 요소를 앞선 형제 쪽으로 당겨 겹치게 할 수 있습니다."
+        "Flex 아이템의 auto 바깥 여백은 주축의 남는 공간을 흡수해 형제와의 간격을 벌립니다.",
+        "비슷한 코드 예시: .sample { margin-right: auto; }",
+        "가로 주축에서 한쪽 여백을 auto로 두면 그 방향의 남는 공간을 가져가 아이템 묶음을 반대편으로 밀 수 있습니다."
       ]
     },
     {
@@ -271,9 +271,9 @@
         "min-width": "0"
       },
       "hints": [
-        "늘어남, 줄어듦, 기준 크기를 각각 판단한 뒤 축약형에 순서대로 넣으세요.",
-        "비슷한 코드 예시: .sample { flex: 2 0 12rem; }",
-        "flex 축약형의 순서는 flex-grow, flex-shrink, flex-basis입니다."
+        "본문은 남는 공간을 채우면서도 긴 콘텐츠 때문에 Flex 컨테이너를 밀어내지 않아야 합니다.",
+        "비슷한 코드 예시: .sample { flex: 2 1 0; min-height: 0; }",
+        "flex 축약형은 확장·축소·기준 크기를 정하고, 기본 최소 크기를 풀면 넘치는 콘텐츠가 아이템 안에서 줄어들 수 있습니다."
       ]
     },
     {
@@ -306,9 +306,9 @@
         "align-items": "baseline"
       },
       "hints": [
-        "주축과 교차축을 구분하고 필요한 정렬 속성을 선택하세요.",
-        "비슷한 코드 예시: .sample { display: flex; justify-content: flex-start; align-items: center; }",
-        "justify-content는 주축, align-items는 한 줄 안의 교차축 정렬을 담당합니다."
+        "글자 크기가 달라도 텍스트 기준선을 맞추려면 컨테이너의 교차축 정렬 방식을 선택합니다.",
+        "비슷한 코드 예시: .sample { display: inline-flex; align-items: flex-end; }",
+        "baseline 정렬은 아이템 상자의 끝이 아니라 각 텍스트가 놓이는 기준선을 서로 맞춥니다."
       ]
     },
     {
@@ -325,9 +325,9 @@
         "align-content": "space-between"
       },
       "hints": [
-        "한 줄에 들어가지 않는 항목을 감싸고 축별 간격을 따로 줄 수 있습니다.",
-        "비슷한 코드 예시: .sample { display: flex; flex-wrap: wrap; gap: .5rem 1rem; }",
-        "wrap은 새 줄을 허용하고 row-gap과 column-gap은 두 축의 간격을 정합니다."
+        "여러 Flex 줄을 컨테이너의 교차축 전체에 배치하려면 줄 묶음의 정렬 방식을 지정합니다.",
+        "비슷한 코드 예시: .sample { display: inline-flex; flex-wrap: wrap; align-content: center; }",
+        "align-content는 줄이 둘 이상이고 교차축에 남는 공간이 있을 때 줄 사이의 공간 분배를 제어합니다."
       ]
     },
     {
@@ -344,9 +344,9 @@
         "gap": "16px"
       },
       "hints": [
-        "주축과 교차축을 구분하고 필요한 정렬 속성을 선택하세요.",
-        "비슷한 코드 예시: .sample { display: flex; justify-content: flex-start; align-items: center; }",
-        "justify-content는 주축, align-items는 한 줄 안의 교차축 정렬을 담당합니다."
+        "미디어 객체는 이미지와 본문을 한 줄에 놓고, 높이가 다른 두 아이템의 시작점을 맞춥니다.",
+        "비슷한 코드 예시: .sample { display: inline-flex; align-items: center; gap: 1rem; }",
+        "교차축 시작 정렬은 이미지와 여러 줄 본문의 위쪽을 맞추고 gap은 두 아이템 사이 간격만 만듭니다."
       ]
     },
     {
@@ -363,9 +363,9 @@
         "min-height": "100vh"
       },
       "hints": [
-        "컨테이너의 주축 방향과 항목 순서를 함께 고려하세요.",
-        "비슷한 코드 예시: .sample { display: flex; flex-direction: column; }",
-        "flex-direction은 주축 방향뿐 아니라 row-reverse처럼 시각적 순서도 바꿀 수 있습니다."
+        "페이지의 세로 주축이 화면 높이만큼 확보되어야 본문이 짧아도 푸터를 아래에 둘 수 있습니다.",
+        "비슷한 코드 예시: .sample { display: inline-flex; flex-direction: column; min-height: 60vh; }",
+        "세로 Flex 컨테이너에 뷰포트 기준 최소 높이를 주면 내부의 유연한 본문이 남는 높이를 사용할 수 있습니다."
       ]
     },
     {
@@ -382,9 +382,9 @@
         "overflow-x": "auto"
       },
       "hints": [
-        "한 줄에 들어가지 않는 항목을 감싸고 축별 간격을 따로 줄 수 있습니다.",
-        "비슷한 코드 예시: .sample { display: flex; flex-wrap: wrap; gap: .5rem 1rem; }",
-        "wrap은 새 줄을 허용하고 row-gap과 column-gap은 두 축의 간격을 정합니다."
+        "탭을 줄바꿈하지 않은 한 줄로 유지한 뒤 가로축의 넘친 부분만 스크롤 영역으로 만듭니다.",
+        "비슷한 코드 예시: .sample { display: inline-flex; flex-wrap: nowrap; overflow-x: scroll; }",
+        "nowrap은 새 Flex 줄 생성을 막고 overflow-x는 컨테이너 너비를 넘는 가로 콘텐츠의 처리 방식을 정합니다."
       ]
     },
     {
@@ -420,9 +420,9 @@
         "gap": "8px"
       },
       "hints": [
-        "주축과 교차축을 구분하고 필요한 정렬 속성을 선택하세요.",
-        "비슷한 코드 예시: .sample { display: flex; justify-content: flex-start; align-items: center; }",
-        "justify-content는 주축, align-items는 한 줄 안의 교차축 정렬을 담당합니다."
+        "inline-flex는 주변 텍스트 흐름에는 인라인 요소처럼 참여하면서 내부 아이템은 Flex로 정렬합니다.",
+        "비슷한 코드 예시: .sample { display: inline-flex; align-items: baseline; gap: .5rem; }",
+        "작은 아이콘과 글자를 교차축 중앙에 맞추고 gap을 사용하면 바깥 여백 없이 내부 간격을 일정하게 유지할 수 있습니다."
       ]
     },
     {

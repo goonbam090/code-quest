@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { CodeEditor, type CodeEditorHandle } from './components/CodeEditor'
+import { LearningReview } from './components/LearningReview'
 import { api } from './lib/api'
 import { createExecutionTrace, type ExecutionTrace } from './lib/executionTrace'
 import { formatHtml } from './lib/formatHtml'
@@ -10,6 +11,7 @@ import type { Problem, Submission, TestReport } from './types'
 import './styles.css'
 
 type TrackId = 'html' | 'css' | 'javascript' | 'java' | 'algorithm'
+type LearningView = 'practice' | 'review'
 
 type CategoryDefinition = {
   id: string
@@ -317,6 +319,28 @@ function SolutionLessonPanel({ result }: { result: Submission }) {
   </details>
 }
 
+function ResultExplanation({ result }: { result: Submission }) {
+  const referenceAnswer = result.correct ? result.solution?.referenceAnswer : null
+  const breakdown = result.correct ? result.solution?.selectorBreakdown : null
+  if (!referenceAnswer || !breakdown?.length) {
+    return <span className="result-intent">{result.intentExplanation}</span>
+  }
+
+  return <section className="selector-solution-review" aria-label="정답 선택자 해설">
+    <span className="selector-solution-label">정답은 다음 CSS 선택자예요.</span>
+    <code className="selector-solution-answer">{referenceAnswer}</code>
+    <strong>왼쪽부터 해석하면:</strong>
+    <ol className="selector-solution-steps">
+      {breakdown.map((step, stepIndex) =>
+        <li key={`${step.fragment}-${stepIndex}`}>
+          <code>{step.fragment}</code>
+          <span className="selector-step-copy"><b aria-hidden="true">→</b>{step.explanation}</span>
+        </li>
+      )}
+    </ol>
+  </section>
+}
+
 export default function App() {
   const [initialLocation] = useState(initialLearningLocation)
   const [track, setTrack] = useState<TrackId>(initialLocation.track)
@@ -330,6 +354,7 @@ export default function App() {
   const [error, setError] = useState('')
   const [hint, setHint] = useState(0)
   const [solved, setSolved] = useState<Set<number>>(new Set())
+  const [learningView, setLearningView] = useState<LearningView>('practice')
   const [pickerOpen, setPickerOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [stageFilter, setStageFilter] = useState('all')
@@ -340,7 +365,10 @@ export default function App() {
   const pickerToggleRef = useRef<HTMLButtonElement>(null)
   const pickerFocusFrameRef = useRef<number | null>(null)
   const problemHeadingRef = useRef<HTMLHeadingElement>(null)
+  const reviewHeadingRef = useRef<HTMLHeadingElement>(null)
   const focusProblemAfterMoveRef = useRef(false)
+  const focusAnswerAfterMoveRef = useRef(false)
+  const answerViewportAfterMoveRef = useRef<{ left: number; top: number } | null>(null)
   const resultRef = useRef<HTMLDivElement>(null)
   const codeEditorRef = useRef<CodeEditorHandle>(null)
   const categoryRequestGenerationRef = useRef(0)
@@ -455,11 +483,34 @@ export default function App() {
     return () => window.clearTimeout(focusTimer)
   }, [pickerOpen])
 
-  useEffect(() => {
-    if (loading || !problem || !focusProblemAfterMoveRef.current) return
+  useLayoutEffect(() => {
+    if (loading || !problem || !focusAnswerAfterMoveRef.current) return
+    const viewport = answerViewportAfterMoveRef.current
+    focusAnswerAfterMoveRef.current = false
     focusProblemAfterMoveRef.current = false
-    requestAnimationFrame(() => problemHeadingRef.current?.focus())
+    answerViewportAfterMoveRef.current = null
+
+    const restoreAnswerViewport = () => {
+      codeEditorRef.current?.focus({ preventScroll: true })
+      if (viewport) window.scrollTo({ ...viewport, behavior: 'auto' })
+    }
+    restoreAnswerViewport()
+    const frame = requestAnimationFrame(restoreAnswerViewport)
+    return () => cancelAnimationFrame(frame)
   }, [loading, problem])
+
+  useEffect(() => {
+    if (loading || !problem) return
+    if (!focusProblemAfterMoveRef.current) return
+    focusProblemAfterMoveRef.current = false
+    requestAnimationFrame(() => problemHeadingRef.current?.focus({ preventScroll: true }))
+  }, [learningView, loading, problem])
+
+  useEffect(() => {
+    if (learningView !== 'review' || loading || !problem) return
+    const frame = requestAnimationFrame(() => reviewHeadingRef.current?.focus())
+    return () => cancelAnimationFrame(frame)
+  }, [learningView, loading, problem])
 
   useEffect(() => () => {
     if (pickerFocusFrameRef.current !== null) cancelAnimationFrame(pickerFocusFrameRef.current)
@@ -467,6 +518,24 @@ export default function App() {
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
+      if (learningView !== 'practice') return
+      const primaryAction = (
+        event.key === 'Enter'
+        && (event.ctrlKey || event.metaKey)
+        && !event.altKey
+        && !event.shiftKey
+      )
+      if (
+        primaryAction
+        && !event.defaultPrevented
+        && !event.isComposing
+        && !event.repeat
+        && !pickerOpen
+      ) {
+        event.preventDefault()
+        handleEditorPrimaryAction()
+        return
+      }
       const typing = event.target instanceof HTMLElement && event.target.matches(
         'input, textarea, [contenteditable="true"], [role="textbox"]'
       )
@@ -533,6 +602,22 @@ export default function App() {
     setPickerOpen(true)
   }
 
+  function openLearningReview() {
+    setPickerOpen(false)
+    setLearningView('review')
+  }
+
+  function returnToPractice() {
+    focusProblemAfterMoveRef.current = true
+    setLearningView('practice')
+  }
+
+  function reviewProblem(next: number) {
+    focusProblemAfterMoveRef.current = true
+    setLearningView('practice')
+    move(next)
+  }
+
   function focusPickerToggleWhenClosed() {
     if (pickerFocusFrameRef.current !== null) cancelAnimationFrame(pickerFocusFrameRef.current)
     pickerFocusFrameRef.current = requestAnimationFrame(() => {
@@ -585,6 +670,7 @@ export default function App() {
 
   function goHome() {
     focusProblemAfterMoveRef.current = true
+    setLearningView('practice')
     setJumpNumber('')
     setResult(null)
     setHint(0)
@@ -618,19 +704,30 @@ export default function App() {
     })
   }
 
-  function moveToNextStep() {
-    focusProblemAfterMoveRef.current = true
+  function moveToNextStep(focusAnswer = false) {
     if (index < problems.length - 1) {
+      focusAnswerAfterMoveRef.current = focusAnswer
+      focusProblemAfterMoveRef.current = !focusAnswer
+      answerViewportAfterMoveRef.current = focusAnswer
+        ? { left: window.scrollX, top: window.scrollY }
+        : null
       move(index + 1)
       return
     }
-    if (nextCategory) changeCategory(nextCategory.id)
+    if (nextCategory) {
+      focusAnswerAfterMoveRef.current = focusAnswer
+      focusProblemAfterMoveRef.current = !focusAnswer
+      answerViewportAfterMoveRef.current = focusAnswer
+        ? { left: window.scrollX, top: window.scrollY }
+        : null
+      changeCategory(nextCategory.id)
+    }
   }
 
   function handleEditorPrimaryAction() {
     if (activeSubmissionRef.current !== null) return
     if (result?.correct) {
-      moveToNextStep()
+      moveToNextStep(true)
       return
     }
     void submit()
@@ -756,7 +853,18 @@ export default function App() {
     {loading && <main className="state" id="learning-content">문제를 불러오는 중…</main>}
     {error && <div className="error" role="alert">{error}</div>}
 
-    {!loading && problem && <main id="learning-content">
+    {!loading && problem && learningView === 'review' && <LearningReview
+      trackLabel={currentTrack.label}
+      categoryLabel={currentCategory.label}
+      groups={stageGroups}
+      solvedIds={solved}
+      completionPercent={completionPercent}
+      headingRef={reviewHeadingRef}
+      onBack={returnToPractice}
+      onSelectProblem={reviewProblem}
+    />}
+
+    {!loading && problem && learningView === 'practice' && <main id="learning-content">
       <section className="problem-bar">
         <div className="problem-copy">
           <span className="problem-context">{problemContext}</span>
@@ -793,7 +901,22 @@ export default function App() {
             <span>{completionPercent}% 완료</span>
             <div><i style={{ width: `${completionPercent}%` }}/></div>
           </div>
-          <button type="button" onClick={closeProblemPicker} aria-label="문제 탐색기 닫기">×</button>
+          <button
+            type="button"
+            className="navigator-review-link"
+            aria-label="학습 지도 열기"
+            onClick={openLearningReview}
+          >
+            <span aria-hidden="true">✦</span>
+            <span><small>LEARNING MAP</small><strong>학습 지도 열기</strong></span>
+            <b aria-hidden="true">→</b>
+          </button>
+          <button
+            type="button"
+            className="problem-picker-close"
+            onClick={closeProblemPicker}
+            aria-label="문제 탐색기 닫기"
+          >×</button>
         </div>
 
         <div className="navigator-toolbar">
@@ -912,9 +1035,9 @@ export default function App() {
                 <strong>{result.message}</strong>
                 <span className="diagnostic-badge">{diagnosticLabels[result.diagnosticCode] ?? '채점 안내'}</span>
               </div>
-              <span className="result-intent">{result.intentExplanation}</span>
+              <ResultExplanation result={result}/>
               <span className="result-guidance">{result.guidance}</span>
-              {result.correct && nextStepLabel && <button type="button" className="result-next" onClick={moveToNextStep}>
+              {result.correct && nextStepLabel && <button type="button" className="result-next" onClick={() => moveToNextStep()}>
                 <span>{nextStepLabel}</span>
                 <span className="result-next-meta"><kbd>Ctrl/⌘↵</kbd><b aria-hidden="true">→</b></span>
               </button>}
@@ -971,9 +1094,9 @@ export default function App() {
                 <strong>{result.message}</strong>
                 <span className="diagnostic-badge">{diagnosticLabels[result.diagnosticCode] ?? '채점 안내'}</span>
               </div>
-              <span className="result-intent">{result.intentExplanation}</span>
+              <ResultExplanation result={result}/>
               <span className="result-guidance">{result.guidance}</span>
-              {result.correct && nextStepLabel && <button type="button" className="result-next" onClick={moveToNextStep}>
+              {result.correct && nextStepLabel && <button type="button" className="result-next" onClick={() => moveToNextStep()}>
                 <span>{nextStepLabel}</span>
                 <span className="result-next-meta"><kbd>Ctrl/⌘↵</kbd><b aria-hidden="true">→</b></span>
               </button>}
@@ -1081,9 +1204,9 @@ export default function App() {
                 <strong>{result.message}</strong>
                 <span className="diagnostic-badge">{diagnosticLabels[result.diagnosticCode] ?? '채점 안내'}</span>
               </div>
-              <span className="result-intent">{result.intentExplanation}</span>
+              <ResultExplanation result={result}/>
               <span className="result-guidance">{result.guidance}</span>
-              {result.correct && nextStepLabel && <button type="button" className="result-next" onClick={moveToNextStep}>
+              {result.correct && nextStepLabel && <button type="button" className="result-next" onClick={() => moveToNextStep()}>
                 <span>{nextStepLabel}</span>
                 <span className="result-next-meta"><kbd>Ctrl/⌘↵</kbd><b aria-hidden="true">→</b></span>
               </button>}

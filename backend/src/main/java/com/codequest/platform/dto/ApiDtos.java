@@ -19,8 +19,11 @@ public final class ApiDtos {
                                    String expected, String actual, String error, boolean passed) {}
     public record TestReportResponse(int passed, int total, int publicPassed, int publicTotal,
                                      int hiddenPassed, int hiddenTotal, List<TestCaseResponse> cases) {}
+    public record SelectorBreakdownResponse(String fragment, String explanation) {}
     public record SolutionLessonResponse(String summary, List<String> keyPoints,
-                                         String alternative, String complexity) {}
+                                         String alternative, String complexity,
+                                         String referenceAnswer,
+                                         List<SelectorBreakdownResponse> selectorBreakdown) {}
     public record SubmissionRequest(
             @NotBlank
             @Size(max = 100)

@@ -336,6 +336,11 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
     if (!host) return
 
     const width = indentWidth(language)
+    const runPrimaryAction = () => {
+      tabExitArmedRef.current = false
+      onSubmitRef.current?.()
+      return true
+    }
     const state = EditorState.create({
       doc: value,
       extensions: [
@@ -388,13 +393,14 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
             }
           },
           {
-            key: 'Mod-Enter',
+            key: 'Ctrl-Enter',
             preventDefault: true,
-            run: () => {
-              tabExitArmedRef.current = false
-              onSubmitRef.current?.()
-              return true
-            }
+            run: runPrimaryAction
+          },
+          {
+            key: 'Meta-Enter',
+            preventDefault: true,
+            run: runPrimaryAction
           },
           {
             key: 'Enter',

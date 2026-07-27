@@ -29,7 +29,7 @@ vi.mock('./components/CodeEditor', async () => {
     } = props
 
     React.useImperativeHandle(forwardedRef, () => ({
-      focus: () => inputRef.current?.focus(),
+      focus: (options?: FocusOptions) => inputRef.current?.focus(options),
       focusLine: (lineNumber: number) => {
         const input = inputRef.current
         if (!input) return
@@ -350,6 +350,100 @@ describe('App accessibility', () => {
     expect(screen.queryByRole('searchbox', { name: '문제 검색' })).not.toBeInTheDocument()
   })
 
+  it('opens a category learning map that previews every concept and marks completed practice', async () => {
+    mockedApi.problems.mockResolvedValueOnce([
+      {
+        id: 1,
+        category: 'selector',
+        number: 1,
+        mode: 'selector',
+        stage: '선택자 기초',
+        title: '문단 선택',
+        question: '모든 문단을 선택하세요.',
+        html: '<main><p>첫 문단</p></main>',
+        starterCode: '',
+        examples: [],
+        constraints: [],
+        hints: [
+          '태그 이름으로 같은 종류의 요소를 한 번에 선택할 수 있습니다.',
+          '태그 선택자는 같은 HTML 태그를 모두 선택합니다. 예: article, button',
+          '태그 이름을 그대로 작성합니다.'
+        ]
+      },
+      {
+        id: 2,
+        category: 'selector',
+        number: 2,
+        mode: 'selector',
+        stage: '관계 선택자',
+        title: '제목 선택',
+        question: '제목을 선택하세요.',
+        html: '<main><h2>제목</h2></main>',
+        starterCode: '',
+        examples: [],
+        constraints: [],
+        hints: [
+          '제목 태그를 사용하세요.',
+          '비슷한 코드 패턴: section > h3',
+          '공백은 모든 후손을, >는 직계 자식을 찾습니다.'
+        ]
+      }
+    ])
+    mockedApi.progress.mockResolvedValueOnce({
+      learnerKey: 'accessibility-test',
+      solved: 1,
+      attempts: 1,
+      solvedProblemIds: [1]
+    })
+    render(<App />)
+    await screen.findByRole('heading', { name: '1. 문단 선택' })
+    await vi.waitFor(() => expect(screen.getByText('현재 영역 완료 · 전체 1문제')).toBeInTheDocument())
+
+    fireEvent.click(screen.getByRole('button', { name: /전체 문제 보기/ }))
+    fireEvent.click(screen.getByRole('button', { name: '학습 지도 열기' }))
+
+    const mapHeading = await screen.findByRole('heading', { name: '선택자 학습 지도' })
+    await vi.waitFor(() => expect(mapHeading).toHaveFocus())
+    const conceptMap = screen.getByRole('region', { name: '단계별 핵심 개념' })
+    expect(within(conceptMap).getByRole('heading', { name: '선택자 기초' })).toBeInTheDocument()
+    expect(within(conceptMap).getByRole('heading', { name: '관계 선택자' })).toBeInTheDocument()
+    expect(within(conceptMap).getByRole('heading', { name: '문단 선택' })).toBeInTheDocument()
+    expect(within(conceptMap).getByRole('heading', { name: '제목 선택' })).toBeInTheDocument()
+    expect(within(conceptMap).getByText(
+      '태그 이름으로 같은 종류의 요소를 한 번에 선택할 수 있습니다.'
+    )).toBeInTheDocument()
+    expect(within(conceptMap).getByText('제목 태그를 사용하세요.')).toBeInTheDocument()
+    expect(within(conceptMap).getAllByText('사용 예시')).toHaveLength(2)
+    const completedCard = screen.getByRole('button', { name: '1번 문단 선택 다시 풀기' })
+      .closest('article')
+    const upcomingCard = screen.getByRole('button', { name: '2번 제목 선택 학습 시작하기' })
+      .closest('article')
+    expect(completedCard).toHaveTextContent('복습')
+    expect(completedCard).toHaveTextContent('완료한 실습 01')
+    expect(completedCard).toHaveTextContent('article, button')
+    expect(upcomingCard).toHaveTextContent('예습')
+    expect(upcomingCard).toHaveTextContent('학습 전 실습 02')
+    expect(upcomingCard).toHaveTextContent('section > h3')
+
+    const foundationNotes = screen.getByRole('article', {
+      name: '선택자 기초 개념 더 알아보기'
+    })
+    expect(foundationNotes).toHaveTextContent('태그 이름을 그대로 작성합니다.')
+    expect(foundationNotes.querySelector('details')).toHaveAttribute('open')
+    const relationNotes = screen.getByRole('article', {
+      name: '관계 선택자 개념 더 알아보기'
+    })
+    const relationDetails = relationNotes.querySelector('details')
+    expect(relationDetails).not.toHaveAttribute('open')
+    fireEvent.click(relationDetails!.querySelector('summary')!)
+    expect(relationDetails).toHaveAttribute('open')
+    expect(relationNotes).toHaveTextContent('공백은 모든 후손을, >는 직계 자식을 찾습니다.')
+
+    fireEvent.click(screen.getByRole('button', { name: '2번 제목 선택 학습 시작하기' }))
+    const practiceHeading = await screen.findByRole('heading', { name: '2. 제목 선택' })
+    await vi.waitFor(() => expect(practiceHeading).toHaveFocus())
+  })
+
   it('lets keyboard users escape an indentation-enabled editor', async () => {
     mockedApi.problems.mockResolvedValueOnce([{
       id: 2,
@@ -377,7 +471,7 @@ describe('App accessibility', () => {
     expect(editor).toHaveAccessibleDescription(/정답 확인 후 다시 누르면 다음 단계/)
   })
 
-  it('uses Mod+Enter to grade first and move to the next problem after a correct result', async () => {
+  it('uses Mod+Enter to grade, move next, and keep the answer editor and viewport active', async () => {
     mockedApi.problems.mockResolvedValueOnce([
       {
         id: 1,
@@ -427,12 +521,43 @@ describe('App accessibility', () => {
     const nextAction = await screen.findByRole('button', { name: /다음 문제 바로 풀기/ })
     expect(nextAction).toHaveTextContent('Ctrl/⌘↵')
     expect(mockedApi.submit).toHaveBeenCalledTimes(1)
+    const editorFocus = vi.spyOn(editor, 'focus')
+    Object.defineProperty(window, 'scrollX', { configurable: true, value: 24 })
+    Object.defineProperty(window, 'scrollY', { configurable: true, value: 640 })
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined)
 
     fireEvent.keyDown(editor, { key: 'Enter', metaKey: true })
 
-    const nextHeading = await screen.findByRole('heading', { name: '2. 제목 선택' })
-    await vi.waitFor(() => expect(nextHeading).toHaveFocus())
+    await screen.findByRole('heading', { name: '2. 제목 선택' })
+    await vi.waitFor(() => expect(editor).toHaveFocus())
+    expect(editorFocus).toHaveBeenCalledWith({ preventScroll: true })
+    expect(scrollTo).toHaveBeenCalledWith({ behavior: 'auto', left: 24, top: 640 })
     expect(mockedApi.submit).toHaveBeenCalledTimes(1)
+  })
+
+  it('uses Command+Enter after focus moves from the editor to another practice control', async () => {
+    mockedApi.submit.mockResolvedValueOnce({
+      correct: false,
+      firstSolve: false,
+      status: 'INCORRECT',
+      diagnosticCode: 'SELECTOR_MISMATCH',
+      message: '선택 결과가 달라요.',
+      intentExplanation: '문단을 선택합니다.',
+      guidance: '선택자를 다시 확인하세요.'
+    })
+    render(<App />)
+    await screen.findByRole('heading', { name: '1. 문단 선택' })
+    const hintButton = screen.getByRole('button', { name: '힌트' })
+    hintButton.focus()
+
+    fireEvent.keyDown(hintButton, { key: 'Enter', metaKey: true })
+
+    await vi.waitFor(() => expect(mockedApi.submit).toHaveBeenCalledTimes(1))
+    expect(mockedApi.submit).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 1 }),
+      'accessibility-test',
+      ''
+    )
   })
 
   it('uses Mod+Enter to retry instead of advancing after an incorrect result', async () => {
@@ -1067,6 +1192,66 @@ describe('App accessibility', () => {
     expect(screen.getByRole('heading', { name: '2. 제목 선택' })).toBeInTheDocument()
     expect(screen.queryByRole('status')).not.toBeInTheDocument()
     expect(screen.queryByText('이전 문제 정답입니다.')).not.toBeInTheDocument()
+  })
+
+  it('shows a correct selector as a readable step-by-step explanation', async () => {
+    mockedApi.problems.mockResolvedValueOnce([{
+      id: 18,
+      category: 'selector',
+      number: 18,
+      mode: 'selector',
+      stage: '구조 응용',
+      title: '댓글',
+      question: '삭제되지 않은 댓글의 작성자 이름만 선택하세요.',
+      html: '<article class="comment"><span class="author">민수</span></article>',
+      starterCode: '',
+      examples: [],
+      constraints: [],
+      hints: ['제외 조건을 사용하세요.']
+    }])
+    mockedApi.submit.mockResolvedValueOnce({
+      correct: true,
+      firstSolve: true,
+      status: 'CORRECT',
+      diagnosticCode: 'NONE',
+      message: '정답입니다.',
+      intentExplanation: '숨겨져야 하는 기존의 일반 출제 의도입니다.',
+      guidance: '목표 요소를 정확히 선택했습니다.',
+      solution: {
+        summary: '선택자의 조건을 왼쪽부터 읽어 보세요.',
+        keyPoints: [],
+        alternative: '같은 요소를 선택하는 다른 표현도 가능합니다.',
+        complexity: 'DOM 관계를 차례로 확인합니다.',
+        referenceAnswer: '.comment:not([data-deleted]) .author',
+        selectorBreakdown: [
+          { fragment: '.comment', explanation: '댓글을 찾습니다.' },
+          {
+            fragment: ':not([data-deleted])',
+            explanation: '그중 삭제되지 않은 댓글만 남깁니다.'
+          },
+          {
+            fragment: '.author',
+            explanation: '해당 댓글 안에서 작성자 이름을 선택합니다.'
+          }
+        ]
+      }
+    })
+    render(<App />)
+    await screen.findByRole('heading', { name: /댓글/ })
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'CSS 답안' }), {
+      target: { value: '.comment .author' }
+    })
+    fireEvent.click(screen.getByRole('button', { name: /정답 확인/ }))
+
+    const review = await screen.findByRole('region', { name: '정답 선택자 해설' })
+    expect(within(review).getByText('정답은 다음 CSS 선택자예요.')).toBeInTheDocument()
+    expect(within(review).getByText('.comment:not([data-deleted]) .author')).toBeInTheDocument()
+    expect(within(review).getAllByRole('listitem')).toHaveLength(3)
+    expect(review).toHaveTextContent('.comment→댓글을 찾습니다.')
+    expect(review).toHaveTextContent(':not([data-deleted])→그중 삭제되지 않은 댓글만 남깁니다.')
+    expect(review).toHaveTextContent('.author→해당 댓글 안에서 작성자 이름을 선택합니다.')
+    expect(screen.queryByText('숨겨져야 하는 기존의 일반 출제 의도입니다.')).not.toBeInTheDocument()
   })
 
   it('shows a source-contract failure without exposing a solution', async () => {

@@ -148,6 +148,89 @@ class ProblemServiceTest {
     }
 
     @Test
+    void exposesSelectorAnswerBreakdownOnlyAfterACorrectSubmission() {
+        ProblemRepository problems = mock(ProblemRepository.class);
+        LearningProgressRepository progress = mock(LearningProgressRepository.class);
+        ProgressRecorder progressRecorder = mock(ProgressRecorder.class);
+        AnswerValidator validator = mock(AnswerValidator.class);
+        ProblemService service = new ProblemService(
+                problems, progress, progressRecorder, validator, new ObjectMapper());
+        Problem problem = new Problem();
+        problem.setCategory("selector");
+        problem.setNumber(18);
+        problem.setMode("selector");
+        problem.setStage("구조 응용");
+        problem.setTitle("댓글");
+        problem.setQuestion("삭제되지 않은 댓글의 작성자 이름만 선택하세요.");
+        problem.setHtml("""
+                <article class="comment">
+                  <span class="author" data-target>민수</span>
+                </article>
+                """);
+        problem.setAnswer(".comment:not([data-deleted]) .author");
+        problem.setHints(List.of("제외 조건을 사용합니다."));
+        problem.setSolutionJson("""
+                {
+                  "selectorBreakdown": [
+                    {"fragment": ".comment", "explanation": "댓글을 찾습니다."},
+                    {
+                      "fragment": ":not([data-deleted])",
+                      "explanation": "삭제되지 않은 댓글만 남깁니다."
+                    },
+                    {"fragment": ".author", "explanation": "작성자 이름을 선택합니다."}
+                  ]
+                }
+                """);
+        when(problems.findByCategoryAndNumber("selector", 18)).thenReturn(Optional.of(problem));
+        when(validator.evaluate(problem, "correct")).thenReturn(
+                new AnswerValidator.Evaluation(
+                        AnswerValidator.Status.CORRECT, false,
+                        AnswerValidator.DiagnosticCode.NONE, "목표 요소를 선택했습니다."
+                )
+        );
+        when(validator.evaluate(problem, "incorrect")).thenReturn(
+                new AnswerValidator.Evaluation(
+                        AnswerValidator.Status.INCORRECT, false,
+                        AnswerValidator.DiagnosticCode.SELECTOR_MISMATCH, "대상이 다릅니다."
+                )
+        );
+        when(progressRecorder.recordAttempt("learner", problem.getId(), true))
+                .thenReturn(new ProgressRecorder.AttemptResult(true));
+        when(progressRecorder.recordAttempt("learner", problem.getId(), false))
+                .thenReturn(new ProgressRecorder.AttemptResult(false));
+
+        var publicProblem = service.get("selector", 18);
+        var correct = service.submit(
+                "selector", 18,
+                new com.codequest.platform.dto.ApiDtos.SubmissionRequest("learner", "correct")
+        );
+        var incorrect = service.submit(
+                "selector", 18,
+                new com.codequest.platform.dto.ApiDtos.SubmissionRequest("learner", "incorrect")
+        );
+
+        assertThat(publicProblem.toString())
+                .doesNotContain(".comment:not([data-deleted]) .author");
+        assertThat(correct.solution()).isNotNull();
+        assertThat(correct.solution().referenceAnswer())
+                .isEqualTo(".comment:not([data-deleted]) .author");
+        assertThat(correct.solution().selectorBreakdown())
+                .extracting(
+                        com.codequest.platform.dto.ApiDtos.SelectorBreakdownResponse::fragment,
+                        com.codequest.platform.dto.ApiDtos.SelectorBreakdownResponse::explanation
+                )
+                .containsExactly(
+                        org.assertj.core.groups.Tuple.tuple(".comment", "댓글을 찾습니다."),
+                        org.assertj.core.groups.Tuple.tuple(
+                                ":not([data-deleted])", "삭제되지 않은 댓글만 남깁니다."),
+                        org.assertj.core.groups.Tuple.tuple(".author", "작성자 이름을 선택합니다.")
+                );
+        assertThat(incorrect.solution()).isNull();
+        assertThat(incorrect.toString())
+                .doesNotContain(".comment:not([data-deleted]) .author");
+    }
+
+    @Test
     void explainsJavaScriptIntentAndDefaultSolutionTradeoffs() {
         ProblemRepository problems = mock(ProblemRepository.class);
         LearningProgressRepository progress = mock(LearningProgressRepository.class);

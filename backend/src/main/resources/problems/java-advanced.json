@@ -150,7 +150,7 @@
       ],
       "hints": [
         "정책을 사용하는 쪽은 구체 클래스가 아니라 인터페이스에 의존할 수 있습니다.",
-        "비슷한 예시: interface Formatter { String format(String value); }",
+        "비슷한 예시: interface Formatter { String format(String value); } final class UpperFormatter implements Formatter { public String format(String value) { return value.toUpperCase(); } }",
         "고정 할인액이 가격보다 크면 최종 가격은 0입니다."
       ],
       "required": {

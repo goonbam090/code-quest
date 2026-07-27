@@ -11,9 +11,17 @@
       "answer": "p",
       "hints": [
         "태그 선택자를 사용합니다.",
-        "태그 선택자는 같은 HTML 태그를 모두 선택할 때 사용합니다. 예: p, button, article",
+        "태그 선택자는 같은 HTML 태그를 모두 선택할 때 사용합니다. 예: section, button, article",
         "태그 이름을 그대로 작성합니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "p",
+            "explanation": "문서에 있는 모든 p 요소를 선택합니다."
+          }
+        ]
+      },
       "stage": "튜토리얼",
       "mode": "selector"
     },
@@ -25,9 +33,17 @@
       "answer": ".note",
       "hints": [
         "클래스 선택자를 사용합니다.",
-        "클래스 선택자는 같은 class 값을 가진 요소들을 선택할 때 사용합니다. 예: .note, .card, .item",
+        "클래스 선택자는 같은 class 값을 가진 요소들을 선택할 때 사용합니다. 예: .memo, .card, .item",
         "class 이름 앞에 점(.)을 붙입니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": ".note",
+            "explanation": "note 클래스를 가진 모든 요소를 선택합니다."
+          }
+        ]
+      },
       "stage": "튜토리얼",
       "mode": "selector"
     },
@@ -39,9 +55,17 @@
       "answer": "#login",
       "hints": [
         "ID 선택자를 사용합니다.",
-        "ID 선택자는 특정 id 값을 가진 요소 하나를 선택할 때 사용합니다. 예: #login, #app, #header",
+        "ID 선택자는 특정 id 값을 가진 요소 하나를 선택할 때 사용합니다. 예: #signup, #app, #header",
         "id 이름 앞에 #을 붙입니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "#login",
+            "explanation": "id가 login인 요소를 선택합니다."
+          }
+        ]
+      },
       "stage": "튜토리얼",
       "mode": "selector"
     },
@@ -53,9 +77,21 @@
       "answer": "article p",
       "hints": [
         "자손 선택자를 사용합니다.",
-        "자손 선택자는 부모 안쪽의 모든 단계에 있는 후손 요소를 선택할 때 사용합니다. 예: article p, .box span",
+        "자손 선택자는 부모 안쪽의 모든 단계에 있는 후손 요소를 선택할 때 사용합니다. 예: section h2, .box span",
         "부모와 자손 사이를 공백으로 구분합니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "article",
+            "explanation": "먼저 article 요소를 찾습니다."
+          },
+          {
+            "fragment": "p",
+            "explanation": "앞의 공백은 후손 관계이므로, article 안의 모든 단계에 있는 p 요소를 선택합니다."
+          }
+        ]
+      },
       "stage": "튜토리얼",
       "mode": "selector"
     },
@@ -70,6 +106,18 @@
         "자식 선택자는 부모 바로 아래 단계의 요소만 선택할 때 사용합니다. 예: .box > p, ul > li",
         "문법은 부모 > 자식 형태입니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": ".menu",
+            "explanation": "menu 클래스를 가진 요소를 찾습니다."
+          },
+          {
+            "fragment": "> li",
+            "explanation": ">는 직계 자식 관계이므로, menu 바로 아래에 있는 li만 선택합니다."
+          }
+        ]
+      },
       "stage": "튜토리얼",
       "mode": "selector"
     },
@@ -82,9 +130,21 @@
       "answer": "li:first-child",
       "hints": [
         ":first-child를 사용합니다.",
-        ":first-child는 형제 요소 중 첫 번째 자식인 요소를 선택합니다. 예: li:first-child, p:first-child",
+        ":first-child는 형제 요소 중 첫 번째 자식인 요소를 선택합니다. 예: button:first-child, p:first-child",
         "선택할 요소 뒤에 :first-child를 붙입니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "li",
+            "explanation": "li 요소를 후보로 찾습니다."
+          },
+          {
+            "fragment": ":first-child",
+            "explanation": "그중 부모의 첫 번째 자식인 li만 선택합니다."
+          }
+        ]
+      },
       "mode": "selector"
     },
     {
@@ -96,9 +156,21 @@
       "answer": "li:last-child",
       "hints": [
         ":last-child를 사용합니다.",
-        ":last-child는 형제 요소 중 마지막 자식인 요소를 선택합니다. 예: li:last-child, p:last-child",
+        ":last-child는 형제 요소 중 마지막 자식인 요소를 선택합니다. 예: button:last-child, p:last-child",
         "선택할 요소 뒤에 :last-child를 붙입니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "li",
+            "explanation": "li 요소를 후보로 찾습니다."
+          },
+          {
+            "fragment": ":last-child",
+            "explanation": "그중 부모의 마지막 자식인 li만 선택합니다."
+          }
+        ]
+      },
       "mode": "selector"
     },
     {
@@ -110,9 +182,21 @@
       "answer": "li:nth-child(2)",
       "hints": [
         ":nth-child()를 사용합니다.",
-        ":nth-child()는 부모의 자식 순서를 기준으로 특정 번째 요소를 선택합니다. 예: li:nth-child(2), tr:nth-child(even)",
+        ":nth-child()는 부모의 자식 순서를 기준으로 특정 번째 요소를 선택합니다. 예: article:nth-child(3), tr:nth-child(even)",
         "괄호 안에 순서나 규칙을 작성합니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "li",
+            "explanation": "li 요소를 후보로 찾습니다."
+          },
+          {
+            "fragment": ":nth-child(2)",
+            "explanation": "그중 부모의 전체 자식 순서에서 두 번째인 li만 선택합니다."
+          }
+        ]
+      },
       "mode": "selector"
     },
     {
@@ -124,9 +208,21 @@
       "answer": "button[disabled]",
       "hints": [
         "속성 선택자를 사용합니다.",
-        "속성 선택자는 특정 속성을 가진 요소를 선택할 때 사용합니다. 예: input[required], button[disabled], img[alt]",
+        "속성 선택자는 특정 속성을 가진 요소를 선택할 때 사용합니다. 예: input[required], a[download], img[alt]",
         "요소 뒤에 [속성명]을 작성합니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "button",
+            "explanation": "button 요소를 후보로 찾습니다."
+          },
+          {
+            "fragment": "[disabled]",
+            "explanation": "그중 disabled 속성이 있는 버튼만 선택합니다."
+          }
+        ]
+      },
       "mode": "selector"
     },
     {
@@ -141,6 +237,18 @@
         ":not()은 괄호 안의 조건에 해당하는 요소를 제외할 때 사용합니다. 예: li:not(.active), button:not(:disabled)",
         "기본 선택자 뒤에 :not(제외할 조건)을 붙입니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": ".menu-item",
+            "explanation": "menu-item 클래스를 가진 메뉴 항목을 찾습니다."
+          },
+          {
+            "fragment": ":not(.active)",
+            "explanation": "그중 active 클래스가 있는 항목을 제외하고 나머지만 선택합니다."
+          }
+        ]
+      },
       "mode": "selector"
     },
     {
@@ -152,9 +260,21 @@
       "answer": "h2 + p",
       "hints": [
         "인접 형제 선택자를 사용합니다.",
-        "+ 선택자는 앞 요소 바로 다음에 오는 형제 요소 하나를 선택합니다. 예: h2 + p, label + input",
+        "+ 선택자는 앞 요소 바로 다음에 오는 형제 요소 하나를 선택합니다. 예: h3 + ul, label + input",
         "문법은 앞요소 + 다음형제 형태입니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "h2",
+            "explanation": "먼저 h2 요소를 찾습니다."
+          },
+          {
+            "fragment": "+ p",
+            "explanation": "+는 인접 형제 관계이므로, h2 바로 다음에 오는 p 하나를 선택합니다."
+          }
+        ]
+      },
       "mode": "selector"
     },
     {
@@ -166,9 +286,21 @@
       "answer": "h2 ~ p",
       "hints": [
         "일반 형제 선택자를 사용합니다.",
-        "~ 선택자는 앞 요소 뒤에 나오는 같은 부모의 형제 요소들을 선택합니다. 예: h2 ~ p, .title ~ span",
+        "~ 선택자는 앞 요소 뒤에 나오는 같은 부모의 형제 요소들을 선택합니다. 예: h3 ~ ul, .title ~ span",
         "문법은 앞요소 ~ 뒤형제 형태입니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "h2",
+            "explanation": "먼저 h2 요소를 찾습니다."
+          },
+          {
+            "fragment": "~ p",
+            "explanation": "~는 일반 형제 관계이므로, h2 뒤에 나오는 같은 부모의 p 형제를 모두 선택합니다."
+          }
+        ]
+      },
       "mode": "selector"
     },
     {
@@ -180,9 +312,21 @@
       "answer": "p:nth-of-type(2)",
       "hints": [
         ":nth-of-type()을 사용합니다.",
-        ":nth-of-type()은 같은 태그 종류끼리 순서를 계산해 특정 번째 요소를 선택합니다. 예: p:nth-of-type(2)",
+        ":nth-of-type()은 같은 태그 종류끼리 순서를 계산해 특정 번째 요소를 선택합니다. 예: li:nth-of-type(3)",
         "괄호 안에 같은 태그 기준의 순서를 작성합니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "p",
+            "explanation": "p 요소를 후보로 찾습니다."
+          },
+          {
+            "fragment": ":nth-of-type(2)",
+            "explanation": "다른 태그는 제외하고, 같은 부모 아래 p끼리 세었을 때 두 번째인 p를 선택합니다."
+          }
+        ]
+      },
       "mode": "selector"
     },
     {
@@ -194,9 +338,17 @@
       "answer": "[data-role=\"admin\"]",
       "hints": [
         "속성 값 선택자를 사용합니다.",
-        "[속성=\"값\"]은 특정 속성값과 정확히 일치하는 요소를 선택합니다. 예: input[type=\"text\"], [data-role=\"admin\"]",
+        "[속성=\"값\"]은 특정 속성값과 정확히 일치하는 요소를 선택합니다. 예: input[type=\"email\"], [data-state=\"ready\"]",
         "대괄호 안에 속성=\"값\"을 작성합니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "[data-role=\"admin\"]",
+            "explanation": "data-role 속성값이 admin과 정확히 같은 요소를 선택합니다."
+          }
+        ]
+      },
       "mode": "selector"
     },
     {
@@ -208,9 +360,17 @@
       "answer": "[class^=\"btn-\"]",
       "hints": [
         "속성값 시작 선택자를 사용합니다.",
-        "[속성^=\"값\"]은 속성값이 지정한 문자열로 시작하는 요소를 선택합니다. 예: [class^=\"btn-\"]",
+        "[속성^=\"값\"]은 속성값이 지정한 문자열로 시작하는 요소를 선택합니다. 예: [data-id^=\"user-\"]",
         "속성명 뒤에 ^= 연산자를 사용합니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "[class^=\"btn-\"]",
+            "explanation": "class 속성값 전체가 btn- 문자열로 시작하는 요소를 선택합니다."
+          }
+        ]
+      },
       "mode": "selector"
     },
     {
@@ -225,6 +385,18 @@
         "required는 폼 제출 전에 반드시 값을 입력해야 함을 나타내는 HTML 속성입니다. 속성 선택자는 input[required]처럼 작성합니다.",
         "조합 예시: .signup input[required] — 공백은 .signup 안의 후손 중 required 속성이 있는 input을 찾습니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": ".login",
+            "explanation": "login 클래스를 가진 로그인 폼을 찾습니다."
+          },
+          {
+            "fragment": "input[required]",
+            "explanation": "앞의 공백은 후손 관계이므로, 로그인 폼 안에서 required 속성이 있는 input만 선택합니다."
+          }
+        ]
+      },
       "mode": "selector"
     },
     {
@@ -239,6 +411,22 @@
         "제외 조건 예시: .item:not(.disabled) — disabled 클래스가 없는 .item만 고릅니다.",
         "조합 예시: .card:not(.featured) > a — featured가 아닌 card의 직계 자식 링크를 선택합니다. :not(...)은 제외, >는 직계 자식을 뜻합니다."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": ".post",
+            "explanation": "게시글을 나타내는 post 클래스 요소를 찾습니다."
+          },
+          {
+            "fragment": ":not(.notice)",
+            "explanation": "그중 notice 클래스가 있는 공지글을 제외하고 일반 게시글만 남깁니다."
+          },
+          {
+            "fragment": "> a",
+            "explanation": ">는 직계 자식 관계이므로, 남은 게시글 바로 아래의 제목 링크를 선택합니다."
+          }
+        ]
+      },
       "mode": "selector"
     },
     {
@@ -253,6 +441,22 @@
         "비슷한 코드 예시: .row:not([aria-hidden=\"true\"]) .name",
         "HTML 구조에서 목표까지 왼쪽에서 오른쪽으로 조건을 연결하세요."
       ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": ".comment",
+            "explanation": "댓글을 찾습니다."
+          },
+          {
+            "fragment": ":not([data-deleted])",
+            "explanation": "그중 data-deleted 속성이 없는, 즉 삭제되지 않은 댓글만 남깁니다."
+          },
+          {
+            "fragment": ".author",
+            "explanation": "공백 뒤의 .author는 해당 댓글 안에서 작성자 이름을 선택합니다."
+          }
+        ]
+      },
       "mode": "selector"
     },
     {
@@ -267,7 +471,19 @@
         "부모 후보부터 찾은 뒤, 내부 요소의 존재 여부를 조건으로 연결해 보세요.",
         "비슷한 코드 패턴: .panel:has(img)",
         ":has()는 괄호 안 선택자와 일치하는 후손을 가진 요소를 고릅니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": ".card",
+            "explanation": "card 클래스를 가진 카드 요소를 후보로 찾습니다."
+          },
+          {
+            "fragment": ":has(.badge.new)",
+            "explanation": "그중 badge와 new 클래스를 모두 가진 요소를 내부에 포함한 카드만 선택합니다."
+          }
+        ]
+      }
     },
     {
       "id": 20,
@@ -281,7 +497,23 @@
         "서로 다른 태그에 같은 상태 조건을 적용할 때 선택자 목록을 묶어 보세요.",
         "비슷한 코드 패턴: .toolbar :is(a, button).selected",
         ":is() 안에는 쉼표로 여러 선택자를 넣을 수 있습니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "nav",
+            "explanation": "먼저 nav 요소로 범위를 좁힙니다."
+          },
+          {
+            "fragment": ":is(a, button)",
+            "explanation": "nav 안의 요소 중 a 또는 button인 요소를 후보로 찾습니다."
+          },
+          {
+            "fragment": ".active",
+            "explanation": "그 후보 중 active 클래스가 있는 요소만 선택합니다."
+          }
+        ]
+      }
     },
     {
       "id": 21,
@@ -295,7 +527,19 @@
         "입력 요소의 유효성 상태를 먼저 찾고, 그 요소를 포함한 바깥 요소를 선택하세요.",
         "비슷한 코드 패턴: form:has(select:invalid)",
         ":invalid는 현재 제약 조건을 통과하지 못한 폼 컨트롤에 일치합니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": ".field",
+            "explanation": "field 클래스를 가진 입력 영역을 후보로 찾습니다."
+          },
+          {
+            "fragment": ":has(input:invalid)",
+            "explanation": "그중 브라우저의 유효성 검사를 통과하지 못한 input을 내부에 포함한 입력 영역만 선택합니다."
+          }
+        ]
+      }
     },
     {
       "id": 22,
@@ -309,7 +553,19 @@
         "반복 간격과 첫 시작 위치를 an+b 식으로 표현해 보세요.",
         "비슷한 코드 패턴: li:nth-child(2n + 1)",
         ":nth-child(an+b)는 a개 간격으로 반복하며 b번째에서 시작합니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "li",
+            "explanation": "li 요소를 후보로 찾습니다."
+          },
+          {
+            "fragment": ":nth-child(3n + 1)",
+            "explanation": "부모의 자식 순서에서 1번째부터 시작해 3개 간격인 1, 4, 7번째 li를 선택합니다."
+          }
+        ]
+      }
     },
     {
       "id": 23,
@@ -323,7 +579,19 @@
         "제외할 조건 안에도 관계 선택자를 중첩할 수 있습니다.",
         "비슷한 코드 패턴: section:not(:has(video))",
         ":not()은 괄호 안 조건과 일치하지 않는 요소만 남깁니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "article",
+            "explanation": "article 요소를 후보로 찾습니다."
+          },
+          {
+            "fragment": ":not(:has(img))",
+            "explanation": "그중 img 요소를 내부에 포함한 article을 제외하여 이미지가 없는 글만 선택합니다."
+          }
+        ]
+      }
     },
     {
       "id": 24,
@@ -337,7 +605,19 @@
         "파일명처럼 속성값의 끝부분이 중요한 경우 접미사 연산자를 사용하세요.",
         "비슷한 코드 패턴: img[src$=\".webp\"]",
         "$= 연산자는 속성값이 지정한 문자열로 끝나는지 검사합니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "a",
+            "explanation": "링크인 a 요소를 후보로 찾습니다."
+          },
+          {
+            "fragment": "[href$=\".pdf\"]",
+            "explanation": "그중 href 속성값이 .pdf로 끝나는 링크만 선택합니다."
+          }
+        ]
+      }
     },
     {
       "id": 25,
@@ -351,7 +631,15 @@
         "공백으로 구분된 속성값 목록에서 독립된 한 단어를 찾으세요.",
         "비슷한 코드 패턴: [data-tag~=\"featured\"]",
         "~= 연산자는 공백으로 구분된 단어 중 정확히 일치하는 값을 찾습니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "[data-role~=\"admin\"]",
+            "explanation": "공백으로 나뉜 data-role 값들 가운데 admin이라는 독립된 단어가 있는 요소를 선택합니다."
+          }
+        ]
+      }
     },
     {
       "id": 26,
@@ -365,7 +653,27 @@
         "테이블의 범위를 먼저 좁힌 뒤, 같은 부모 아래의 위치를 계산하세요.",
         "비슷한 코드 패턴: ol > li:nth-child(odd)",
         ">는 직계 자식만, :nth-child()는 형제 중 위치를 기준으로 선택합니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": ".table",
+            "explanation": "table 클래스를 가진 표를 찾습니다."
+          },
+          {
+            "fragment": "> tbody",
+            "explanation": "표의 직계 자식인 tbody로 범위를 좁힙니다."
+          },
+          {
+            "fragment": "> tr",
+            "explanation": "tbody의 직계 자식인 tr 행을 후보로 찾습니다."
+          },
+          {
+            "fragment": ":nth-child(even)",
+            "explanation": "그중 부모의 자식 순서가 짝수인 행만 선택합니다."
+          }
+        ]
+      }
     },
     {
       "id": 27,
@@ -379,7 +687,23 @@
         "접근성 상태는 class 대신 aria-* 속성으로 표현되는 경우가 많습니다.",
         "비슷한 코드 패턴: button[aria-expanded=\"true\"]",
         "[속성=\"값\"] 형태는 속성과 값이 모두 정확히 일치할 때 선택합니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": ".tabs",
+            "explanation": "tabs 클래스를 가진 탭 영역을 찾습니다."
+          },
+          {
+            "fragment": "button",
+            "explanation": "앞의 공백은 후손 관계이므로, 탭 영역 안의 button을 후보로 찾습니다."
+          },
+          {
+            "fragment": "[aria-selected=\"true\"]",
+            "explanation": "그중 aria-selected 값이 true인, 현재 선택된 탭 버튼만 선택합니다."
+          }
+        ]
+      }
     },
     {
       "id": 28,
@@ -393,7 +717,19 @@
         "부모의 직계 자식 관계와 바로 다음 형제 관계를 괄호 안에서 조합하세요.",
         "비슷한 코드 패턴: article:has(> h3 + p)",
         ">는 직계 자식, +는 바로 뒤의 인접 형제를 뜻합니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "section",
+            "explanation": "section 요소를 후보로 찾습니다."
+          },
+          {
+            "fragment": ":has(> h2 + p)",
+            "explanation": "그중 직계 자식 h2가 있고 그 h2 바로 다음 형제가 p인 section만 선택합니다."
+          }
+        ]
+      }
     },
     {
       "id": 29,
@@ -407,7 +743,27 @@
         "먼저 열린 컨테이너를 찾고, 사용할 수 없는 상태를 제외하세요.",
         "비슷한 코드 패턴: form button:not([disabled])",
         "상태 속성과 :not()을 조합하면 사용 가능한 요소만 남길 수 있습니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "dialog",
+            "explanation": "dialog 요소를 후보로 찾습니다."
+          },
+          {
+            "fragment": "[open]",
+            "explanation": "그중 open 속성이 있어 현재 열린 대화상자만 남깁니다."
+          },
+          {
+            "fragment": "button",
+            "explanation": "앞의 공백은 후손 관계이므로, 열린 대화상자 안의 버튼을 찾습니다."
+          },
+          {
+            "fragment": ":not([disabled])",
+            "explanation": "그중 disabled 속성이 있는 버튼을 제외하여 사용할 수 있는 버튼만 선택합니다."
+          }
+        ]
+      }
     },
     {
       "id": 30,
@@ -421,7 +777,23 @@
         "현재 위치를 나타내는 접근성 속성과 그 값을 확인하세요.",
         "비슷한 코드 패턴: nav a[aria-current=\"step\"]",
         "aria-current는 page, step 등 현재 항목의 종류를 값으로 표현합니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": ".breadcrumb",
+            "explanation": "breadcrumb 클래스를 가진 경로 탐색 영역을 찾습니다."
+          },
+          {
+            "fragment": "a",
+            "explanation": "앞의 공백은 후손 관계이므로, 경로 탐색 영역 안의 링크를 후보로 찾습니다."
+          },
+          {
+            "fragment": "[aria-current=\"page\"]",
+            "explanation": "그중 aria-current 값이 page인 현재 페이지 링크만 선택합니다."
+          }
+        ]
+      }
     },
     {
       "id": 31,
@@ -435,7 +807,27 @@
         "여러 컨테이너 후보를 낮은 우선순위로 묶고 직계 첫 제목을 찾으세요.",
         "비슷한 코드 패턴: main :where(article, aside) > h3:first-child",
         ":where()는 여러 선택자를 묶되 선택자 우선순위를 높이지 않습니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "main",
+            "explanation": "먼저 main 요소로 범위를 좁힙니다."
+          },
+          {
+            "fragment": ":where(article, section)",
+            "explanation": "main 안에서 article 또는 section을 후보로 찾습니다. :where()는 이 묶음 자체의 선택자 우선순위를 높이지 않습니다."
+          },
+          {
+            "fragment": "> h2",
+            "explanation": "후보 요소의 직계 자식인 h2를 찾습니다."
+          },
+          {
+            "fragment": ":first-child",
+            "explanation": "그중 부모의 첫 번째 자식인 h2만 선택합니다."
+          }
+        ]
+      }
     },
     {
       "id": 32,
@@ -449,7 +841,23 @@
         "행을 먼저 후보로 두고, 특정 상태 셀이 있는지를 검사하세요.",
         "비슷한 코드 패턴: ul li:has(span[data-status=\"warn\"])",
         ":has() 안에 속성 선택자를 넣어 특정 상태의 후손 존재 여부를 확인할 수 있습니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "table",
+            "explanation": "먼저 table 요소로 범위를 좁힙니다."
+          },
+          {
+            "fragment": "tr",
+            "explanation": "앞의 공백은 후손 관계이므로, 표 안의 tr 행을 후보로 찾습니다."
+          },
+          {
+            "fragment": ":has(td[data-status=\"error\"])",
+            "explanation": "그중 data-status 값이 error인 td 셀을 내부에 포함한 행만 선택합니다."
+          }
+        ]
+      }
     },
     {
       "id": 33,
@@ -463,7 +871,15 @@
         "언어 코드처럼 기본값과 하위 코드를 함께 찾는 속성 연산자를 떠올려 보세요.",
         "비슷한 코드 패턴: [lang|=\"en\"]",
         "[attr|=\"value\"]는 값이 정확히 일치하거나 value-로 시작할 때 선택합니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": "[lang|=\"ko\"]",
+            "explanation": "lang 값이 ko와 정확히 같거나 ko-로 시작하는 요소를 선택합니다."
+          }
+        ]
+      }
     },
     {
       "id": 34,
@@ -477,7 +893,23 @@
         "전체 자식 수가 아니라 같은 태그 유형의 형제 수를 기준으로 판단하세요.",
         "비슷한 코드 패턴: article > h2:only-of-type",
         ":only-of-type은 같은 부모 아래 동일 태그가 하나뿐일 때 일치합니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": ".toolbar",
+            "explanation": "toolbar 클래스를 가진 도구 모음을 찾습니다."
+          },
+          {
+            "fragment": "> button",
+            "explanation": "도구 모음의 직계 자식인 button을 후보로 찾습니다."
+          },
+          {
+            "fragment": ":only-of-type",
+            "explanation": "그중 같은 부모 아래 button 태그가 하나뿐인 버튼만 선택합니다."
+          }
+        ]
+      }
     },
     {
       "id": 35,
@@ -491,7 +923,23 @@
         "오류 input을 가진 부모를 먼저 찾고 그 부모의 label로 대상을 좁히세요.",
         "비슷한 코드 패턴: .row:has(> input:required) > label",
         ":has()로 부모 조건을 검사한 뒤 자식 결합자를 이어 사용할 수 있습니다."
-      ]
+      ],
+      "solution": {
+        "selectorBreakdown": [
+          {
+            "fragment": ".field",
+            "explanation": "field 클래스를 가진 입력 영역을 후보로 찾습니다."
+          },
+          {
+            "fragment": ":has(> input[aria-invalid=\"true\"])",
+            "explanation": "그중 aria-invalid 값이 true인 input을 직계 자식으로 가진 오류 입력 영역만 남깁니다."
+          },
+          {
+            "fragment": "> label",
+            "explanation": "남은 입력 영역의 직계 자식인 label만 선택합니다."
+          }
+        ]
+      }
     }
   ]
 }

@@ -283,12 +283,15 @@ describe('CodeEditor', () => {
       .toBeLessThan(shortcutGuide.textContent?.indexOf('자동 완성') ?? 0)
   })
 
-  it('submits with Mod+Enter without adding a line', () => {
+  it.each([
+    ['Control', 'ctrlKey'],
+    ['Command', 'metaKey']
+  ] as const)('submits with %s+Enter without adding a line', (_label, modifier) => {
     const onSubmit = vi.fn()
     render(<ControlledEditor initialValue="return 42;" language="java" onSubmit={onSubmit} />)
     const editor = screen.getByRole('textbox', { name: 'java 답안' })
 
-    fireEvent.keyDown(editor, { key: 'Enter', ctrlKey: true })
+    fireEvent.keyDown(editor, { key: 'Enter', [modifier]: true })
 
     expect(onSubmit).toHaveBeenCalledTimes(1)
     expect(screen.getByTestId('controlled-value').textContent).toBe('return 42;')

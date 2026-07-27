@@ -177,7 +177,9 @@ public class ProblemService {
                         node.path("summary").asText(defaultSummary(problem)),
                         keyPoints.isEmpty() ? defaultKeyPoints(problem) : keyPoints,
                         node.path("alternative").asText(defaultAlternative(problem)),
-                        node.path("complexity").asText(defaultComplexity(problem))
+                        node.path("complexity").asText(defaultComplexity(problem)),
+                        referenceAnswer(problem),
+                        selectorBreakdown(node.path("selectorBreakdown"))
                 );
             } catch (Exception ignored) {
                 // 손상된 선택 해설은 안전한 기본 해설로 대체합니다.
@@ -187,11 +189,33 @@ public class ProblemService {
                 defaultSummary(problem),
                 defaultKeyPoints(problem),
                 defaultAlternative(problem),
-                defaultComplexity(problem)
+                defaultComplexity(problem),
+                referenceAnswer(problem),
+                List.of()
         );
     }
 
+    private String referenceAnswer(Problem problem) {
+        return "selector".equals(problem.getMode()) ? problem.getAnswer() : null;
+    }
+
+    private List<SelectorBreakdownResponse> selectorBreakdown(JsonNode node) {
+        if (!node.isArray()) return List.of();
+        List<SelectorBreakdownResponse> result = new ArrayList<>();
+        for (JsonNode item : node) {
+            String fragment = item.path("fragment").asText();
+            String explanation = item.path("explanation").asText();
+            if (!fragment.isBlank() && !explanation.isBlank()) {
+                result.add(new SelectorBreakdownResponse(fragment, explanation));
+            }
+        }
+        return result;
+    }
+
     private String defaultSummary(Problem problem) {
+        if ("selector".equals(problem.getMode())) {
+            return "선택자의 조건을 왼쪽부터 읽으며 목표 요소까지 범위를 좁혀 보세요.";
+        }
         return "문제의 각 조건을 코드의 구조나 선언으로 나눈 뒤 모두 충족하면 출제 의도에 맞는 풀이가 됩니다.";
     }
 

@@ -206,6 +206,35 @@ function declarationMap(value) {
   return declarations
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+function selectorExampleRevealsAnswer(answer, example) {
+  const normalizedAnswer = normalized(answer)
+  const normalizedExample = normalized(example)
+  if (!normalizedAnswer || !normalizedExample) return false
+
+  if (/^[a-z][a-z0-9_-]*$/i.test(normalizedAnswer)) {
+    const identifiers = normalizedExample.match(/[a-z][a-z0-9_-]*/gi) ?? []
+    return identifiers.includes(normalizedAnswer)
+  }
+
+  const answerPattern = new RegExp(
+    `(^|[^a-z0-9_-])${escapeRegExp(normalizedAnswer)}(?=$|[^a-z0-9_-])`,
+    'i'
+  )
+  return answerPattern.test(normalizedExample)
+}
+
+function validateSelectorHintSafety(problem, location) {
+  for (const hint of problem.hints) {
+    if (selectorExampleRevealsAnswer(problem.answer, hint)) {
+      fail(location, '힌트가 기준 선택자를 그대로 노출합니다. 다른 요소와 값의 유사 예시를 사용하세요.')
+    }
+  }
+}
+
 function validateDeclarationMetadata(problem, location) {
   if (Object.hasOwn(problem, 'accept')) {
     fail(location, '사용되지 않는 accept 필드는 declaration 문제 계약에 포함할 수 없습니다.')
@@ -233,10 +262,26 @@ function indexUnique(kind, value, location) {
   else duplicateIndex.set(key, location)
 }
 
-function validateSolution(solution, location) {
-  if (solution === undefined) return
+function validateSolution(solution, location, mode) {
+  if (solution === undefined) {
+    if (mode === 'selector') {
+      fail(location, '선택자 문제에는 정답 후 단계별 해설 solution이 필요합니다.')
+    }
+    return
+  }
   if (!solution || typeof solution !== 'object') {
     fail(location, 'solution은 객체여야 합니다.')
+    return
+  }
+  if (mode === 'selector') {
+    if (!Array.isArray(solution.selectorBreakdown)
+        || solution.selectorBreakdown.length === 0
+        || solution.selectorBreakdown.some(step =>
+          !step || typeof step !== 'object'
+          || !nonBlank(step.fragment)
+          || !nonBlank(step.explanation))) {
+      fail(location, 'solution.selectorBreakdown에는 선택자 조각과 단계별 설명이 필요합니다.')
+    }
     return
   }
   for (const field of ['summary', 'alternative', 'complexity']) {
@@ -266,9 +311,10 @@ function validateProblem(problem, category, expectedId) {
 
   indexUnique(`${category} 제목`, problem.title, location)
   indexUnique(`${category} 질문`, problem.question, location)
-  validateSolution(problem.solution, location)
+  validateSolution(problem.solution, location, problem.mode)
 
   if (problem.mode === 'selector') {
+    validateSelectorHintSafety(problem, location)
     if (!nonBlank(problem.html) || !problem.html.includes('data-target')) {
       fail(location, '선택자 문제 HTML에는 data-target 정답 대상이 필요합니다.')
     }
