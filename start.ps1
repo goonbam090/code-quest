@@ -146,7 +146,8 @@ try {
     Set-Location -LiteralPath $PSScriptRoot
 
     Write-Step "실행 환경을 확인하고 있습니다..."
-    $dockerCommand = Get-Command "docker" -CommandType Application -ErrorAction SilentlyContinue
+    $dockerCommand = Get-Command "docker" -CommandType Application -ErrorAction SilentlyContinue |
+        Select-Object -First 1
     if ($null -eq $dockerCommand) {
         throw "Docker 명령을 찾을 수 없습니다. Docker Desktop을 설치한 뒤 새 터미널에서 다시 실행해 주세요."
     }
