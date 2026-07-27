@@ -12,6 +12,73 @@ vi.mock('./lib/api', () => ({
   }
 }))
 
+vi.mock('./components/CodeEditor', async () => {
+  const React = await import('react')
+
+  const CodeEditor = React.forwardRef(function MockCodeEditor(props: any, forwardedRef: any) {
+    const inputRef = React.useRef<HTMLTextAreaElement>(null)
+    const tabExitArmedRef = React.useRef(false)
+    const {
+      language,
+      cssSyntaxMode,
+      onChange,
+      onSubmit,
+      readOnly,
+      value,
+      ...inputProps
+    } = props
+
+    React.useImperativeHandle(forwardedRef, () => ({
+      focus: () => inputRef.current?.focus(),
+      focusLine: (lineNumber: number) => {
+        const input = inputRef.current
+        if (!input) return
+        const lines = String(value).split('\n')
+        const safeLine = Math.min(Math.max(lineNumber, 1), lines.length)
+        const start = lines.slice(0, safeLine - 1).reduce((length, line) => length + line.length + 1, 0)
+        input.focus()
+        input.setSelectionRange(start, start + lines[safeLine - 1].length)
+      },
+      scrollIntoView: (options?: ScrollIntoViewOptions) => inputRef.current?.scrollIntoView(options)
+    }))
+
+    return <textarea
+      {...inputProps}
+      ref={inputRef}
+      data-language={language}
+      data-css-syntax={cssSyntaxMode}
+      readOnly={readOnly}
+      value={value}
+      onChange={event => onChange(event.target.value)}
+      onKeyDown={event => {
+        if (event.key === 'Escape') {
+          tabExitArmedRef.current = true
+          return
+        }
+        if (event.key === 'Tab') {
+          event.preventDefault()
+          if (tabExitArmedRef.current) {
+            const focusable = Array.from(document.querySelectorAll<HTMLElement>(
+              'a[href], button:not(:disabled), input:not(:disabled), textarea:not(:disabled), summary'
+            ))
+            const currentIndex = focusable.indexOf(event.currentTarget)
+            focusable[currentIndex + (event.shiftKey ? -1 : 1)]?.focus()
+            tabExitArmedRef.current = false
+          }
+          return
+        }
+        tabExitArmedRef.current = false
+        if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+          event.preventDefault()
+          onSubmit?.()
+        }
+      }}
+    />
+  })
+
+  return { CodeEditor }
+})
+
 const mockedApi = vi.mocked(api)
 
 function deferred<T>() {
@@ -98,6 +165,7 @@ describe('App accessibility', () => {
 
     const editor = await screen.findByRole('textbox', { name: 'CSS 답안' })
     expect(editor).toHaveValue('')
+    expect(editor).toHaveAttribute('data-css-syntax', 'stylesheet')
 
     fireEvent.change(editor, { target: { value: 'p' } })
     expect(localStorage.getItem('codequest-draft-css-155-v1-1')).toBe('p')
@@ -385,6 +453,7 @@ describe('App accessibility', () => {
     render(<App />)
     await screen.findByRole('heading', { name: '1. Flex 시작' })
     const editor = screen.getByRole('textbox', { name: 'CSS 답안' })
+    expect(editor).toHaveAttribute('data-css-syntax', 'declarations')
 
     fireEvent.change(editor, { target: { value: 'display: flex;' } })
     fireEvent.click(screen.getByRole('button', { name: /정답 확인/ }))

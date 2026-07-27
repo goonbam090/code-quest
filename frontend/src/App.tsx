@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { CodeEditor, type CodeEditorHandle } from './components/CodeEditor'
 import { api } from './lib/api'
 import { createExecutionTrace, type ExecutionTrace } from './lib/executionTrace'
 import { formatHtml } from './lib/formatHtml'
@@ -327,12 +328,11 @@ export default function App() {
   const [problemRequestRevision, setProblemRequestRevision] = useState(0)
   const searchRef = useRef<HTMLInputElement>(null)
   const pickerToggleRef = useRef<HTMLButtonElement>(null)
-  const editorTabExitRef = useRef(false)
   const pickerFocusFrameRef = useRef<number | null>(null)
   const problemHeadingRef = useRef<HTMLHeadingElement>(null)
   const focusProblemAfterMoveRef = useRef(false)
   const resultRef = useRef<HTMLDivElement>(null)
-  const codeEditorRef = useRef<HTMLTextAreaElement>(null)
+  const codeEditorRef = useRef<CodeEditorHandle>(null)
   const categoryRequestGenerationRef = useRef(0)
   const submissionGenerationRef = useRef(0)
   const openHomeAtFirstProblemRef = useRef(false)
@@ -456,7 +456,9 @@ export default function App() {
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
-      const typing = event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement
+      const typing = event.target instanceof HTMLElement && event.target.matches(
+        'input, textarea, [contenteditable="true"], [role="textbox"]'
+      )
       if (event.key === 'Escape' && pickerOpen) {
         event.preventDefault()
         closeProblemPicker()
@@ -626,116 +628,9 @@ export default function App() {
     requestAnimationFrame(() => codeEditorRef.current?.focus())
   }
 
-  function handleCodeKeyDown(event: ReactKeyboardEvent<HTMLTextAreaElement>) {
-    if (event.key === 'Escape') {
-      editorTabExitRef.current = true
-      return
-    }
-    if (event.key === 'Tab' && editorTabExitRef.current) {
-      event.preventDefault()
-      editorTabExitRef.current = false
-      moveFocusFromEditor(event.currentTarget, event.shiftKey)
-      return
-    }
-    editorTabExitRef.current = false
-    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
-      event.preventDefault()
-      submit()
-      return
-    }
-    const editor = event.currentTarget
-    const start = editor.selectionStart
-    const end = editor.selectionEnd
-    if (event.key === 'Tab') {
-      event.preventDefault()
-      const next = `${answer.slice(0, start)}    ${answer.slice(end)}`
-      updateAnswer(next)
-      requestAnimationFrame(() => editor.setSelectionRange(start + 4, start + 4))
-      return
-    }
-    if (event.key === 'Enter') {
-      event.preventDefault()
-      const lineStart = answer.lastIndexOf('\n', start - 1) + 1
-      const currentLine = answer.slice(lineStart, start)
-      const baseIndent = currentLine.match(/^\s*/)?.[0] ?? ''
-      const extraIndent = currentLine.trimEnd().endsWith('{') ? '    ' : ''
-      const insertion = `\n${baseIndent}${extraIndent}`
-      updateAnswer(`${answer.slice(0, start)}${insertion}${answer.slice(end)}`)
-      requestAnimationFrame(() => {
-        const cursor = start + insertion.length
-        editor.setSelectionRange(cursor, cursor)
-      })
-    }
-  }
-
-  function handleHtmlKeyDown(event: ReactKeyboardEvent<HTMLTextAreaElement>) {
-    if (event.key === 'Escape') {
-      editorTabExitRef.current = true
-      return
-    }
-    if (event.key === 'Tab' && editorTabExitRef.current) {
-      event.preventDefault()
-      editorTabExitRef.current = false
-      moveFocusFromEditor(event.currentTarget, event.shiftKey)
-      return
-    }
-    editorTabExitRef.current = false
-    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
-      event.preventDefault()
-      submit()
-      return
-    }
-    const editor = event.currentTarget
-    const start = editor.selectionStart
-    const end = editor.selectionEnd
-    if (event.key === 'Tab') {
-      event.preventDefault()
-      const insertion = '  '
-      updateAnswer(`${answer.slice(0, start)}${insertion}${answer.slice(end)}`)
-      requestAnimationFrame(() => editor.setSelectionRange(start + insertion.length, start + insertion.length))
-      return
-    }
-    if (event.key === 'Enter') {
-      event.preventDefault()
-      const lineStart = answer.lastIndexOf('\n', start - 1) + 1
-      const currentLine = answer.slice(lineStart, start)
-      const baseIndent = currentLine.match(/^\s*/)?.[0] ?? ''
-      const opensElement = /<([a-z][\w-]*)(?:\s[^<>]*)?>\s*$/i.test(currentLine)
-        && !/<(?:area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)\b/i.test(currentLine)
-      const insertion = `\n${baseIndent}${opensElement ? '  ' : ''}`
-      updateAnswer(`${answer.slice(0, start)}${insertion}${answer.slice(end)}`)
-      requestAnimationFrame(() => {
-        const cursor = start + insertion.length
-        editor.setSelectionRange(cursor, cursor)
-      })
-    }
-  }
-
-  function moveFocusFromEditor(editor: HTMLTextAreaElement, backwards: boolean) {
-    const selector = [
-      'a[href]',
-      'button:not(:disabled)',
-      'input:not(:disabled)',
-      'select:not(:disabled)',
-      'textarea:not(:disabled)',
-      'summary',
-      '[tabindex]:not([tabindex="-1"])'
-    ].join(',')
-    const focusable = Array.from(document.querySelectorAll<HTMLElement>(selector))
-      .filter(element => !element.hasAttribute('hidden') && getComputedStyle(element).display !== 'none')
-    const currentIndex = focusable.indexOf(editor)
-    const target = focusable[currentIndex + (backwards ? -1 : 1)]
-    requestAnimationFrame(() => target?.focus())
-  }
-
   function focusErrorLine() {
     if (!result?.errorLine || !codeEditorRef.current) return
-    const lines = answer.split('\n')
-    const lineIndex = Math.min(Math.max(result.errorLine - 1, 0), lines.length - 1)
-    const start = lines.slice(0, lineIndex).reduce((length, line) => length + line.length + 1, 0)
-    const end = start + lines[lineIndex].length
-    codeEditorRef.current.focus()
-    codeEditorRef.current.setSelectionRange(start, end)
+    codeEditorRef.current.focusLine(result.errorLine)
   }
 
   function focusAnswer() {
@@ -962,16 +857,15 @@ export default function App() {
               <button type="button" onClick={resetAnswer}>시작 코드로 복원</button>
             </div>
           </div>
-          <textarea
+          <CodeEditor
             ref={codeEditorRef}
             className="html-code-editor"
+            language="html"
             aria-label="HTML 답안"
             aria-describedby="code-editor-keyboard-help"
             value={answer}
-            spellCheck={false}
-            onChange={event => updateAnswer(event.target.value)}
-            onKeyDown={handleHtmlKeyDown}
-            onBlur={() => { editorTabExitRef.current = false }}
+            onChange={updateAnswer}
+            onSubmit={submit}
           />
           <div className="answer-workbench html-actions">
             <div className="panel-title answer-title"><span>VALIDATE HTML</span><button onClick={() => setHint(value => (value + 1) % problem.hints.length)}>힌트</button></div>
@@ -997,8 +891,15 @@ export default function App() {
         </section>
       </div> : !codeProblem ? <div className="workspace">
         <section className="editor panel html-panel">
-          <div className="panel-title"><span>HTML</span><small>자동 들여쓰기 · 읽기 전용</small></div>
-          <pre aria-label="자동 들여쓰기된 HTML 코드">{formattedHtml}</pre>
+          <div className="panel-title"><span>HTML</span><small>줄 번호 · 문법 강조 · 읽기 전용</small></div>
+          <CodeEditor
+            className="html-reference-viewer"
+            language="html"
+            aria-label="자동 들여쓰기된 HTML 코드"
+            value={formattedHtml}
+            onChange={() => undefined}
+            readOnly
+          />
         </section>
         <section className="preview panel">
           <div className="panel-title"><span>LIVE PREVIEW</span><small>{problem.mode === 'selector' ? '보라색이 선택 결과입니다' : '입력 즉시 적용됩니다'}</small></div>
@@ -1012,18 +913,17 @@ export default function App() {
                 <button type="button" onClick={() => setHint(value => (value + 1) % problem.hints.length)}>힌트</button>
               </div>
             </div>
-            <textarea
+            <CodeEditor
               ref={codeEditorRef}
+              className="css-answer-editor"
+              language="css"
+              cssSyntaxMode={problem.mode === 'selector' ? 'stylesheet' : 'declarations'}
               aria-label="CSS 답안"
+              aria-describedby="code-editor-keyboard-help"
               value={answer}
-              onChange={event => updateAnswer(event.target.value)}
+              onChange={updateAnswer}
               placeholder={problem.mode === 'selector' ? '.target' : 'display: flex;'}
-              onKeyDown={event => {
-                if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
-                  event.preventDefault()
-                  submit()
-                }
-              }}
+              onSubmit={submit}
             />
             <p className="hint" aria-live="polite">{problem.hints[hint]}</p>
             <button className="submit" onClick={submit}>정답 확인 <kbd>Ctrl/⌘↵</kbd></button>
@@ -1047,7 +947,14 @@ export default function App() {
             <span>{problem.mode === 'javascript' ? 'FUNCTION CONTRACT' : 'METHOD CONTRACT'}</span>
             <small>{problem.mode === 'javascript' ? '함수 형태' : '메서드 형태'} · 읽기 전용</small>
           </div>
-          <pre aria-label={`${codeLanguage} 시작 코드`}>{problem.starterCode}</pre>
+          <CodeEditor
+            className="contract-code-viewer"
+            language={problem.mode === 'javascript' ? 'javascript' : 'java'}
+            aria-label={`${codeLanguage} 시작 코드`}
+            value={problem.starterCode}
+            onChange={() => undefined}
+            readOnly
+          />
           {problem.constraints.length > 0 && <section className="constraints" aria-label="문제 제한사항">
             <div className="panel-title"><span>CONSTRAINTS</span><small>입력 크기에서 풀이 방향을 추론해 보세요</small></div>
             <ul>
@@ -1077,7 +984,14 @@ export default function App() {
               <div className="syntax-topics">
                 {syntaxGuide.topics.map(topic => <span key={topic}>{topic}</span>)}
               </div>
-              <pre><code>{syntaxGuide.code}</code></pre>
+              <CodeEditor
+                className="syntax-code-viewer"
+                language={problem.mode === 'javascript' ? 'javascript' : 'java'}
+                aria-label={`${codeLanguage} 문법 예시 코드`}
+                value={syntaxGuide.code}
+                onChange={() => undefined}
+                readOnly
+              />
               <p>형태만 참고해 현재 문제의 변수와 조건에 맞게 바꿔보세요.</p>
             </div>
           </section>}
@@ -1091,17 +1005,16 @@ export default function App() {
               <button type="button" onClick={resetAnswer}>시작 코드로 복원</button>
             </div>
           </div>
-          <textarea
+          <CodeEditor
             ref={codeEditorRef}
-            className={`code-editor ${result?.errorLine ? 'has-error' : ''}`}
+            className="code-editor"
+            language={problem.mode === 'javascript' ? 'javascript' : 'java'}
             aria-label={`${codeLanguage} 답안`}
             aria-describedby="code-editor-keyboard-help"
             aria-invalid={result?.errorLine ? true : undefined}
             value={answer}
-            spellCheck={false}
-            onChange={event => updateAnswer(event.target.value)}
-            onKeyDown={handleCodeKeyDown}
-            onBlur={() => { editorTabExitRef.current = false }}
+            onChange={updateAnswer}
+            onSubmit={submit}
           />
           {result?.errorLine && <section
             className="code-error-location"
@@ -1146,7 +1059,8 @@ export default function App() {
         <button disabled={index === problems.length - 1} onClick={() => move(index + 1)}>다음 →</button>
       </footer>
       <p className="sr-only" id="code-editor-keyboard-help">
-        Tab 키는 코드를 들여씁니다. 편집기 밖으로 이동하려면 Escape를 누른 다음 Tab 또는 Shift+Tab을 누르세요.
+        Tab과 Shift+Tab으로 코드를 들여쓰거나 내어씁니다. 편집기 밖으로 이동하려면 Escape를 누른 다음
+        Tab 또는 Shift+Tab을 누르세요. Ctrl 또는 Command와 Enter를 함께 누르면 코드를 검사합니다.
       </p>
     </main>}
   </div>

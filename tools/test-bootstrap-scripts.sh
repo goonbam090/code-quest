@@ -300,7 +300,9 @@ test_unix_stale_volume_error
 test_unix_engine_error
 test_windows_bootstrap
 
-git -C "$project_dir" check-ignore -q .env ||
-  fail ".env is not ignored by Git"
+if [ -e "$project_dir/.git" ]; then
+  git -C "$project_dir" check-ignore -q .env ||
+    fail ".env is not ignored by Git"
+fi
 
 printf 'Bootstrap tests passed.\n'

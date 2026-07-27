@@ -97,9 +97,10 @@ Map·Set과 `Promise` 기반 비동기 처리까지 이어집니다.
 6. 오타·문법·개념 오류를 구분한 피드백을 확인합니다.
 7. 정답 해설을 확인하고 다음 문제로 바로 이동합니다.
 
-답안은 문제별로 자동 저장됩니다. 문제 탐색기, 번호 직접 이동, 진도 표시, 자동 들여쓰기와
-키보드 단축키도 제공합니다. `Code Quest` 로고를 누르면 HTML 1번 화면으로 돌아가지만 기존
-진도와 답안은 삭제되지 않습니다.
+답안은 문제별로 자동 저장됩니다. 모든 코드 편집기와 읽기 전용 코드 화면은 줄 번호와 언어별
+문법 강조를 제공하며, Enter 자동 들여쓰기와 Tab·Shift+Tab 내어쓰기를 지원합니다. 문제 탐색기,
+번호 직접 이동, 진도 표시와 키보드 단축키도 제공합니다. `Code Quest` 로고를 누르면 HTML 1번
+화면으로 돌아가지만 기존 진도와 답안은 삭제되지 않습니다.
 
 ## 채점 방식
 
@@ -128,7 +129,7 @@ Java와 JavaScript 문제 모두 기준 답안과 전체 JSON 테스트 정의�
 
 ## 기술 스택
 
-- Frontend: React 19.2.8, TypeScript 7.0.2, Vite 8.1.5
+- Frontend: React 19.2.8, TypeScript 7.0.2, Vite 8.1.5, CodeMirror 6
 - Backend: Java 21, Spring Boot 3.5.14, Spring Data JPA, Flyway
 - Database: PostgreSQL 16
 - Judges: Playwright 1.61.0 + Chromium, 별도 Java 21 runner, Deno 2.9.4 JavaScript runner
@@ -356,6 +357,9 @@ docker compose build javascript-runner
 
 # Compose 문법과 필수 환경 변수 확인
 docker compose config --quiet
+
+# 신규 사용자에게 전달할 검증 가능한 ZIP 생성
+tools/build-release-zip.sh
 ```
 
 Maven 3.9.9와 JDK 21이 로컬에 설치되어 있다면 CI의 Backend 검증을
@@ -385,10 +389,11 @@ docker compose up --detach --wait javascript-runner
 각각 1개 worker로 직렬 검증하고, 마크업·스타일 문제만 기본 2개 worker로 병렬 검증합니다.
 마크업·스타일 worker 수는 `CODE_QUEST_AUDIT_WORKERS=1`부터 `4`까지 조정할 수 있습니다.
 `audit-grading-contracts.mjs`는 정상 채점 상태와 시도 횟수·해설 노출, 24개 동시 제출의 원자성,
-renderer·JavaScript runner 장애 시 시도 미기록 계약을 각각 검증합니다. GitHub Actions는 문제 데이터, Backend,
-Frontend, Chromium judge, Java sandbox와 JavaScript sandbox를 각각 검사한 뒤 Docker 전체
-환경에서 모든 기준 답안과 채점 회귀를 다시 검증하고 종료 시 로그를 수집한 후 테스트용 데이터
-볼륨을 제거합니다.
+renderer·JavaScript runner 장애 시 시도 미기록 계약을 각각 검증합니다. GitHub Actions는 실제
+배포 ZIP을 만들고 공백이 포함된 새 폴더에 압축을 푼 뒤, 사용자가 실행하는 것과 같은
+`start.sh` 경로로 `.env` 자동 생성부터 전체 서비스를 시작합니다. 이후 문제 데이터, Backend,
+Frontend, Chromium judge, Java sandbox와 JavaScript sandbox, 모든 기준 답안과 채점 회귀를
+검증하고 종료 시 로그를 수집한 후 테스트용 데이터 볼륨을 제거합니다.
 
 ## 주요 API
 
