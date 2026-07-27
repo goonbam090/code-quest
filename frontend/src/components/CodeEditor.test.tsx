@@ -12,6 +12,8 @@ import {
   waitFor
 } from '@testing-library/react'
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+import { EditorSelection } from '@codemirror/state'
+import { EditorView } from '@codemirror/view'
 import { CodeEditor } from './CodeEditor'
 import type {
   CodeEditorHandle,
@@ -100,6 +102,17 @@ async function findCompletionOption(label: string) {
   ).find(element => element.querySelector('.cm-completionLabel')?.textContent === label)
   expect(option).toBeDefined()
   return option!
+}
+
+function openCompletionAt(editor: HTMLElement, offset: number) {
+  act(() => {
+    editor.focus()
+    fireEvent.keyDown(editor, { key: 'Home' })
+    for (let position = 0; position < offset; position += 1) {
+      fireEvent.keyDown(editor, { key: 'ArrowRight' })
+    }
+    fireEvent.keyDown(editor, { key: ' ', code: 'Space', ctrlKey: true })
+  })
 }
 
 describe('CodeEditor', () => {
@@ -195,6 +208,102 @@ describe('CodeEditor', () => {
     fireEvent.mouseDown(option)
 
     expect(screen.getByTestId('controlled-value').textContent).toBe('<li></li>')
+    expect(EditorView.findFromDOM(editor)?.state.selection.main.head)
+      .toBe('<li>'.length)
+  })
+
+  it('inserts an HTML tag pair when completion starts immediately after <', async () => {
+    render(<ControlledEditor initialValue="<" language="html" />)
+    const editor = screen.getByRole('textbox', { name: 'html 답안' })
+
+    act(() => {
+      editor.focus()
+      fireEvent.keyDown(editor, { key: 'End' })
+      fireEvent.keyDown(editor, { key: ' ', code: 'Space', ctrlKey: true })
+    })
+    const option = await findCompletionOption('li')
+    fireEvent.mouseDown(option)
+
+    expect(screen.getByTestId('controlled-value').textContent).toBe('<li></li>')
+    expect(EditorView.findFromDOM(editor)?.state.selection.main.head)
+      .toBe('<li>'.length)
+  })
+
+  it.each([
+    ['an existing tag terminator', '<l>', 'li', 2, '<li></li>'],
+    [
+      'existing attributes',
+      '<l class="item">',
+      'li',
+      2,
+      '<li class="item"></li>'
+    ],
+    [
+      'an attribute value containing a tag terminator',
+      '<l data-value=">">',
+      'li',
+      2,
+      '<li data-value=">"></li>'
+    ],
+    [
+      'an unfinished attribute',
+      '<l class="item"',
+      'li',
+      2,
+      '<li class="item"'
+    ],
+    [
+      'existing content and a closing tag',
+      '<l>item</li>',
+      'li',
+      2,
+      '<li>item</li>'
+    ],
+    [
+      'a self-closing tag',
+      '<d class="item" />',
+      'div',
+      2,
+      '<div class="item" />'
+    ],
+    ['a void element', '<im>', 'img', 3, '<img>']
+  ])('preserves %s while completing an HTML tag pair', async (
+    _case,
+    source,
+    completion,
+    offset,
+    expected
+  ) => {
+    render(<ControlledEditor initialValue={source} language="html" />)
+    const editor = screen.getByRole('textbox', { name: 'html 답안' })
+
+    openCompletionAt(editor, offset)
+    const option = await findCompletionOption(completion)
+    fireEvent.mouseDown(option)
+
+    expect(screen.getByTestId('controlled-value').textContent).toBe(expected)
+  })
+
+  it('preserves multiple selections by completing tag names without adding pairs', async () => {
+    render(<ControlledEditor initialValue={'<l>\n<l>'} language="html" />)
+    const editor = screen.getByRole('textbox', { name: 'html 답안' })
+    const view = EditorView.findFromDOM(editor)
+    expect(view).not.toBeNull()
+
+    act(() => {
+      view!.dispatch({
+        selection: EditorSelection.create([
+          EditorSelection.cursor(2),
+          EditorSelection.cursor(6)
+        ])
+      })
+      fireEvent.keyDown(editor, { key: ' ', code: 'Space', ctrlKey: true })
+    })
+    const option = await findCompletionOption('li')
+    fireEvent.mouseDown(option)
+
+    expect(screen.getByTestId('controlled-value').textContent).toBe('<li>\n<li>')
+    expect(view!.state.selection.ranges).toHaveLength(2)
   })
 
   it('inserts an HTML tag pair when its completion is accepted with Enter', async () => {
@@ -253,6 +362,43 @@ describe('CodeEditor', () => {
       'class Main {\n    static void run() {\n        System.out.println("x");\n    }\n}'
     ]
   ] as const)('reindents the entire %s document with Alt/Option+Shift+F', (
+    language,
+    source,
+    expected
+  ) => {
+    render(<ControlledEditor initialValue={source} language={language} />)
+    const editor = screen.getByRole('textbox', { name: `${language} 답안` })
+
+    act(() => {
+      editor.focus()
+      fireEvent.keyDown(editor, {
+        key: 'F',
+        code: 'KeyF',
+        altKey: true,
+        shiftKey: true
+      })
+    })
+
+    expect(screen.getByTestId('controlled-value').textContent).toBe(expected)
+  })
+
+  it.each([
+    [
+      'html',
+      '<main>\n<pre>\nraw\n  indented\n</pre>\n<textarea>\nalpha\n  beta\n</textarea>\n</main>',
+      '<main>\n  <pre>\nraw\n  indented\n</pre>\n  <textarea>\nalpha\n  beta\n</textarea>\n</main>'
+    ],
+    [
+      'java',
+      'class Main {\nstatic String text() {\nreturn """\nraw\n  indented\n""";\n}\n}',
+      'class Main {\n    static String text() {\n        return """\nraw\n  indented\n""";\n    }\n}'
+    ],
+    [
+      'css',
+      '.card {\ncontent: "first\\\n second";\n}',
+      '.card {\n  content: "first\\\n second";\n}'
+    ]
+  ] as const)('preserves whitespace-sensitive %s content while formatting', (
     language,
     source,
     expected

@@ -93,10 +93,20 @@ function deferred<T>() {
 
 describe('App accessibility', () => {
   beforeEach(() => {
+    mockedApi.problems.mockReset()
+    mockedApi.progress.mockReset()
+    mockedApi.submit.mockReset()
     localStorage.clear()
     localStorage.setItem('codequest-learner', 'accessibility-test')
     localStorage.setItem('codequest-last-track', 'css')
     localStorage.setItem('codequest-last-category', 'selector')
+    Object.defineProperty(window, 'scrollX', { configurable: true, value: 0 })
+    Object.defineProperty(window, 'scrollY', { configurable: true, value: 0 })
+    Object.defineProperty(window, 'scrollTo', {
+      configurable: true,
+      writable: true,
+      value: vi.fn()
+    })
     mockedApi.problems.mockResolvedValue([{
       id: 1,
       category: 'selector',
@@ -126,6 +136,7 @@ describe('App accessibility', () => {
 
   afterEach(() => {
     cleanup()
+    vi.restoreAllMocks()
     vi.clearAllMocks()
   })
 

@@ -516,7 +516,7 @@ export default function App() {
     if (pickerFocusFrameRef.current !== null) cancelAnimationFrame(pickerFocusFrameRef.current)
   }, [])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
       if (learningView !== 'practice') return
       const primaryAction = (

@@ -6,7 +6,12 @@ import {
 } from 'react'
 import type { AriaAttributes } from 'react'
 import { basicSetup } from 'codemirror'
-import { snippetCompletion } from '@codemirror/autocomplete'
+import {
+  insertCompletionText,
+  pickedCompletion,
+  snippetCompletion,
+  type Completion
+} from '@codemirror/autocomplete'
 import {
   indentLess,
   indentMore,
@@ -21,14 +26,19 @@ import {
 import { java } from '@codemirror/lang-java'
 import { javascript } from '@codemirror/lang-javascript'
 import {
+  ensureSyntaxTree,
+  getIndentation,
   HighlightStyle,
+  IndentContext,
+  indentString,
   LanguageSupport,
-  indentRange,
   indentUnit,
+  syntaxTree,
   syntaxHighlighting
 } from '@codemirror/language'
 import {
   Compartment,
+  EditorSelection,
   EditorState,
   Prec,
   Transaction
@@ -117,6 +127,98 @@ const htmlVoidElements = new Set([
   'wbr'
 ])
 
+function insertTagName(
+  view: EditorView,
+  completion: Completion,
+  from: number,
+  to: number
+) {
+  view.dispatch({
+    ...insertCompletionText(view.state, completion.label, from, to),
+    annotations: pickedCompletion.of(completion)
+  })
+}
+
+function tagPairCompletion(completion: Completion): Completion {
+  const snippet = snippetCompletion(
+    `${completion.label}>\${}</${completion.label}>`,
+    {
+      ...completion,
+      detail: `</${completion.label}>`
+    }
+  )
+  const applySnippet = snippet.apply
+
+  return {
+    ...snippet,
+    apply(view, selectedCompletion, from, to) {
+      const state = view.state
+      if (
+        state.selection.ranges.length !== 1
+        || !state.selection.main.empty
+      ) {
+        insertTagName(view, selectedCompletion, from, to)
+        return
+      }
+
+      let openTag = syntaxTree(state).resolveInner(from, 1)
+      while (openTag.name !== 'OpenTag' && openTag.parent) {
+        openTag = openTag.parent
+      }
+
+      if (openTag.name !== 'OpenTag') {
+        if (
+          from === to
+          && from > 0
+          && state.sliceDoc(from - 1, from) === '<'
+          && typeof applySnippet === 'function'
+        ) {
+          applySnippet(view, selectedCompletion, from, to)
+        } else {
+          insertTagName(view, selectedCompletion, from, to)
+        }
+        return
+      }
+
+      const endTag = openTag.getChild('EndTag')
+      if (!endTag) {
+        if (openTag.to === to && typeof applySnippet === 'function') {
+          applySnippet(view, selectedCompletion, from, to)
+        } else {
+          insertTagName(view, selectedCompletion, from, to)
+        }
+        return
+      }
+
+      if (
+        state.sliceDoc(endTag.from, endTag.to).includes('/')
+        || openTag.nextSibling
+      ) {
+        insertTagName(view, selectedCompletion, from, to)
+        return
+      }
+
+      const changes = state.changes([
+        { from, to, insert: selectedCompletion.label },
+        {
+          from: endTag.to,
+          to: endTag.to,
+          insert: `</${selectedCompletion.label}>`
+        }
+      ])
+      view.dispatch({
+        changes,
+        selection: EditorSelection.cursor(changes.mapPos(endTag.to, -1)),
+        annotations: [
+          pickedCompletion.of(selectedCompletion),
+          Transaction.userEvent.of('input.complete')
+        ],
+        scrollIntoView: true
+      })
+    }
+  }
+}
+
 function htmlCompletionSourceWithTagPairs(
   context: Parameters<typeof htmlCompletionSource>[0]
 ) {
@@ -139,13 +241,7 @@ function htmlCompletionSourceWithTagPairs(
         return completion
       }
 
-      return snippetCompletion(
-        `${completion.label}>\${}</${completion.label}>`,
-        {
-          ...completion,
-          detail: `</${completion.label}>`
-        }
-      )
+      return tagPairCompletion(completion)
     })
   }
 }
@@ -212,9 +308,104 @@ function editorShortcutPanel() {
   return { dom, top: true }
 }
 
+function addProtectedLines(
+  state: EditorState,
+  protectedLineStarts: Set<number>,
+  start: number,
+  end: number
+) {
+  const firstLine = state.doc.lineAt(start).number + 1
+  const lastLine = state.doc.lineAt(Math.max(start, end)).number
+  for (let lineNumber = firstLine; lineNumber <= lastLine; lineNumber += 1) {
+    protectedLineStarts.add(state.doc.line(lineNumber).from)
+  }
+}
+
+function protectedIndentationLines(state: EditorState) {
+  const tree = ensureSyntaxTree(state, state.doc.length, 100)
+  if (!tree) return null
+
+  const protectedLineStarts = new Set<number>()
+  const whitespaceSensitiveNodes = new Set([
+    'StringLiteral',
+    'TemplateString',
+    'TextBlock'
+  ])
+  const cursor = tree.cursor()
+
+  do {
+    if (cursor.name === 'Element') {
+      const element = cursor.node
+      const openTag = element.getChild('OpenTag')
+      const tagName = openTag?.getChild('TagName')
+      const name = tagName
+        ? state.sliceDoc(tagName.from, tagName.to).toLowerCase()
+        : ''
+      if (openTag && (name === 'pre' || name === 'textarea')) {
+        const closeTag = element.getChild('CloseTag')
+        addProtectedLines(
+          state,
+          protectedLineStarts,
+          openTag.to,
+          closeTag?.from ?? element.to
+        )
+      }
+    }
+
+    if (
+      whitespaceSensitiveNodes.has(cursor.name)
+      && state.doc.lineAt(cursor.from).number < state.doc.lineAt(cursor.to).number
+    ) {
+      addProtectedLines(
+        state,
+        protectedLineStarts,
+        cursor.from,
+        cursor.to
+      )
+    }
+  } while (cursor.next())
+
+  return protectedLineStarts
+}
+
+function safeIndentChanges(state: EditorState) {
+  const protectedLineStarts = protectedIndentationLines(state)
+  if (!protectedLineStarts) return null
+
+  const updated = new Map<number, number>()
+  const context = new IndentContext(state, {
+    overrideIndentation: start => updated.get(start) ?? -1
+  })
+  const changes = []
+
+  for (let position = 0; position <= state.doc.length;) {
+    const line = state.doc.lineAt(position)
+    position = line.to + 1
+    if (protectedLineStarts.has(line.from)) continue
+
+    let indentation = getIndentation(context, line.from)
+    if (indentation === null) continue
+    if (!/\S/.test(line.text)) indentation = 0
+
+    const current = /^\s*/.exec(line.text)?.[0] ?? ''
+    const formatted = indentString(state, indentation)
+    if (current !== formatted) {
+      updated.set(line.from, indentation)
+      changes.push({
+        from: line.from,
+        to: line.from + current.length,
+        insert: formatted
+      })
+    }
+  }
+
+  return state.changes(changes)
+}
+
 function formatDocument(view: EditorView) {
   if (view.state.readOnly) return false
-  const changes = indentRange(view.state, 0, view.state.doc.length)
+  const changes = safeIndentChanges(view.state)
+  if (!changes) return true
   if (!changes.empty) {
     view.dispatch({
       changes,
