@@ -17,6 +17,7 @@ class AnswerValidatorTest {
 
     @Test void acceptsEquivalentSelectorSpacing() {
         Problem p = problem("selector", ".menu > li");
+        p.setHtml("<ul class=\"menu\"><li data-target>메뉴</li></ul>");
         assertThat(validator.isCorrect(p, " .menu>li ")).isTrue();
     }
 
@@ -53,6 +54,12 @@ class AnswerValidatorTest {
 
     @Test void acceptsAdvancedSelectorSpacing() {
         Problem p = problem("selector", ".dashboard > :not(header, footer):has(> [data-widget])");
+        p.setHtml("""
+                <div class="dashboard">
+                  <main data-target><section data-widget>위젯</section></main>
+                  <header><section data-widget>헤더 위젯</section></header>
+                </div>
+                """);
         assertThat(validator.isCorrect(p,
                 ".dashboard>:not(header,footer):has(>[data-widget])")).isTrue();
     }
@@ -64,6 +71,42 @@ class AnswerValidatorTest {
 
         assertThat(result.status()).isEqualTo(AnswerValidator.Status.CORRECT);
         assertThat(result.exactMatch()).isFalse();
+    }
+
+    @Test void rejectsCaseChangedClassNamesEvenWhenTheyResembleTheCanonicalAnswer() {
+        Problem login = problem("selector", ".login input[required]");
+        login.setHtml("""
+                <form class="login">
+                  <input required data-target>
+                  <input>
+                </form>
+                """);
+        Problem board = problem("selector", ".post:not(.notice) > a");
+        board.setHtml("""
+                <article class="post notice"><a>공지</a></article>
+                <article class="post"><a data-target>일반글</a></article>
+                """);
+
+        AnswerValidator.Evaluation loginResult =
+                validator.evaluate(login, ".LOGIN input[required]");
+        AnswerValidator.Evaluation boardResult =
+                validator.evaluate(board, ".POST:not(.NOTICE) > A");
+
+        assertThat(loginResult.status()).isEqualTo(AnswerValidator.Status.INCORRECT);
+        assertThat(loginResult.guidance()).contains("일치하는 요소가 없습니다");
+        assertThat(boardResult.status()).isEqualTo(AnswerValidator.Status.INCORRECT);
+        assertThat(boardResult.guidance()).contains("일치하는 요소가 없습니다");
+    }
+
+    @Test void alwaysChecksTheSelectedElementsBeforeAcceptingNormalizedSelectorText() {
+        Problem p = problem("selector", "[data-label=\"입금, 출금\"]");
+        p.setHtml("<button data-label=\"입금, 출금\" data-target>거래</button>");
+
+        AnswerValidator.Evaluation result =
+                validator.evaluate(p, "[data-label=\"입금,출금\"]");
+
+        assertThat(result.status()).isEqualTo(AnswerValidator.Status.INCORRECT);
+        assertThat(result.guidance()).contains("일치하는 요소가 없습니다");
     }
 
     @Test void acceptsEquivalentShorthandAndLogicalDeclarationsWhenBrowserConfirmsTheResult() {

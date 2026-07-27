@@ -142,6 +142,7 @@ class ProblemServiceTest {
         );
 
         assertThat(response.correct()).isTrue();
+        assertThat(response.message()).isEqualTo("정답입니다.");
         assertThat(response.solution().summary()).isEqualTo("두 값을 직접 더합니다.");
         assertThat(response.solution().complexity()).isEqualTo("시간 O(1), 공간 O(1)");
     }
@@ -188,6 +189,7 @@ class ProblemServiceTest {
         assertThat(response.intentExplanation())
                 .contains("JavaScript 함수의 실행 결과")
                 .contains("경계값");
+        assertThat(response.message()).isEqualTo("정답입니다.");
         assertThat(response.solution().alternative()).contains("JavaScript 표현");
         assertThat(response.solution().complexity()).contains("Map").contains("시간·공간");
     }

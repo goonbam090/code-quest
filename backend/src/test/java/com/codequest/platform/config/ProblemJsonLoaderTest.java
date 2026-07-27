@@ -90,6 +90,32 @@ class ProblemJsonLoaderTest {
         )).isFalse();
     }
 
+    @Test
+    void keepsSelectorProgressWhenOnlyTheRepresentativeAnswerChanges() throws Exception {
+        Problem existing = codeProblem();
+        existing.setMode("selector");
+        existing.setQuestion("로그인 폼 안의 필수 입력 요소를 선택하세요.");
+        existing.setHtml("""
+                <form class="login">
+                  <input required data-target>
+                </form>
+                """);
+        existing.setStarterCode("");
+        existing.setAnswer("form.login input[required]");
+        JsonNode imported = mapper.readTree("""
+                {
+                  "mode": "selector",
+                  "question": "로그인 폼 안의 필수 입력 요소를 선택하세요.",
+                  "html": "<form class=\\"login\\">\\n  <input required data-target>\\n</form>\\n",
+                  "answer": ".login input[required]"
+                }
+                """);
+
+        assertThat(ProblemJsonLoader.requiresProgressReset(
+                existing, imported, "", null
+        )).isFalse();
+    }
+
     private Problem codeProblem() {
         Problem problem = new Problem();
         problem.setMode("java");

@@ -50,7 +50,7 @@ final class SelectorIntentMatcher {
     }
 
     private String adaptBrowserSelector(Document document, String selector) {
-        String adapted = selector
+        String adapted = adaptCaseSensitiveSimpleSelectors(document, selector)
                 .replace(":where(", ":is(")
                 .replace(":placeholder-shown",
                         ":is([placeholder]:not([value]),[placeholder][value=\"\"])")
@@ -104,5 +104,87 @@ final class SelectorIntentMatcher {
         }
         nthMatcher.appendTail(nthResult);
         return nthResult.toString();
+    }
+
+    private String adaptCaseSensitiveSimpleSelectors(Document document, String selector) {
+        StringBuilder adapted = new StringBuilder();
+        int markerIndex = 0;
+        int bracketDepth = 0;
+        char quote = 0;
+
+        for (int index = 0; index < selector.length();) {
+            char current = selector.charAt(index);
+            if (quote != 0) {
+                adapted.append(current);
+                if (current == '\\' && index + 1 < selector.length()) {
+                    adapted.append(selector.charAt(index + 1));
+                    index += 2;
+                    continue;
+                }
+                if (current == quote) {
+                    quote = 0;
+                }
+                index++;
+                continue;
+            }
+            if (current == '"' || current == '\'') {
+                quote = current;
+                adapted.append(current);
+                index++;
+                continue;
+            }
+            if (current == '[') {
+                bracketDepth++;
+                adapted.append(current);
+                index++;
+                continue;
+            }
+            if (current == ']') {
+                bracketDepth = Math.max(0, bracketDepth - 1);
+                adapted.append(current);
+                index++;
+                continue;
+            }
+
+            boolean classSelector = current == '.';
+            boolean idSelector = current == '#';
+            if (bracketDepth == 0
+                    && (classSelector || idSelector)
+                    && index + 1 < selector.length()
+                    && isSimpleIdentifierStart(selector.charAt(index + 1))) {
+                int end = index + 2;
+                while (end < selector.length()
+                        && isSimpleIdentifierPart(selector.charAt(end))) {
+                    end++;
+                }
+                String name = selector.substring(index + 1, end);
+                String marker = "data-codequest-"
+                        + (classSelector ? "class" : "id")
+                        + "-match-" + markerIndex++;
+                for (Element element : document.body().getAllElements()) {
+                    boolean matches = classSelector
+                            ? Arrays.asList(element.className().split("\\s+")).contains(name)
+                            : element.id().equals(name);
+                    if (matches) {
+                        element.attr(marker, "");
+                    }
+                }
+                adapted.append('[').append(marker).append(']');
+                index = end;
+                continue;
+            }
+
+            adapted.append(current);
+            index++;
+        }
+        return adapted.toString();
+    }
+
+    private boolean isSimpleIdentifierStart(char value) {
+        return value == '-' || value == '_' || Character.isLetter(value) || value >= 128;
+    }
+
+    private boolean isSimpleIdentifierPart(char value) {
+        return isSimpleIdentifierStart(value) || Character.isDigit(value);
     }
 }

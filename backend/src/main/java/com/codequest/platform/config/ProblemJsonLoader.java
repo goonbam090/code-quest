@@ -87,10 +87,12 @@ public class ProblemJsonLoader implements CommandLineRunner {
     ) {
         String mode = imported.path("mode").asText("declaration");
         boolean executableCodeProblem = Set.of("java", "algorithm", "javascript").contains(mode);
+        boolean answerDefinesGradingContract = !"selector".equals(mode);
         return !Objects.equals(existing.getMode(), mode)
                 || !Objects.equals(existing.getQuestion(), imported.path("question").asText())
                 || !Objects.equals(existing.getHtml(), imported.path("html").asText())
-                || !Objects.equals(existing.getAnswer(), imported.path("answer").asText())
+                || (answerDefinesGradingContract
+                        && !Objects.equals(existing.getAnswer(), imported.path("answer").asText()))
                 || !Objects.equals(Objects.toString(existing.getStarterCode(), ""), starterCode)
                 || (!executableCodeProblem && !Objects.equals(existing.getValidationJson(), validationJson));
     }

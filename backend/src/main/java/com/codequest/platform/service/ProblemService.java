@@ -273,9 +273,7 @@ public class ProblemService {
             case TIME_LIMIT -> "코드가 제한 시간 안에 끝나지 않았어요.";
             case JUDGE_UNAVAILABLE -> "채점 서비스를 잠시 사용할 수 없어요.";
             default -> switch (evaluation.status()) {
-                case CORRECT -> evaluation.exactMatch()
-                        ? "정답입니다."
-                        : "정답입니다. 예시 답안과 달라도 같은 결과로 인정했습니다.";
+                case CORRECT -> "정답입니다.";
                 case EMPTY -> "아직 답안이 입력되지 않았어요.";
                 case TYPO -> "오답으로 처리하지 않았습니다. 오타 가능성이 높아요.";
                 case SYNTAX -> "오답으로 처리하지 않았습니다. CSS 문법을 먼저 확인해 주세요.";

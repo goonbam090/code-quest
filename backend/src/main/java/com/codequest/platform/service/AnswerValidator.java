@@ -138,14 +138,13 @@ public class AnswerValidator {
         String actual = normalizeSelector(submitted);
         boolean exact = expected.equals(actual);
 
-        if (exact) {
-            return new Evaluation(Status.CORRECT, true, "목표 요소를 정확히 선택했습니다.");
-        }
-
         SelectorIntentMatcher.Result match = selectorIntentMatcher.match(problem.getHtml(), submitted);
         if (match.intentMatched()) {
-            return new Evaluation(Status.CORRECT, false,
-                    "예시 선택자와 표현은 다르지만 같은 목표 요소만 선택해 정답으로 인정했습니다.");
+            String guidance = exact
+                    ? "목표 요소를 정확히 선택했습니다."
+                    : "작성한 선택자도 목표 요소 " + match.targetCount()
+                            + "개만 정확히 선택합니다. 같은 결과를 만드는 정답은 한 가지가 아닙니다.";
+            return new Evaluation(Status.CORRECT, exact, guidance);
         }
         if (!match.syntaxValid() || !balanced(submitted)) {
             return new Evaluation(Status.SYNTAX, false,
@@ -468,7 +467,7 @@ public class AnswerValidator {
 
     private String normalizeSelector(String value) {
         if (value == null) return "";
-        return value.trim().toLowerCase(Locale.ROOT)
+        return value.trim()
                 .replaceAll("\\s*([>+~,])\\s*", "$1")
                 .replaceAll("\\s+", " ");
     }

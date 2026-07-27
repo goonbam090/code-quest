@@ -62,4 +62,43 @@ class SelectorIntentMatcherTest {
             assertThat(bypassedProblems).isEmpty();
         }
     }
+
+    @Test
+    void usesTheConciseValidAnswersAndStepByStepHintsForProblems16And17() throws Exception {
+        try (InputStream input = getClass().getResourceAsStream("/problems/selector.json")) {
+            assertThat(input).isNotNull();
+            JsonNode problems = new ObjectMapper().readTree(input).path("problems");
+            JsonNode login = findProblem(problems, 16);
+            JsonNode board = findProblem(problems, 17);
+
+            assertThat(login.path("answer").asText()).isEqualTo(".login input[required]");
+            assertThat(login.path("hints").path(2).asText())
+                    .contains(".signup input[required]")
+                    .contains("후손");
+
+            assertThat(board.path("answer").asText()).isEqualTo(".post:not(.notice) > a");
+            assertThat(board.path("hints").path(2).asText())
+                    .contains(".card:not(.featured) > a")
+                    .contains(":not(...)은 제외")
+                    .contains(">는 직계 자식");
+
+            assertThat(matcher.match(
+                    login.path("html").asText(),
+                    "form.login input[required]"
+            ).intentMatched()).isTrue();
+            assertThat(matcher.match(
+                    board.path("html").asText(),
+                    ".post:not(.notice) > .title"
+            ).intentMatched()).isTrue();
+        }
+    }
+
+    private JsonNode findProblem(JsonNode problems, int number) {
+        for (JsonNode problem : problems) {
+            if (problem.path("id").asInt() == number) {
+                return problem;
+            }
+        }
+        throw new AssertionError("선택자 문제를 찾을 수 없습니다: " + number);
+    }
 }
