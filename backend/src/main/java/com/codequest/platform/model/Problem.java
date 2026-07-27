@@ -20,6 +20,7 @@ public class Problem {
     @Column(columnDefinition = "text") private String starterCode;
     @Column(columnDefinition = "text") private String examplesJson;
     @Column(columnDefinition = "text") private String constraintsJson;
+    @Column(columnDefinition = "text") private String learningJson;
     @Column(columnDefinition = "text") private String solutionJson;
     @Column(nullable = false, columnDefinition = "text") private String answer;
     @ElementCollection(fetch = FetchType.EAGER)
@@ -50,6 +51,8 @@ public class Problem {
     public void setExamplesJson(String examplesJson) { this.examplesJson = examplesJson; }
     public String getConstraintsJson() { return constraintsJson; }
     public void setConstraintsJson(String constraintsJson) { this.constraintsJson = constraintsJson; }
+    public String getLearningJson() { return learningJson; }
+    public void setLearningJson(String learningJson) { this.learningJson = learningJson; }
     public String getSolutionJson() { return solutionJson; }
     public void setSolutionJson(String solutionJson) { this.solutionJson = solutionJson; }
     public String getAnswer() { return answer; }

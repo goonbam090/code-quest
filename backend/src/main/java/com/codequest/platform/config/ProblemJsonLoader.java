@@ -3,6 +3,7 @@ package com.codequest.platform.config;
 import com.codequest.platform.model.Problem;
 import com.codequest.platform.repository.LearningProgressRepository;
 import com.codequest.platform.repository.ProblemRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ public class ProblemJsonLoader implements CommandLineRunner {
         for (Resource resource : new PathMatchingResourcePatternResolver().getResources("classpath:problems/*.json")) {
             JsonNode root = mapper.readTree(resource.getInputStream());
             String category = root.path("id").asText();
+            JsonNode categoryLearning = root.path("learning");
             Set<Integer> importedNumbers = new HashSet<>();
             for (JsonNode node : root.path("problems")) {
                 int number = node.path("id").asInt();
@@ -46,6 +48,7 @@ public class ProblemJsonLoader implements CommandLineRunner {
                 String constraintsJson = node.has("constraints")
                         ? mapper.writeValueAsString(node.get("constraints"))
                         : null;
+                String learningJson = learningJson(node, categoryLearning, number, mapper);
                 String solutionJson = node.has("solution")
                         ? mapper.writeValueAsString(node.get("solution"))
                         : null;
@@ -60,6 +63,7 @@ public class ProblemJsonLoader implements CommandLineRunner {
                 p.setStarterCode(starterCode);
                 p.setExamplesJson(examplesJson);
                 p.setConstraintsJson(constraintsJson);
+                p.setLearningJson(learningJson);
                 p.setSolutionJson(solutionJson);
                 p.setAnswer(node.path("answer").asText());
                 List<String> hints = new ArrayList<>(); node.path("hints").forEach(h -> hints.add(h.asText()));
@@ -95,5 +99,19 @@ public class ProblemJsonLoader implements CommandLineRunner {
                         && !Objects.equals(existing.getAnswer(), imported.path("answer").asText()))
                 || !Objects.equals(Objects.toString(existing.getStarterCode(), ""), starterCode)
                 || (!executableCodeProblem && !Objects.equals(existing.getValidationJson(), validationJson));
+    }
+
+    static String learningJson(
+            JsonNode problem,
+            JsonNode categoryLearning,
+            int number,
+            ObjectMapper mapper
+    ) throws JsonProcessingException {
+        JsonNode learningNode = problem.has("learning")
+                ? problem.get("learning")
+                : categoryLearning.path(Integer.toString(number));
+        return !learningNode.isMissingNode() && !learningNode.isNull()
+                ? mapper.writeValueAsString(learningNode)
+                : null;
     }
 }

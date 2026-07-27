@@ -293,6 +293,97 @@ function validateSolution(solution, location, mode) {
   }
 }
 
+function validateLearning(learning, problem, location) {
+  if (learning === undefined) {
+    if (problem.mode === 'selector') {
+      fail(location, '선택자 문제에는 정답 전에 공개할 learning 교안이 필요합니다.')
+    }
+    return
+  }
+  if (!learning || typeof learning !== 'object' || Array.isArray(learning)) {
+    fail(location, 'learning은 객체여야 합니다.')
+    return
+  }
+
+  const forbiddenFields = new Set([
+    'answer',
+    'expectedAnswer',
+    'referenceAnswer',
+    'required',
+    'selectorBreakdown',
+    'solution',
+    'validationJson'
+  ])
+  const publicStrings = []
+  const inspectPublicValue = (value, path) => {
+    if (typeof value === 'string') {
+      publicStrings.push({ path, value })
+      return
+    }
+    if (Array.isArray(value)) {
+      value.forEach((item, index) => inspectPublicValue(item, `${path}[${index}]`))
+      return
+    }
+    if (!value || typeof value !== 'object') return
+    for (const [field, child] of Object.entries(value)) {
+      if (forbiddenFields.has(field)) {
+        fail(location, `공개 ${path}에는 금지 필드 ${field}를 포함할 수 없습니다.`)
+      }
+      inspectPublicValue(child, `${path}.${field}`)
+    }
+  }
+  inspectPublicValue(learning, 'learning')
+  for (const { path, value } of publicStrings) {
+    if (/data-target/i.test(value)) {
+      fail(location, `${path}에 내부 채점 표식 data-target을 포함할 수 없습니다.`)
+    }
+    if (problem.mode === 'selector'
+        && selectorExampleRevealsAnswer(problem.answer, value)) {
+      fail(location, `${path}이(가) 기준 선택자를 그대로 노출합니다.`)
+    }
+  }
+
+  const validateTextArray = (field, minimum, maximum) => {
+    const values = learning[field]
+    if (!Array.isArray(values)
+        || values.length < minimum
+        || values.length > maximum
+        || values.some(value => !nonBlank(value))) {
+      fail(location, `learning.${field}에는 ${minimum}~${maximum}개의 설명이 필요합니다.`)
+      return
+    }
+    const unique = new Set(values.map(normalized))
+    if (unique.size !== values.length) {
+      fail(location, `learning.${field}에 중복된 내용이 있습니다.`)
+    }
+  }
+
+  validateTextArray('keywords', 2, 4)
+  validateTextArray('principles', 2, 4)
+  validateTextArray('pitfalls', 1, 3)
+  if (!nonBlank(learning.summary)) fail(location, 'learning.summary가 비어 있습니다.')
+
+  if (!learning.example || typeof learning.example !== 'object'
+      || !nonBlank(learning.example.code)
+      || !nonBlank(learning.example.explanation)) {
+    fail(location, 'learning.example에는 정답이 아닌 코드와 해석이 필요합니다.')
+  }
+
+  if (!Array.isArray(learning.applications) || learning.applications.length === 0) {
+    fail(location, 'learning.applications에는 한 개 이상의 응용 사례가 필요합니다.')
+  } else {
+    for (const [index, application] of learning.applications.entries()) {
+      if (!application || typeof application !== 'object'
+          || !nonBlank(application.title)
+          || !nonBlank(application.description)
+          || !nonBlank(application.code)) {
+        fail(location, `learning.applications[${index}]에는 제목, 설명, 코드가 필요합니다.`)
+        continue
+      }
+    }
+  }
+}
+
 function validateProblem(problem, category, expectedId) {
   const location = `${category}#${problem.id ?? '?'}`
   if (problem.id !== expectedId) fail(location, `문제 번호는 연속된 ${expectedId}여야 합니다.`)
@@ -312,6 +403,7 @@ function validateProblem(problem, category, expectedId) {
   indexUnique(`${category} 제목`, problem.title, location)
   indexUnique(`${category} 질문`, problem.question, location)
   validateSolution(problem.solution, location, problem.mode)
+  validateLearning(problem.learning, problem, location)
 
   if (problem.mode === 'selector') {
     validateSelectorHintSafety(problem, location)
@@ -702,7 +794,26 @@ for (const file of files) {
   if (describedCount && Number(describedCount[1]) !== catalog.problems.length) {
     fail(file, `설명에는 ${describedCount[1]}문제지만 실제로는 ${catalog.problems.length}문제입니다.`)
   }
-  catalog.problems.forEach((problem, index) => validateProblem(problem, fileCategory, index + 1))
+  const categoryLearning = catalog.learning
+  if (categoryLearning !== undefined
+      && (!categoryLearning || typeof categoryLearning !== 'object' || Array.isArray(categoryLearning))) {
+    fail(file, '루트 learning은 문제 번호를 키로 사용하는 객체여야 합니다.')
+  }
+  if (fileCategory === 'selector') {
+    const expectedLearningKeys = catalog.problems.map(problem => String(problem.id)).sort()
+    const actualLearningKeys = categoryLearning && typeof categoryLearning === 'object'
+      ? Object.keys(categoryLearning).sort()
+      : []
+    if (JSON.stringify(actualLearningKeys) !== JSON.stringify(expectedLearningKeys)) {
+      fail(file, '선택자 learning은 모든 문제 번호와 정확히 일치해야 합니다.')
+    }
+  }
+  catalog.problems.forEach((problem, index) => validateProblem({
+    ...problem,
+    learning: Object.hasOwn(problem, 'learning')
+      ? problem.learning
+      : categoryLearning?.[String(problem.id)]
+  }, fileCategory, index + 1))
   summary.push(`${fileCategory} ${catalog.problems.length}`)
 }
 

@@ -100,6 +100,109 @@ class ProblemServiceTest {
     }
 
     @Test
+    void exposesCuratedLearningContentWithoutTheReferenceAnswer() {
+        ProblemRepository problems = mock(ProblemRepository.class);
+        ProblemService service = new ProblemService(
+                problems,
+                mock(LearningProgressRepository.class),
+                mock(ProgressRecorder.class),
+                mock(AnswerValidator.class),
+                new ObjectMapper()
+        );
+        Problem problem = new Problem();
+        problem.setCategory("selector");
+        problem.setNumber(18);
+        problem.setMode("selector");
+        problem.setStage("구조 응용");
+        problem.setTitle("댓글");
+        problem.setQuestion("삭제되지 않은 댓글의 작성자 이름만 선택하세요.");
+        problem.setHtml("<article><span data-target>작성자</span></article>");
+        problem.setAnswer(".comment:not([data-deleted]) .author");
+        problem.setHints(List.of("힌트"));
+        problem.setLearningJson("""
+                {
+                  "keywords": [":not()", "속성 부재", "자손 결합자"],
+                  "summary": "속성이 있는 후보를 제외한 뒤 내부 요소를 찾습니다.",
+                  "example": {
+                    "code": ".row:not([hidden]) .name",
+                    "explanation": "숨겨지지 않은 row 안의 name을 선택합니다."
+                  },
+                  "principles": [
+                    "[attr]은 속성 존재를 검사합니다.",
+                    "공백은 모든 깊이의 후손을 찾습니다."
+                  ],
+                  "applications": [
+                    {
+                      "title": "숨김 행 제외",
+                      "description": "보이는 항목의 이름만 꾸밉니다.",
+                      "code": ".item:not([hidden]) .label"
+                    }
+                  ],
+                  "pitfalls": ["속성 존재와 속성값 일치를 구분합니다."]
+                }
+                """);
+        when(problems.findByCategoryOrderByNumber("selector")).thenReturn(List.of(problem));
+
+        var response = service.list("selector").getFirst();
+
+        assertThat(response.learning()).isNotNull();
+        assertThat(response.learning().keywords())
+                .containsExactly(":not()", "속성 부재", "자손 결합자");
+        assertThat(response.learning().example().code())
+                .isEqualTo(".row:not([hidden]) .name");
+        assertThat(response.learning().applications())
+                .singleElement()
+                .satisfies(application -> {
+                    assertThat(application.title()).isEqualTo("숨김 행 제외");
+                    assertThat(application.code()).isEqualTo(".item:not([hidden]) .label");
+                });
+        assertThat(response.toString())
+                .doesNotContain(".comment:not([data-deleted]) .author")
+                .doesNotContain("data-target");
+    }
+
+    @Test
+    void ignoresMalformedOrStructurallyInvalidLearningContentWithoutFailingTheProblemList() {
+        ProblemRepository problems = mock(ProblemRepository.class);
+        ProblemService service = new ProblemService(
+                problems,
+                mock(LearningProgressRepository.class),
+                mock(ProgressRecorder.class),
+                mock(AnswerValidator.class),
+                new ObjectMapper()
+        );
+        Problem problem = new Problem();
+        problem.setCategory("selector");
+        problem.setNumber(1);
+        problem.setMode("selector");
+        problem.setStage("튜토리얼");
+        problem.setTitle("태그 선택자");
+        problem.setQuestion("모든 문단을 선택하세요.");
+        problem.setHtml("<p data-target>문단</p>");
+        problem.setAnswer("p");
+        problem.setHints(List.of("힌트"));
+        when(problems.findByCategoryOrderByNumber("selector")).thenReturn(List.of(problem));
+
+        for (String invalidLearning : List.of(
+                "{not-valid-json",
+                "null",
+                "[]",
+                "{}",
+                """
+                {
+                  "keywords": ["키워드 하나"],
+                  "summary": "형식은 JSON이지만 필수 교안 구조가 부족합니다."
+                }
+                """
+        )) {
+            problem.setLearningJson(invalidLearning);
+            var response = service.list("selector").getFirst();
+            assertThat(response.learning()).as(invalidLearning).isNull();
+            assertThat(response.html()).isEqualTo("<p>문단</p>");
+        }
+    }
+
+    @Test
     void exposesSolutionLessonOnlyAfterCorrectSubmission() {
         ProblemRepository problems = mock(ProblemRepository.class);
         LearningProgressRepository progress = mock(LearningProgressRepository.class);

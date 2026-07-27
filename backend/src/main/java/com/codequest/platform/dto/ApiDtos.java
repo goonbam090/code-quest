@@ -11,10 +11,18 @@ public final class ApiDtos {
     public record CategoryResponse(String id, String name, String description, long count) {}
     public record TraceStepResponse(String label, String state, String detail) {}
     public record ExampleResponse(String input, String output, List<TraceStepResponse> trace) {}
+    public record LearningExampleResponse(String code, String explanation) {}
+    public record LearningApplicationResponse(String title, String description, String code) {}
+    public record LearningContentResponse(List<String> keywords, String summary,
+                                          LearningExampleResponse example,
+                                          List<String> principles,
+                                          List<LearningApplicationResponse> applications,
+                                          List<String> pitfalls) {}
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public record ProblemResponse(Long id, String category, int number, String mode, String stage,
                                   String title, String question, String html, String starterCode,
                                   List<ExampleResponse> examples, List<String> constraints,
-                                  List<String> hints) {}
+                                  List<String> hints, LearningContentResponse learning) {}
     public record TestCaseResponse(String visibility, int number, String label, String input,
                                    String expected, String actual, String error, boolean passed) {}
     public record TestReportResponse(int passed, int total, int publicPassed, int publicTotal,

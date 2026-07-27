@@ -1,3 +1,19 @@
+export type ProblemLearning = {
+  keywords: string[]
+  summary: string
+  example: {
+    code: string
+    explanation: string
+  }
+  principles: string[]
+  applications: Array<{
+    title: string
+    description: string
+    code?: string
+  }>
+  pitfalls: string[]
+}
+
 export type Problem = {
   id: number
   category: string
@@ -16,6 +32,7 @@ export type Problem = {
   }>
   constraints: string[]
   hints: string[]
+  learning?: ProblemLearning
 }
 
 export type TestCaseResult = {

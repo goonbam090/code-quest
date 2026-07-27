@@ -379,7 +379,25 @@ describe('App accessibility', () => {
           '태그 이름으로 같은 종류의 요소를 한 번에 선택할 수 있습니다.',
           '태그 선택자는 같은 HTML 태그를 모두 선택합니다. 예: article, button',
           '태그 이름을 그대로 작성합니다.'
-        ]
+        ],
+        learning: {
+          keywords: ['태그 선택자', '요소 이름'],
+          summary: '태그 이름으로 같은 종류의 요소를 한 번에 선택할 수 있습니다.',
+          example: {
+            code: 'article, button',
+            explanation: '쉼표로 나열한 article과 button 요소를 각각 선택합니다.'
+          },
+          principles: [
+            '태그 이름을 점이나 # 없이 그대로 작성합니다.',
+            '이름이 같은 요소가 여러 개면 모두 선택됩니다.'
+          ],
+          applications: [{
+            title: '문서 기본 요소 스타일',
+            description: '같은 종류의 문서 영역에 공통 여백을 적용합니다.',
+            code: 'section { padding: 1rem; }'
+          }],
+          pitfalls: ['범위를 제한하지 않으면 같은 태그가 모두 선택됩니다.']
+        }
       },
       {
         id: 2,
@@ -397,7 +415,25 @@ describe('App accessibility', () => {
           '제목 태그를 사용하세요.',
           '비슷한 코드 패턴: section > h3',
           '공백은 모든 후손을, >는 직계 자식을 찾습니다.'
-        ]
+        ],
+        learning: {
+          keywords: ['자식 결합자', '>'],
+          summary: '부모 바로 아래에 있는 직계 자식만 선택합니다.',
+          example: {
+            code: 'section > h3',
+            explanation: 'section 바로 아래의 h3만 선택합니다.'
+          },
+          principles: [
+            '> 왼쪽은 부모이고 오른쪽은 직계 자식입니다.',
+            '더 깊이 중첩된 h3는 선택하지 않습니다.'
+          ],
+          applications: [{
+            title: '중첩 영역 영향 차단',
+            description: '현재 section의 직접 제목만 꾸밉니다.',
+            code: '.panel > h3 { margin-top: 0; }'
+          }],
+          pitfalls: ['중간 래퍼가 생기면 직계 자식 조건에 일치하지 않습니다.']
+        }
       }
     ])
     mockedApi.progress.mockResolvedValueOnce({
@@ -423,36 +459,87 @@ describe('App accessibility', () => {
     expect(within(conceptMap).getByText(
       '태그 이름으로 같은 종류의 요소를 한 번에 선택할 수 있습니다.'
     )).toBeInTheDocument()
-    expect(within(conceptMap).getByText('제목 태그를 사용하세요.')).toBeInTheDocument()
-    expect(within(conceptMap).getAllByText('사용 예시')).toHaveLength(2)
+    expect(within(conceptMap).getByText('부모 바로 아래에 있는 직계 자식만 선택합니다.'))
+      .toBeInTheDocument()
+    expect(within(conceptMap).getAllByText(/유사 사용 예시/)).toHaveLength(2)
     const completedCard = screen.getByRole('button', { name: '1번 문단 선택 다시 풀기' })
       .closest('article')
     const upcomingCard = screen.getByRole('button', { name: '2번 제목 선택 학습 시작하기' })
       .closest('article')
     expect(completedCard).toHaveTextContent('복습')
     expect(completedCard).toHaveTextContent('완료한 실습 01')
+    expect(completedCard).toHaveTextContent('태그 선택자')
     expect(completedCard).toHaveTextContent('article, button')
     expect(upcomingCard).toHaveTextContent('예습')
     expect(upcomingCard).toHaveTextContent('학습 전 실습 02')
+    expect(upcomingCard).toHaveTextContent('자식 결합자')
     expect(upcomingCard).toHaveTextContent('section > h3')
 
-    const foundationNotes = screen.getByRole('article', {
-      name: '선택자 기초 개념 더 알아보기'
+    const handbook = screen.getByRole('region', { name: '선택자 학습 교안' })
+    expect(handbook).toHaveTextContent('문제의 정답은 공개하지 않습니다.')
+    expect(handbook).toHaveTextContent('문서 기본 요소 스타일')
+    expect(handbook).toHaveTextContent('범위를 제한하지 않으면 같은 태그가 모두 선택됩니다.')
+    expect(within(handbook).getAllByText('개념과 동작 원리')).toHaveLength(2)
+    expect(within(handbook).getAllByText('사용 예시 해석')).toHaveLength(2)
+    expect(within(handbook).getAllByText('응용 활용')).toHaveLength(2)
+    expect(within(handbook).getAllByText('자주 하는 실수')).toHaveLength(2)
+    const handbookChapters = handbook.querySelectorAll('details')
+    expect(handbookChapters).toHaveLength(2)
+    expect(handbookChapters[0]).toHaveAttribute('open')
+    expect(handbookChapters[1]).not.toHaveAttribute('open')
+    expect(within(handbook).queryByRole('region', { name: '학습 목표' })).not.toBeInTheDocument()
+    expect(handbook.querySelectorAll('article')).toHaveLength(2)
+    expect(handbook.querySelector('summary h1, summary h2, summary h3, summary h4, summary h5, summary h6'))
+      .not.toBeInTheDocument()
+
+    fireEvent.click(within(handbook).getByRole('link', { name: /관계 선택자/ }))
+    expect(handbookChapters[1]).toHaveAttribute('open')
+    expect(handbookChapters[1].querySelector('summary')).toHaveFocus()
+    expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({
+      behavior: 'auto',
+      block: 'start'
     })
-    expect(foundationNotes).toHaveTextContent('태그 이름을 그대로 작성합니다.')
-    expect(foundationNotes.querySelector('details')).toHaveAttribute('open')
-    const relationNotes = screen.getByRole('article', {
-      name: '관계 선택자 개념 더 알아보기'
-    })
-    const relationDetails = relationNotes.querySelector('details')
-    expect(relationDetails).not.toHaveAttribute('open')
-    fireEvent.click(relationDetails!.querySelector('summary')!)
-    expect(relationDetails).toHaveAttribute('open')
-    expect(relationNotes).toHaveTextContent('공백은 모든 후손을, >는 직계 자식을 찾습니다.')
+    expect(handbookChapters[1]).toHaveTextContent('중간 래퍼가 생기면')
 
     fireEvent.click(screen.getByRole('button', { name: '2번 제목 선택 학습 시작하기' }))
     const practiceHeading = await screen.findByRole('heading', { name: '2. 제목 선택' })
     await vi.waitFor(() => expect(practiceHeading).toHaveFocus())
+  })
+
+  it('shows a natural-language usage context instead of an empty handbook example', async () => {
+    localStorage.setItem('codequest-last-track', 'algorithm')
+    localStorage.setItem('codequest-last-category', 'algorithm-intermediate')
+    mockedApi.problems.mockResolvedValueOnce([{
+      id: 3,
+      category: 'algorithm-intermediate',
+      number: 3,
+      mode: 'algorithm',
+      stage: '완전 탐색',
+      title: 'N-Queens 배치 수',
+      question: '서로 공격하지 않는 퀸 배치 수를 구하세요.',
+      html: '',
+      starterCode: 'public class Solution {}',
+      examples: [],
+      constraints: [],
+      hints: [
+        '행을 하나씩 내려가며 사용할 열을 선택하세요.',
+        '비슷한 예시: 사용한 열과 두 대각선을 boolean[]로 표시하고 재귀 후 원상복구합니다.',
+        '대각선은 row-column과 row+column 값으로 확인합니다.'
+      ]
+    }])
+
+    render(<App />)
+    await screen.findByRole('heading', { name: '1. N-Queens 배치 수' })
+    fireEvent.click(screen.getByRole('button', { name: /전체 문제 보기/ }))
+    fireEvent.click(screen.getByRole('button', { name: '학습 지도 열기' }))
+
+    const handbook = await screen.findByRole('region', { name: '코딩테스트 중급 학습 교안' })
+    expect(within(handbook).getByRole('heading', { name: '사용 맥락 해석' })).toBeInTheDocument()
+    expect(handbook.querySelector('.review-lesson-context')).toHaveTextContent(
+      '사용한 열과 두 대각선을 boolean[]로 표시하고 재귀 후 원상복구합니다.'
+    )
+    expect(handbook.querySelector('.review-lesson-context')?.closest('div')?.querySelector('dl'))
+      .not.toBeInTheDocument()
   })
 
   it('lets keyboard users escape an indentation-enabled editor', async () => {

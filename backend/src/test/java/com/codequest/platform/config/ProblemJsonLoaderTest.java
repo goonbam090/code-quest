@@ -116,6 +116,68 @@ class ProblemJsonLoaderTest {
         )).isFalse();
     }
 
+    @Test
+    void keepsProgressWhenOnlyPublicLearningContentChanges() throws Exception {
+        Problem existing = codeProblem();
+        existing.setLearningJson("""
+                {"keywords":["이전 키워드"],"summary":"이전 교안"}
+                """);
+        JsonNode imported = mapper.readTree("""
+                {
+                  "mode": "java",
+                  "question": "입력을 그대로 반환하세요.",
+                  "html": "",
+                  "starterCode": "public class Solution {}",
+                  "answer": "public class Solution {}",
+                  "learning": {
+                    "keywords": ["새 키워드"],
+                    "summary": "더 구체적인 새 교안"
+                  }
+                }
+                """);
+
+        assertThat(ProblemJsonLoader.requiresProgressReset(
+                existing, imported, "public class Solution {}", existing.getValidationJson()
+        )).isFalse();
+    }
+
+    @Test
+    void loadsCategoryLearningAndLetsAnExplicitProblemValueTakePrecedence() throws Exception {
+        JsonNode categoryLearning = mapper.readTree("""
+                {
+                  "1": {"summary": "카테고리 교안"},
+                  "2": {"summary": "두 번째 교안"}
+                }
+                """);
+        JsonNode inheritedProblem = mapper.readTree("""
+                {"id": 1}
+                """);
+        JsonNode overriddenProblem = mapper.readTree("""
+                {"id": 2, "learning": {"summary": "문제별 교안"}}
+                """);
+
+        assertThat(ProblemJsonLoader.learningJson(
+                inheritedProblem, categoryLearning, 1, mapper
+        )).isEqualTo("{\"summary\":\"카테고리 교안\"}");
+        assertThat(ProblemJsonLoader.learningJson(
+                overriddenProblem, categoryLearning, 2, mapper
+        )).isEqualTo("{\"summary\":\"문제별 교안\"}");
+    }
+
+    @Test
+    void treatsAnExplicitNullLearningValueAsAnInvalidatingOverride() throws Exception {
+        JsonNode categoryLearning = mapper.readTree("""
+                {"1": {"summary": "카테고리 교안"}}
+                """);
+        JsonNode problem = mapper.readTree("""
+                {"id": 1, "learning": null}
+                """);
+
+        assertThat(ProblemJsonLoader.learningJson(
+                problem, categoryLearning, 1, mapper
+        )).isNull();
+    }
+
     private Problem codeProblem() {
         Problem problem = new Problem();
         problem.setMode("java");

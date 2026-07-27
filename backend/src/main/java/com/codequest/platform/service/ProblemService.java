@@ -70,7 +70,7 @@ public class ProblemService {
     private ProblemResponse response(Problem p) {
         return new ProblemResponse(p.getId(), p.getCategory(), p.getNumber(), p.getMode(), p.getStage(),
                 p.getTitle(), p.getQuestion(), publicHtml(p), p.getStarterCode(), examples(p),
-                textList(p.getConstraintsJson()), p.getHints());
+                textList(p.getConstraintsJson()), p.getHints(), learning(p));
     }
 
     private String publicHtml(Problem problem) {
@@ -127,6 +127,72 @@ public class ProblemService {
         }
     }
 
+    private LearningContentResponse learning(Problem problem) {
+        if (problem.getLearningJson() == null || problem.getLearningJson().isBlank()) return null;
+        try {
+            JsonNode node = mapper.readTree(problem.getLearningJson());
+            if (!isValidLearning(node)) return null;
+            JsonNode example = node.path("example");
+            List<LearningApplicationResponse> applications = new ArrayList<>();
+            for (JsonNode application : node.path("applications")) {
+                applications.add(new LearningApplicationResponse(
+                        application.path("title").asText(),
+                        application.path("description").asText(),
+                        application.path("code").asText()
+                ));
+            }
+            return new LearningContentResponse(
+                    textList(node.path("keywords")),
+                    node.path("summary").asText(),
+                    new LearningExampleResponse(
+                            example.path("code").asText(),
+                            example.path("explanation").asText()
+                    ),
+                    textList(node.path("principles")),
+                    applications,
+                    textList(node.path("pitfalls"))
+            );
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private boolean isValidLearning(JsonNode node) {
+        if (node == null || !node.isObject()
+                || !isTextArray(node.path("keywords"), 2, 4)
+                || !isNonBlankText(node.path("summary"))
+                || !node.path("example").isObject()
+                || !isNonBlankText(node.path("example").path("code"))
+                || !isNonBlankText(node.path("example").path("explanation"))
+                || !isTextArray(node.path("principles"), 2, 4)
+                || !node.path("applications").isArray()
+                || node.path("applications").isEmpty()
+                || !isTextArray(node.path("pitfalls"), 1, 3)) {
+            return false;
+        }
+        for (JsonNode application : node.path("applications")) {
+            if (!application.isObject()
+                    || !isNonBlankText(application.path("title"))
+                    || !isNonBlankText(application.path("description"))
+                    || !isNonBlankText(application.path("code"))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isTextArray(JsonNode node, int minimum, int maximum) {
+        if (!node.isArray() || node.size() < minimum || node.size() > maximum) return false;
+        for (JsonNode item : node) {
+            if (!isNonBlankText(item)) return false;
+        }
+        return true;
+    }
+
+    private boolean isNonBlankText(JsonNode node) {
+        return node.isTextual() && !node.asText().isBlank();
+    }
+
     private List<TraceStepResponse> trace(JsonNode trace) {
         if (!trace.isArray()) return List.of();
         List<TraceStepResponse> result = new ArrayList<>();
@@ -149,6 +215,13 @@ public class ProblemService {
         } catch (Exception ignored) {
             return List.of();
         }
+    }
+
+    private List<String> textList(JsonNode node) {
+        if (!node.isArray()) return List.of();
+        List<String> result = new ArrayList<>();
+        node.forEach(item -> result.add(item.asText()));
+        return result;
     }
 
     private TestReportResponse testReport(CodeExecutionEvaluator.TestReport report) {

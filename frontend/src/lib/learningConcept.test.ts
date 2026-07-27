@@ -1,7 +1,84 @@
 import { describe, expect, it } from 'vitest'
-import { createLearningConcept } from './learningConcept'
+import { createLearningConcept, createLearningGuide } from './learningConcept'
 
 describe('learning concept content', () => {
+  it('uses curated learning content before hint-based fallbacks', () => {
+    const problem = {
+      mode: 'selector' as const,
+      title: '댓글',
+      question: '삭제되지 않은 댓글의 작성자를 선택하세요.',
+      hints: ['이 문장은 카드에 표시되면 안 됩니다.'],
+      constraints: [],
+      learning: {
+        keywords: [':not()', '속성 부재', '자손 결합자'],
+        summary: '속성이 있는 후보를 제외한 뒤 내부 요소를 찾습니다.',
+        example: {
+          code: '.row:not([hidden]) .name',
+          explanation: '숨겨지지 않은 row 안의 name을 선택합니다.'
+        },
+        principles: [
+          '[attr]은 속성 존재를 검사합니다.',
+          '공백은 모든 깊이의 후손을 찾습니다.'
+        ],
+        applications: [{
+          title: '숨김 행 제외',
+          description: '보이는 항목의 이름만 꾸밉니다.',
+          code: '.item:not([hidden]) .label'
+        }],
+        pitfalls: ['속성 존재와 속성값 일치를 구분합니다.']
+      }
+    }
+
+    const concept = createLearningConcept(problem)
+    const guide = createLearningGuide(problem, concept)
+
+    expect(concept).toEqual({
+      overview: '속성이 있는 후보를 제외한 뒤 내부 요소를 찾습니다.',
+      usage: {
+        kind: 'code',
+        value: '.row:not([hidden]) .name',
+        note: '숨겨지지 않은 row 안의 name을 선택합니다.'
+      },
+      details: [
+        '[attr]은 속성 존재를 검사합니다.',
+        '공백은 모든 깊이의 후손을 찾습니다.'
+      ]
+    })
+    expect(guide).toEqual({
+      keywords: [':not()', '속성 부재', '자손 결합자'],
+      syntax: [{
+        pattern: '.row:not([hidden]) .name',
+        explanation: '숨겨지지 않은 row 안의 name을 선택합니다.'
+      }],
+      applications: [{
+        title: '숨김 행 제외',
+        description: '보이는 항목의 이름만 꾸밉니다.',
+        code: '.item:not([hidden]) .label'
+      }],
+      pitfalls: ['속성 존재와 속성값 일치를 구분합니다.']
+    })
+  })
+
+  it('derives concrete selector keywords when curated metadata is not available yet', () => {
+    const problem = {
+      mode: 'selector' as const,
+      title: '필수 입력',
+      question: '가입 폼 안의 필수 입력을 선택하세요.',
+      hints: [
+        '속성 선택자와 자손 선택자를 조합합니다.',
+        '조합 예시: .signup input[required]',
+        '공백은 모든 깊이의 후손을 찾습니다.'
+      ],
+      constraints: []
+    }
+
+    expect(createLearningGuide(problem).keywords).toEqual([
+      '속성 존재 선택자',
+      '자손 결합자',
+      '클래스 선택자'
+    ])
+  })
+
   it('separates an inline selector example from its explanation', () => {
     expect(createLearningConcept({
       mode: 'selector',

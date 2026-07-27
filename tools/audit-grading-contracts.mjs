@@ -8,6 +8,15 @@ const allowedModes = new Set([
 ])
 const requestTimeoutMs = 60_000
 const runId = `${Date.now().toString(36)}-${process.pid.toString(36)}`
+const privateProblemFields = new Set([
+  'answer',
+  'expectedAnswer',
+  'referenceAnswer',
+  'required',
+  'selectorBreakdown',
+  'solution',
+  'validationJson'
+])
 
 if (!allowedModes.has(mode)) {
   console.error(
@@ -463,21 +472,98 @@ async function progress(key) {
   return result
 }
 
+function assertNoPrivateLearningContent(value, label, path = 'learning') {
+  if (typeof value === 'string') {
+    assert(!/data-target/i.test(value),
+      `${label}: ${path}에 내부 selector target 표식이 노출됐습니다.`)
+    return
+  }
+  if (Array.isArray(value)) {
+    value.forEach((item, index) =>
+      assertNoPrivateLearningContent(item, label, `${path}[${index}]`))
+    return
+  }
+  if (!value || typeof value !== 'object') return
+  for (const [field, child] of Object.entries(value)) {
+    assert(!privateProblemFields.has(field),
+      `${label}: ${path}.${field}에 비공개 문제 필드가 노출됐습니다.`)
+    assertNoPrivateLearningContent(child, label, `${path}.${field}`)
+  }
+}
+
+function assertTextArray(value, minimum, maximum, label) {
+  assert(Array.isArray(value)
+      && value.length >= minimum
+      && value.length <= maximum
+      && value.every(item => typeof item === 'string' && item.trim().length > 0),
+  `${label}: ${minimum}~${maximum}개의 비어 있지 않은 문자열 배열이어야 합니다.`)
+  assert(new Set(value.map(item => item.trim())).size === value.length,
+    `${label}: 중복된 항목이 있습니다.`)
+}
+
+function assertLearningContent(learning, label) {
+  assert(learning && typeof learning === 'object' && !Array.isArray(learning),
+    `${label}: 공개 learning 교안이 없습니다.`)
+  assertNoPrivateLearningContent(learning, label)
+  assertTextArray(learning.keywords, 2, 4, `${label}.learning.keywords`)
+  assert(typeof learning.summary === 'string' && learning.summary.trim().length > 0,
+    `${label}: learning.summary가 비어 있습니다.`)
+  assert(learning.example
+      && typeof learning.example === 'object'
+      && !Array.isArray(learning.example)
+      && typeof learning.example.code === 'string'
+      && learning.example.code.trim().length > 0
+      && typeof learning.example.explanation === 'string'
+      && learning.example.explanation.trim().length > 0,
+  `${label}: learning.example의 코드와 설명이 필요합니다.`)
+  assertTextArray(learning.principles, 2, 4, `${label}.learning.principles`)
+  assert(Array.isArray(learning.applications) && learning.applications.length > 0,
+    `${label}: learning.applications가 비어 있습니다.`)
+  for (const [index, application] of learning.applications.entries()) {
+    assert(application
+        && typeof application === 'object'
+        && !Array.isArray(application)
+        && typeof application.title === 'string'
+        && application.title.trim().length > 0
+        && typeof application.description === 'string'
+        && application.description.trim().length > 0
+        && typeof application.code === 'string'
+        && application.code.trim().length > 0,
+    `${label}: learning.applications[${index}]의 제목, 설명, 코드가 필요합니다.`)
+  }
+  assertTextArray(learning.pitfalls, 1, 3, `${label}.learning.pitfalls`)
+}
+
+function assertPublicProblem(result, category, number) {
+  const label = `${category}#${number}`
+  assert(result.category === category && result.number === number,
+    `공개 문제 식별자가 요청과 다릅니다: ${JSON.stringify(result)}`)
+  for (const privateField of privateProblemFields) {
+    assert(!Object.hasOwn(result, privateField),
+      `${label}: 공개 문제 API에 ${privateField} 필드가 노출됐습니다.`)
+  }
+  if (category === 'selector') {
+    assert(typeof result.html === 'string' && !result.html.includes('data-target'),
+      `${label}: 내부 selector target 표식이 노출됐습니다.`)
+    assertLearningContent(result.learning, label)
+  }
+}
+
+async function assertSelectorLearningCatalog() {
+  const selectors = await requestJson('/api/problems?category=selector')
+  assert(Array.isArray(selectors) && selectors.length === 35,
+    `선택자 공개 문제 API는 35문제여야 합니다: ${JSON.stringify(selectors)}`)
+  const numbers = selectors.map(problem => problem.number).sort((left, right) => left - right)
+  assert(numbers.every((number, index) => number === index + 1),
+    `선택자 공개 문제 번호가 1~35와 일치하지 않습니다: ${JSON.stringify(numbers)}`)
+  selectors.forEach(problem => assertPublicProblem(problem, 'selector', problem.number))
+  console.log('선택자 35문제의 공개 learning 교안과 비공개 필드 경계를 검증했습니다.')
+}
+
 async function publicProblem(category, number) {
   const result = await requestJson(
     `/api/problems/${encodeURIComponent(category)}/${number}`)
-  assert(result.category === category && result.number === number,
-    `공개 문제 식별자가 요청과 다릅니다: ${JSON.stringify(result)}`)
-  for (const privateField of [
-    'answer', 'required', 'validationJson', 'solution', 'expectedAnswer'
-  ]) {
-    assert(!Object.hasOwn(result, privateField),
-      `${category}#${number}: 공개 문제 API에 ${privateField} 필드가 노출됐습니다.`)
-  }
-  if (category === 'selector') {
-    assert(!result.html.includes('data-target'),
-      `${category}#${number}: 내부 selector target 표식이 노출됐습니다.`)
-  }
+  assertPublicProblem(result, category, number)
   return result
 }
 
@@ -553,6 +639,7 @@ async function runOneCase(testCase, index, problem) {
 }
 
 async function runCases() {
+  await assertSelectorLearningCatalog()
   const failures = []
   const publicProblems = new Map()
   for (const testCase of gradingCases) {
