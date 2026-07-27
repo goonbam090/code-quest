@@ -3,7 +3,14 @@ import {
   createRef,
   useState
 } from 'react'
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { CodeEditor } from './CodeEditor'
 import type {
@@ -84,6 +91,17 @@ function ControlledEditor({
   )
 }
 
+async function findCompletionOption(label: string) {
+  await waitFor(() => {
+    expect(document.querySelector('.cm-tooltip-autocomplete')).toBeInTheDocument()
+  })
+  const option = Array.from(
+    document.querySelectorAll<HTMLElement>('.cm-tooltip-autocomplete li')
+  ).find(element => element.querySelector('.cm-completionLabel')?.textContent === label)
+  expect(option).toBeDefined()
+  return option!
+}
+
 describe('CodeEditor', () => {
   it('exposes an accessible textbox with line numbers and syntax highlighting', () => {
     const { container } = render(
@@ -162,6 +180,39 @@ describe('CodeEditor', () => {
     })
 
     expect(screen.getByTestId('controlled-value').textContent).toBe(`${source}\n${indentation}`)
+  })
+
+  it('inserts an HTML tag pair when its completion is selected with the mouse', async () => {
+    render(<ControlledEditor initialValue="<l" language="html" />)
+    const editor = screen.getByRole('textbox', { name: 'html 답안' })
+
+    act(() => {
+      editor.focus()
+      fireEvent.keyDown(editor, { key: 'End' })
+      fireEvent.keyDown(editor, { key: ' ', code: 'Space', ctrlKey: true })
+    })
+    const option = await findCompletionOption('li')
+    fireEvent.mouseDown(option)
+
+    expect(screen.getByTestId('controlled-value').textContent).toBe('<li></li>')
+  })
+
+  it('inserts an HTML tag pair when its completion is accepted with Enter', async () => {
+    render(<ControlledEditor initialValue="<li" language="html" />)
+    const editor = screen.getByRole('textbox', { name: 'html 답안' })
+
+    act(() => {
+      editor.focus()
+      fireEvent.keyDown(editor, { key: 'End' })
+      fireEvent.keyDown(editor, { key: ' ', code: 'Space', ctrlKey: true })
+    })
+    await findCompletionOption('li')
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 80))
+    })
+    fireEvent.keyDown(editor, { key: 'Enter' })
+
+    expect(screen.getByTestId('controlled-value').textContent).toBe('<li></li>')
   })
 
   it('indents with Tab and outdents with Shift+Tab', () => {

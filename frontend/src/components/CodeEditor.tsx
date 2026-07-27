@@ -6,13 +6,18 @@ import {
 } from 'react'
 import type { AriaAttributes } from 'react'
 import { basicSetup } from 'codemirror'
+import { snippetCompletion } from '@codemirror/autocomplete'
 import {
   indentLess,
   indentMore,
   insertNewlineAndIndent
 } from '@codemirror/commands'
 import { css, cssCompletionSource, cssLanguage } from '@codemirror/lang-css'
-import { html } from '@codemirror/lang-html'
+import {
+  autoCloseTags,
+  htmlCompletionSource,
+  htmlLanguage
+} from '@codemirror/lang-html'
 import { java } from '@codemirror/lang-java'
 import { javascript } from '@codemirror/lang-javascript'
 import {
@@ -91,13 +96,76 @@ const structuralTheme = EditorView.theme({
   }
 })
 
+const htmlVoidElements = new Set([
+  'area',
+  'base',
+  'br',
+  'col',
+  'command',
+  'embed',
+  'frame',
+  'hr',
+  'img',
+  'input',
+  'keygen',
+  'link',
+  'menuitem',
+  'meta',
+  'param',
+  'source',
+  'track',
+  'wbr'
+])
+
+function htmlCompletionSourceWithTagPairs(
+  context: Parameters<typeof htmlCompletionSource>[0]
+) {
+  const result = htmlCompletionSource(context)
+  const completingOpeningTag = result
+    && result.from > 0
+    && context.state.sliceDoc(result.from - 1, result.from) === '<'
+
+  if (!result || !completingOpeningTag) return result
+
+  return {
+    ...result,
+    options: result.options.map(completion => {
+      const tagName = completion.label.toLowerCase()
+      if (
+        completion.apply !== undefined
+        || completion.type !== 'type'
+        || htmlVoidElements.has(tagName)
+      ) {
+        return completion
+      }
+
+      return snippetCompletion(
+        `${completion.label}>\${}</${completion.label}>`,
+        {
+          ...completion,
+          detail: `</${completion.label}>`
+        }
+      )
+    })
+  }
+}
+
+function htmlWithTagPairCompletion() {
+  return new LanguageSupport(htmlLanguage, [
+    htmlLanguage.data.of({ autocomplete: htmlCompletionSourceWithTagPairs }),
+    autoCloseTags,
+    javascript().support,
+    css().support
+  ])
+}
+
 function languageExtension(
   language: CodeEditorLanguage,
   cssSyntaxMode: CssSyntaxMode
 ): Extension {
   switch (language) {
     case 'html':
-      return html()
+      return htmlWithTagPairCompletion()
     case 'css':
       if (cssSyntaxMode === 'declarations') {
         const declarationsLanguage = cssLanguage.configure({ top: 'Styles' })
