@@ -1,6 +1,9 @@
-import { useState, type MouseEvent, type RefObject } from 'react'
-import { createLearningConcept, createLearningGuide } from '../lib/learningConcept'
-import type { ProblemGroup } from '../lib/problemNavigation'
+import { type MouseEvent, type RefObject } from 'react'
+import { createLearningConcept, createLearningGuide, type LearningGuide } from '../lib/learningConcept'
+import {
+  splitProblemGroupsIntoUnits,
+  type ProblemGroup
+} from '../lib/problemNavigation'
 import type { Problem } from '../types'
 
 type LearningReviewProps = {
@@ -18,6 +21,10 @@ function displayNumber(problem: Problem) {
   return problem.displayNumber ?? problem.number
 }
 
+function formatNumber(number: number) {
+  return String(number).padStart(2, '0')
+}
+
 function codeLabel(problem: Problem) {
   if (problem.mode === 'selector') return 'CSS SELECTOR'
   if (problem.mode === 'declaration') return 'CSS'
@@ -26,16 +33,25 @@ function codeLabel(problem: Problem) {
   return problem.mode === 'algorithm' ? 'JAVA · ALGORITHM' : 'JAVA'
 }
 
-function openHandbookChapter(event: MouseEvent<HTMLAnchorElement>, chapterId: string) {
-  const chapter = document.getElementById(chapterId)
-  if (!(chapter instanceof HTMLDetailsElement)) return
+function conceptTitle(problem: Problem, guide: LearningGuide) {
+  if (problem.mode === 'html') return problem.title
+  const primaryKeyword = guide.keywords[0]
+  if (!primaryKeyword || problem.title.includes(primaryKeyword)) return problem.title
+  return `${primaryKeyword} · ${problem.title}`
+}
+
+function focusReviewHeading(
+  event: MouseEvent<HTMLAnchorElement>,
+  headingId: string
+) {
+  const heading = document.getElementById(headingId)
+  if (!(heading instanceof HTMLElement)) return
 
   event.preventDefault()
-  chapter.open = true
   const reducedMotion = typeof window.matchMedia === 'function'
     && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  chapter.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' })
-  chapter.querySelector<HTMLElement>(':scope > summary')?.focus({ preventScroll: true })
+  heading.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' })
+  heading.focus({ preventScroll: true })
 }
 
 export function LearningReview({
@@ -49,11 +65,9 @@ export function LearningReview({
   onSelectProblem
 }: LearningReviewProps) {
   const problems = groups.flatMap(group => group.problems)
+  const units = splitProblemGroupsIntoUnits(groups)
   const learnedProblems = problems.filter(problem => solvedIds.has(problem.id))
   const remainingProblems = problems.filter(problem => !solvedIds.has(problem.id))
-  const [openHandbookChapters, setOpenHandbookChapters] = useState(
-    () => new Set<number>([0])
-  )
   const concepts = new Map(problems.map(problem => [problem.id, createLearningConcept(problem)]))
   const guides = new Map(problems.map(problem => [
     problem.id,
@@ -69,17 +83,20 @@ export function LearningReview({
       <button type="button" className="review-back" onClick={onBack}>← 실습으로 돌아가기</button>
       <span className="review-eyebrow">LEARNING MAP · {trackLabel}</span>
       <h2 ref={headingRef} tabIndex={-1}>{categoryLabel} 학습 지도</h2>
-      <p>이 카테고리에서 배울 모든 핵심 개념을 단계별로 모았습니다. 학습 전에는 예습하고, 완료한 뒤에는 복습해 보세요.</p>
+      <p>
+        핵심 개념을 먼저 이해하고, 5개 이하의 Quest 묶음에서 직접 사용해 보세요.
+        개념 학습과 실전 연습이 하나의 순서로 이어집니다.
+      </p>
       <section className="review-summary" aria-label={`${categoryLabel} 학습 요약`}>
         <div>
           <span>전체 핵심 개념</span>
           <strong>{problems.length}</strong>
-          <small>이 카테고리에서 배울 내용</small>
+          <small>순서대로 익힐 내용</small>
         </div>
         <div>
-          <span>완료한 실습</span>
+          <span>완료한 Quest</span>
           <strong>{learnedProblems.length}</strong>
-          <small>{remainingProblems.length}개 실습 남음</small>
+          <small>{remainingProblems.length}개 Quest 남음</small>
         </div>
         <div>
           <span>현재 진도</span>
@@ -89,36 +106,48 @@ export function LearningReview({
       </section>
     </section>
 
-    <nav className="review-stage-map" aria-label="단계별 학습 지도">
-      {groups.map((group, groupIndex) => {
-        const learnedCount = group.problems.filter(problem => solvedIds.has(problem.id)).length
-        const stagePercent = Math.round((learnedCount / group.problems.length) * 100)
-        return <a href={`#review-stage-${groupIndex + 1}`} key={group.stage}>
-          <span>STEP {String(groupIndex + 1).padStart(2, '0')}</span>
-          <strong>{group.stage}</strong>
-          <small>{learnedCount} / {group.problems.length}개 완료</small>
-          <div aria-hidden="true"><i style={{ width: `${stagePercent}%` }}/></div>
+    <nav className="review-stage-map" aria-label="5문제 단위 학습 지도">
+      {units.map(unit => {
+        const learnedCount = unit.problems.filter(problem => solvedIds.has(problem.id)).length
+        const unitPercent = Math.round((learnedCount / unit.problems.length) * 100)
+        const unitHeadingId = `review-unit-heading-${unit.id}`
+        return <a
+          href={`#${unitHeadingId}`}
+          key={unit.id}
+          onClick={event => focusReviewHeading(event, unitHeadingId)}
+        >
+          <span>UNIT {formatNumber(unit.number)}</span>
+          <strong>Quest {formatNumber(unit.start)}–{formatNumber(unit.end)}</strong>
+          <small>{unit.stage} · {learnedCount} / {unit.problems.length}개 완료</small>
+          <div aria-hidden="true"><i style={{ width: `${unitPercent}%` }}/></div>
         </a>
       })}
     </nav>
 
-    <section className="review-stage-list" aria-label="단계별 핵심 개념">
-      {groups.map((group, groupIndex) => {
-        const learnedCount = group.problems.filter(problem => solvedIds.has(problem.id)).length
+    <section className="review-stage-list" aria-label="5문제 단위 실습 안내">
+      {units.map(unit => {
+        const learnedCount = unit.problems.filter(problem => solvedIds.has(problem.id)).length
+        const unitHeadingId = `review-unit-heading-${unit.id}`
         return <section
-          className="review-stage"
-          id={`review-stage-${groupIndex + 1}`}
-          key={group.stage}
+          className="review-stage review-problem-unit"
+          id={`review-unit-${unit.id}`}
+          key={unit.id}
+          aria-labelledby={unitHeadingId}
         >
           <header>
             <div>
-              <span>STEP {String(groupIndex + 1).padStart(2, '0')}</span>
-              <h3>{group.stage}</h3>
+              <span>UNIT {formatNumber(unit.number)}</span>
+              <h3 id={unitHeadingId} tabIndex={-1}>
+                {unit.stage} · Quest {formatNumber(unit.start)}–{formatNumber(unit.end)}
+              </h3>
             </div>
-            <p>{learnedCount} / {group.problems.length}개 완료 · {group.problems.length}개 핵심 개념</p>
+            <p>
+              Quest {formatNumber(unit.start)}–{formatNumber(unit.end)}
+              {' · '}{learnedCount} / {unit.problems.length}개 완료
+            </p>
           </header>
           <div className="review-card-grid">
-            {group.problems.map(problem => {
+            {unit.problems.map(problem => {
               const problemIndex = problemIndexById.get(problem.id)!
               const number = displayNumber(problem)
               const learned = solvedIds.has(problem.id)
@@ -131,7 +160,7 @@ export function LearningReview({
               >
                 <span className="review-card-state">
                   <b>{learned ? '복습' : '예습'}</b>
-                  {learned ? '완료한 실습' : '학습 전 실습'} {String(number).padStart(2, '0')}
+                  {learned ? '완료한 Quest' : '학습할 Quest'} {formatNumber(number)}
                 </span>
                 <h4 id={`review-card-title-${problem.id}`}>{problem.title}</h4>
                 <div className="review-keywords">
@@ -141,7 +170,7 @@ export function LearningReview({
                   </ul>
                 </div>
                 <div className="review-concept">
-                  <span>이 문제에서 배우는 것</span>
+                  <span>이 Quest에서 확인할 개념</span>
                   <p>{concept.overview}</p>
                   {concept.usage.kind === 'code'
                     ? <figure className="review-usage-example">
@@ -177,139 +206,138 @@ export function LearningReview({
 
     <section className="review-handbook" aria-labelledby="review-handbook-title">
       <header>
-        <span>LEARNING HANDBOOK · {trackLabel}</span>
+        <span>CONCEPT CURRICULUM · {trackLabel}</span>
         <h3 id="review-handbook-title">{categoryLabel} 학습 교안</h3>
         <p>
-          문제의 정답은 공개하지 않습니다. 대신 다른 이름과 값으로 만든 예시를 읽으며
-          개념의 동작 원리, 실제 활용 방식, 자주 하는 실수를 먼저 익힐 수 있습니다.
+          문제별 정답을 나열하지 않습니다. 개념이 필요한 이유부터 코드 해석과 응용까지
+          순서대로 읽고, 각 개념 끝의 Quest에서 직접 사용하며 지식을 완성하세요.
         </p>
+        <ol className="review-learning-cycle" aria-label="학습 교안 활용 순서">
+          <li><b>1</b><span>개념 이해<small>왜 필요한지 먼저 읽기</small></span></li>
+          <li><b>2</b><span>예시 해석<small>코드를 한 단계씩 읽기</small></span></li>
+          <li><b>3</b><span>Quest 실전<small>직접 작성해 확인하기</small></span></li>
+        </ol>
       </header>
 
       <nav className="review-handbook-index" aria-label={`${categoryLabel} 학습 교안 목차`}>
-        {groups.map((group, groupIndex) => {
-          const chapterId = `review-handbook-stage-${groupIndex + 1}`
+        {problems.map((problem, conceptIndex) => {
+          const guide = guides.get(problem.id)!
+          const conceptHeadingId = `review-curriculum-concept-${problem.id}`
           return <a
-            href={`#${chapterId}`}
-            key={group.stage}
-            onClick={event => {
-              setOpenHandbookChapters(current => new Set(current).add(groupIndex))
-              openHandbookChapter(event, chapterId)
-            }}
+            href={`#${conceptHeadingId}`}
+            key={problem.id}
+            onClick={event => focusReviewHeading(event, conceptHeadingId)}
           >
-            <span>CHAPTER {String(groupIndex + 1).padStart(2, '0')}</span>
-            <strong>{group.stage}</strong>
-            <small>{group.problems.length}개 개념</small>
+            <span>CONCEPT {formatNumber(conceptIndex + 1)}</span>
+            <strong>{conceptTitle(problem, guide)}</strong>
+            <small>연결 Quest {formatNumber(displayNumber(problem))}</small>
           </a>
         })}
       </nav>
 
-      <div className="review-handbook-chapters">
-        {groups.map((group, groupIndex) => <details
-          className="review-handbook-chapter"
-          id={`review-handbook-stage-${groupIndex + 1}`}
-          key={group.stage}
-          open={openHandbookChapters.has(groupIndex)}
-          onToggle={event => {
-            const isOpen = event.currentTarget.open
-            setOpenHandbookChapters(current => {
-              if (current.has(groupIndex) === isOpen) return current
-              const next = new Set(current)
-              if (isOpen) next.add(groupIndex)
-              else next.delete(groupIndex)
-              return next
-            })
-          }}
+      <div className="review-curriculum">
+        {groups.map((group, groupIndex) => <section
+          className="review-curriculum-chapter"
+          key={`${groupIndex}-${group.stage}-${group.start}-${group.end}`}
+          aria-labelledby={`review-curriculum-chapter-${groupIndex + 1}`}
         >
-          <summary>
-            <span>CHAPTER {String(groupIndex + 1).padStart(2, '0')}</span>
-            <strong>{group.stage}</strong>
-            <small>{group.problems.length}개 문제에서 배우는 개념</small>
-            <b aria-hidden="true">＋</b>
-          </summary>
-          <div className="review-handbook-lessons">
+          <header>
+            <span>CHAPTER {formatNumber(groupIndex + 1)}</span>
+            <h4 id={`review-curriculum-chapter-${groupIndex + 1}`}>{group.stage}</h4>
+            <p>
+              아래 개념은 학습 순서대로 연결됩니다. 앞 개념을 이해한 뒤 다음 개념과
+              Quest로 넘어가세요.
+            </p>
+          </header>
+
+          <ol className="review-curriculum-flow" aria-label={`${group.stage} 개념 학습 순서`}>
             {group.problems.map(problem => {
-              const number = displayNumber(problem)
               const problemIndex = problemIndexById.get(problem.id)!
+              const conceptIndex = problemIndex + 1
+              const number = displayNumber(problem)
               const learned = solvedIds.has(problem.id)
               const concept = concepts.get(problem.id)!
               const guide = guides.get(problem.id)!
-              return <article
-                className="review-handbook-lesson"
-                key={problem.id}
-                aria-labelledby={`review-handbook-lesson-${problem.id}`}
-              >
-                <header>
-                  <span>{String(number).padStart(2, '0')}</span>
-                  <div>
-                    <small>{learned ? '복습할 개념' : '풀기 전에 볼 개념'}</small>
-                    <h4 id={`review-handbook-lesson-${problem.id}`}>{problem.title}</h4>
+              const conceptHeadingId = `review-curriculum-concept-${problem.id}`
+              return <li className="review-curriculum-topic" key={problem.id}>
+                <span className="review-curriculum-marker" aria-hidden="true">
+                  {formatNumber(conceptIndex)}
+                </span>
+                <div className="review-curriculum-body">
+                  <header>
+                    <small>CONCEPT {formatNumber(conceptIndex)} · {group.stage}</small>
+                    <h5 id={conceptHeadingId} tabIndex={-1}>{conceptTitle(problem, guide)}</h5>
+                    <p>{concept.overview}</p>
+                    <ul
+                      className="review-handbook-keywords"
+                      aria-label={`${conceptTitle(problem, guide)} 핵심 키워드`}
+                    >
+                      {guide.keywords.map(keyword => <li key={keyword}><code>{keyword}</code></li>)}
+                    </ul>
+                  </header>
+
+                  <div className="review-curriculum-explanation">
+                    <div>
+                      <h6 id={`review-principles-${problem.id}`}>왜 필요한가와 동작 원리</h6>
+                      <ul>
+                        {concept.details.map(detail => <li key={detail}>{detail}</li>)}
+                      </ul>
+                    </div>
+
+                    <div>
+                      <h6 id={`review-example-${problem.id}`}>
+                        {guide.syntax.length > 0 ? '예시를 코드 순서로 읽기' : '사용 맥락 이해하기'}
+                      </h6>
+                      {guide.syntax.length > 0
+                        ? <dl>
+                          {guide.syntax.map(item => <div key={`${item.pattern}-${item.explanation}`}>
+                            <dt><code dir="ltr">{item.pattern}</code></dt>
+                            <dd>{item.explanation}</dd>
+                          </div>)}
+                        </dl>
+                        : <p className="review-lesson-context">{concept.usage.value}</p>}
+                    </div>
                   </div>
-                </header>
 
-                <ul
-                  className="review-handbook-keywords"
-                  aria-label={`${number}번 교안 핵심 키워드`}
-                >
-                  {guide.keywords.map(keyword => <li key={keyword}><code>{keyword}</code></li>)}
-                </ul>
-
-                <div className="review-lesson-goal">
-                  <span>학습 목표</span>
-                  <p>{concept.overview}</p>
-                </div>
-
-                <div className="review-lesson-grid">
-                  <div>
-                    <h5>개념과 동작 원리</h5>
+                  <div className="review-applications">
+                    <h6 id={`review-applications-${problem.id}`}>실제 화면과 코드에 응용하기</h6>
                     <ul>
-                      {concept.details.map(detail => <li key={detail}>{detail}</li>)}
+                      {guide.applications.map((application, applicationIndex) => <li
+                        key={`${application.title}-${applicationIndex}`}
+                      >
+                        <strong>{application.title}</strong>
+                        <p>{application.description}</p>
+                        {application.code && <code dir="ltr">{application.code}</code>}
+                      </li>)}
                     </ul>
                   </div>
-                  <div>
-                    <h5>{guide.syntax.length > 0 ? '사용 예시 해석' : '사용 맥락 해석'}</h5>
-                    {guide.syntax.length > 0
-                      ? <dl>
-                        {guide.syntax.map(item => <div key={`${item.pattern}-${item.explanation}`}>
-                          <dt><code dir="ltr">{item.pattern}</code></dt>
-                          <dd>{item.explanation}</dd>
-                        </div>)}
-                      </dl>
-                      : <p className="review-lesson-context">{concept.usage.value}</p>}
+
+                  {guide.pitfalls.length > 0 && <div className="review-pitfalls">
+                    <h6 id={`review-pitfalls-${problem.id}`}>자주 하는 실수</h6>
+                    <ul>
+                      {guide.pitfalls.map(pitfall => <li key={pitfall}>{pitfall}</li>)}
+                    </ul>
+                  </div>}
+
+                  <div className={`review-curriculum-quest ${learned ? 'is-complete' : ''}`}>
+                    <div>
+                      <span>연결 Quest {formatNumber(number)} · {learned ? '복습' : '실전 학습'}</span>
+                      <strong>{problem.title}</strong>
+                      <p>{problem.question}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => onSelectProblem(problemIndex)}
+                      aria-label={`Quest ${number} ${problem.title} ${learned ? '다시 풀기' : '실습하기'}`}
+                    >
+                      {learned ? '다시 풀어 확인' : 'Quest에서 실습'} <b aria-hidden="true">→</b>
+                    </button>
                   </div>
                 </div>
-
-                <div className="review-applications">
-                  <h5>응용 활용</h5>
-                  <ul>
-                    {guide.applications.map((application, applicationIndex) => <li
-                      key={`${application.title}-${applicationIndex}`}
-                    >
-                      <strong>{application.title}</strong>
-                      <p>{application.description}</p>
-                      {application.code && <code dir="ltr">{application.code}</code>}
-                    </li>)}
-                  </ul>
-                </div>
-
-                {guide.pitfalls.length > 0 && <div className="review-pitfalls">
-                  <h5>자주 하는 실수</h5>
-                  <ul>
-                    {guide.pitfalls.map(pitfall => <li key={pitfall}>{pitfall}</li>)}
-                  </ul>
-                </div>}
-
-                <button
-                  type="button"
-                  onClick={() => onSelectProblem(problemIndex)}
-                  aria-label={`${number}번 ${problem.title} 교안에서 ${learned ? '다시 풀기' : '학습 시작하기'}`}
-                >
-                  {learned ? '교안을 확인했으니 다시 풀기' : '교안을 확인했으니 직접 풀기'}
-                  <b aria-hidden="true">→</b>
-                </button>
-              </article>
+              </li>
             })}
-          </div>
-        </details>)}
+          </ol>
+        </section>)}
       </div>
     </section>
   </main>

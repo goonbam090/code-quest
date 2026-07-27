@@ -417,6 +417,24 @@ export default function App() {
   const syntaxGuide = useMemo(() => createSyntaxGuide(problem), [problem])
   const executionTrace = useMemo(() => createExecutionTrace(problem), [problem])
   const stageGroups = useMemo(() => groupProblemsByStage(problems), [problems])
+  const stageFilterOptions = useMemo(() => {
+    const options = new Map<string, { stage: string; start: number; end: number; count: number }>()
+    for (const group of stageGroups) {
+      const existing = options.get(group.stage)
+      if (existing) {
+        existing.end = group.end
+        existing.count += group.problems.length
+      } else {
+        options.set(group.stage, {
+          stage: group.stage,
+          start: group.start,
+          end: group.end,
+          count: group.problems.length
+        })
+      }
+    }
+    return [...options.values()]
+  }, [stageGroups])
   const visibleGroups = useMemo(
     () => filterProblemGroups(stageGroups, query, stageFilter, progressFilter, solved),
     [stageGroups, query, stageFilter, progressFilter, solved]
@@ -961,7 +979,7 @@ export default function App() {
           <button type="button" className={stageFilter === 'all' ? 'active' : ''} aria-pressed={stageFilter === 'all'} onClick={() => setStageFilter('all')}>
             전체 <small>1–{problems.length}</small>
           </button>
-          {stageGroups.map(group =>
+          {stageFilterOptions.map(group =>
             <button
               type="button"
               key={group.stage}
@@ -969,14 +987,17 @@ export default function App() {
               aria-pressed={stageFilter === group.stage}
               onClick={() => setStageFilter(group.stage)}
             >
-              {group.stage} <small>{group.start}–{group.end}</small>
+              {group.stage} <small>{group.start}–{group.end} · {group.count}개</small>
             </button>
           )}
         </nav>
 
         <div className="problem-groups">
           <div className="navigator-result"><span>{visibleCount}개 문제</span><kbd>Alt</kbd> + <kbd>/</kbd> 키로 탐색기 열기</div>
-          {visibleGroups.map(group => <section className="problem-group" key={group.stage}>
+          {visibleGroups.map(group => <section
+            className="problem-group"
+            key={`${group.stage}-${group.problems[0]?.id}-${group.problems.at(-1)?.id}`}
+          >
             <header>
               <div><h3>{group.stage}</h3><p>{group.start}번–{group.end}번 · {group.problems.length}개 표시</p></div>
               <span>{group.start}—{group.end}</span>

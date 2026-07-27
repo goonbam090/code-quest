@@ -7,6 +7,12 @@ export type ProblemGroup = {
   problems: Problem[]
 }
 
+export type ProblemUnit = ProblemGroup & {
+  id: string
+  number: number
+  numberInStage: number
+}
+
 export type ProgressFilter = 'all' | 'unsolved' | 'solved'
 
 function displayNumber(problem: Problem) {
@@ -25,6 +31,36 @@ export function groupProblemsByStage(problems: Problem[]): ProblemGroup[] {
     }
     return groups
   }, [])
+}
+
+export function splitProblemGroupsIntoUnits(
+  groups: ProblemGroup[],
+  unitSize = 5
+): ProblemUnit[] {
+  if (!Number.isInteger(unitSize) || unitSize < 1) {
+    throw new RangeError('unitSize는 1 이상의 정수여야 합니다.')
+  }
+
+  let unitNumber = 0
+  return groups.flatMap((group, groupIndex) => {
+    const units: ProblemUnit[] = []
+    for (let offset = 0; offset < group.problems.length; offset += unitSize) {
+      const problems = group.problems.slice(offset, offset + unitSize)
+      const start = displayNumber(problems[0])
+      const end = displayNumber(problems.at(-1)!)
+      unitNumber += 1
+      units.push({
+        id: `${groupIndex + 1}-${offset / unitSize + 1}-${start}-${end}`,
+        number: unitNumber,
+        numberInStage: offset / unitSize + 1,
+        stage: group.stage,
+        start,
+        end,
+        problems
+      })
+    }
+    return units
+  })
 }
 
 export function filterProblemGroups(

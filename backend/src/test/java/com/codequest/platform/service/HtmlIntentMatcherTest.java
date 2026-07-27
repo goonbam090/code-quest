@@ -185,4 +185,39 @@ class HtmlIntentMatcherTest {
             }
         }
     }
+
+    @Test
+    void publicHtmlLearningExamplesDoNotSolveTheirConnectedProblems() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try (InputStream stream = getClass().getResourceAsStream("/problems/html.json")) {
+            assertThat(stream).isNotNull();
+            var catalog = objectMapper.readTree(stream);
+            var learningByProblem = catalog.path("learning");
+
+            for (var problem : catalog.path("problems")) {
+                int problemId = problem.path("id").asInt();
+                String required = objectMapper.writeValueAsString(problem.path("required"));
+                String answer = problem.path("answer").asText();
+                var learning = learningByProblem.path(String.valueOf(problemId));
+
+                var exampleResult = matcher.match(
+                        required, answer, learning.path("example").path("code").asText());
+                assertThat(exampleResult.intentMatched())
+                        .as("html#%s learning.example은 연결 문제의 정답으로 통과하지 않아야 합니다.",
+                                problemId)
+                        .isFalse();
+
+                int applicationIndex = 0;
+                for (var application : learning.path("applications")) {
+                    applicationIndex++;
+                    var applicationResult = matcher.match(
+                            required, answer, application.path("code").asText());
+                    assertThat(applicationResult.intentMatched())
+                            .as("html#%s learning.applications[%s]은 연결 문제의 정답으로 통과하지 않아야 합니다.",
+                                    problemId, applicationIndex)
+                            .isFalse();
+                }
+            }
+        }
+    }
 }

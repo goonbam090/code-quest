@@ -227,6 +227,11 @@ function selectorExampleRevealsAnswer(answer, example) {
   return answerPattern.test(normalizedExample)
 }
 
+function htmlLearningStringRevealsAnswer(answer, value) {
+  const normalizedAnswer = normalized(answer)
+  return normalizedAnswer.length > 0 && normalized(value).includes(normalizedAnswer)
+}
+
 function validateSelectorHintSafety(problem, location) {
   for (const hint of problem.hints) {
     if (selectorExampleRevealsAnswer(problem.answer, hint)) {
@@ -340,6 +345,10 @@ function validateLearning(learning, problem, location) {
     if (problem.mode === 'selector'
         && selectorExampleRevealsAnswer(problem.answer, value)) {
       fail(location, `${path}이(가) 기준 선택자를 그대로 노출합니다.`)
+    }
+    if (problem.mode === 'html'
+        && htmlLearningStringRevealsAnswer(problem.answer, value)) {
+      fail(location, `${path}이(가) HTML 기준 답안을 그대로 노출합니다.`)
     }
   }
 
@@ -799,13 +808,18 @@ for (const file of files) {
       && (!categoryLearning || typeof categoryLearning !== 'object' || Array.isArray(categoryLearning))) {
     fail(file, '루트 learning은 문제 번호를 키로 사용하는 객체여야 합니다.')
   }
-  if (fileCategory === 'selector') {
+  if (fileCategory === 'selector' || fileCategory === 'html') {
     const expectedLearningKeys = catalog.problems.map(problem => String(problem.id)).sort()
     const actualLearningKeys = categoryLearning && typeof categoryLearning === 'object'
       ? Object.keys(categoryLearning).sort()
       : []
     if (JSON.stringify(actualLearningKeys) !== JSON.stringify(expectedLearningKeys)) {
-      fail(file, '선택자 learning은 모든 문제 번호와 정확히 일치해야 합니다.')
+      fail(
+        file,
+        fileCategory === 'selector'
+          ? '선택자 learning은 모든 문제 번호와 정확히 일치해야 합니다.'
+          : 'HTML learning은 모든 문제 번호와 정확히 일치해야 합니다.'
+      )
     }
   }
   catalog.problems.forEach((problem, index) => validateProblem({
