@@ -373,9 +373,10 @@ describe('App accessibility', () => {
     expect(fireEvent.keyDown(editor, { key: 'Tab' })).toBe(false)
     await vi.waitFor(() => expect(screen.getByRole('button', { name: '힌트' })).toHaveFocus())
     expect(editor).toHaveAccessibleDescription(/Escape를 누른 다음 Tab/)
+    expect(editor).toHaveAccessibleDescription(/정답 확인 후 다시 누르면 다음 단계/)
   })
 
-  it('moves focus to the new problem after the result action removes itself', async () => {
+  it('uses Mod+Enter to grade first and move to the next problem after a correct result', async () => {
     mockedApi.problems.mockResolvedValueOnce([
       {
         id: 1,
@@ -418,12 +419,268 @@ describe('App accessibility', () => {
     render(<App />)
     await screen.findByRole('heading', { name: '1. 문단 선택' })
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'CSS 답안' }), { target: { value: 'p' } })
-    fireEvent.click(screen.getByRole('button', { name: /정답 확인/ }))
-    fireEvent.click(await screen.findByRole('button', { name: /다음 문제 바로 풀기/ }))
+    const editor = screen.getByRole('textbox', { name: 'CSS 답안' })
+    fireEvent.change(editor, { target: { value: 'p' } })
+    fireEvent.keyDown(editor, { key: 'Enter', ctrlKey: true })
+
+    const nextAction = await screen.findByRole('button', { name: /다음 문제 바로 풀기/ })
+    expect(nextAction).toHaveTextContent('Ctrl/⌘↵')
+    expect(mockedApi.submit).toHaveBeenCalledTimes(1)
+
+    fireEvent.keyDown(editor, { key: 'Enter', metaKey: true })
 
     const nextHeading = await screen.findByRole('heading', { name: '2. 제목 선택' })
     await vi.waitFor(() => expect(nextHeading).toHaveFocus())
+    expect(mockedApi.submit).toHaveBeenCalledTimes(1)
+  })
+
+  it('uses Mod+Enter to retry instead of advancing after an incorrect result', async () => {
+    mockedApi.problems.mockResolvedValueOnce([
+      {
+        id: 1,
+        category: 'selector',
+        number: 1,
+        mode: 'selector',
+        stage: '선택자 기초',
+        title: '문단 선택',
+        question: '모든 문단을 선택하세요.',
+        html: '<main><p>첫 문단</p></main>',
+        starterCode: '',
+        examples: [],
+        constraints: [],
+        hints: ['태그 선택자를 사용하세요.']
+      },
+      {
+        id: 2,
+        category: 'selector',
+        number: 2,
+        mode: 'selector',
+        stage: '선택자 기초',
+        title: '제목 선택',
+        question: '제목을 선택하세요.',
+        html: '<main><h2>제목</h2></main>',
+        starterCode: '',
+        examples: [],
+        constraints: [],
+        hints: ['제목 태그를 사용하세요.']
+      }
+    ])
+    mockedApi.submit.mockResolvedValue({
+      correct: false,
+      firstSolve: false,
+      status: 'INCORRECT',
+      diagnosticCode: 'SELECTOR_MISMATCH',
+      message: '선택한 요소가 달라요.',
+      intentExplanation: '문단을 선택해야 합니다.',
+      guidance: '태그 이름을 다시 확인하세요.'
+    })
+    render(<App />)
+    const editor = await screen.findByRole('textbox', { name: 'CSS 답안' })
+
+    fireEvent.change(editor, { target: { value: 'div' } })
+    fireEvent.keyDown(editor, { key: 'Enter', ctrlKey: true })
+    await screen.findByText('선택한 요소가 달라요.')
+
+    fireEvent.keyDown(editor, { key: 'Enter', ctrlKey: true })
+    await vi.waitFor(() => expect(mockedApi.submit).toHaveBeenCalledTimes(2))
+    expect(screen.getByRole('heading', { name: '1. 문단 선택' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /다음 문제 바로 풀기/ })).not.toBeInTheDocument()
+  })
+
+  it('grades the edited answer again instead of advancing from a stale correct result', async () => {
+    mockedApi.problems.mockResolvedValueOnce([
+      {
+        id: 1,
+        category: 'selector',
+        number: 1,
+        mode: 'selector',
+        stage: '선택자 기초',
+        title: '문단 선택',
+        question: '모든 문단을 선택하세요.',
+        html: '<main><p>첫 문단</p></main>',
+        starterCode: '',
+        examples: [],
+        constraints: [],
+        hints: ['태그 선택자를 사용하세요.']
+      },
+      {
+        id: 2,
+        category: 'selector',
+        number: 2,
+        mode: 'selector',
+        stage: '선택자 기초',
+        title: '제목 선택',
+        question: '제목을 선택하세요.',
+        html: '<main><h2>제목</h2></main>',
+        starterCode: '',
+        examples: [],
+        constraints: [],
+        hints: ['제목 태그를 사용하세요.']
+      }
+    ])
+    mockedApi.submit.mockResolvedValue({
+      correct: true,
+      firstSolve: true,
+      status: 'CORRECT',
+      diagnosticCode: 'NONE',
+      message: '정답입니다.',
+      intentExplanation: '문단을 정확히 선택했습니다.',
+      guidance: ''
+    })
+    render(<App />)
+    const editor = await screen.findByRole('textbox', { name: 'CSS 답안' })
+
+    fireEvent.change(editor, { target: { value: 'p' } })
+    fireEvent.keyDown(editor, { key: 'Enter', ctrlKey: true })
+    await screen.findByRole('button', { name: /다음 문제 바로 풀기/ })
+
+    fireEvent.change(editor, { target: { value: 'p, span' } })
+    expect(screen.queryByRole('button', { name: /다음 문제 바로 풀기/ })).not.toBeInTheDocument()
+    fireEvent.keyDown(editor, { key: 'Enter', ctrlKey: true })
+
+    await vi.waitFor(() => expect(mockedApi.submit).toHaveBeenCalledTimes(2))
+    expect(screen.getByRole('heading', { name: '1. 문단 선택' })).toBeInTheDocument()
+  })
+
+  it('ignores repeated Mod+Enter while the current submission is still running', async () => {
+    const submissionRequest = deferred<Submission>()
+    mockedApi.submit.mockImplementationOnce(() => submissionRequest.promise)
+    render(<App />)
+    const editor = await screen.findByRole('textbox', { name: 'CSS 답안' })
+
+    fireEvent.change(editor, { target: { value: 'p' } })
+    fireEvent.keyDown(editor, { key: 'Enter', ctrlKey: true })
+    fireEvent.keyDown(editor, { key: 'Enter', ctrlKey: true })
+
+    expect(mockedApi.submit).toHaveBeenCalledTimes(1)
+    expect(screen.getByRole('button', { name: /채점 중/ })).toBeDisabled()
+
+    await act(async () => {
+      submissionRequest.resolve({
+        correct: true,
+        firstSolve: true,
+        status: 'CORRECT',
+        diagnosticCode: 'NONE',
+        message: '정답입니다.',
+        intentExplanation: '문단을 정확히 선택했습니다.',
+        guidance: ''
+      })
+      await submissionRequest.promise
+    })
+
+    expect(await screen.findByRole('button', { name: /CSS 속성으로 계속하기/ })).toBeInTheDocument()
+    expect(mockedApi.submit).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not advance when a button-triggered regrade is still running', async () => {
+    mockedApi.problems.mockResolvedValueOnce([
+      {
+        id: 1,
+        category: 'selector',
+        number: 1,
+        mode: 'selector',
+        stage: '선택자 기초',
+        title: '문단 선택',
+        question: '모든 문단을 선택하세요.',
+        html: '<main><p>첫 문단</p></main>',
+        starterCode: '',
+        examples: [],
+        constraints: [],
+        hints: ['태그 선택자를 사용하세요.']
+      },
+      {
+        id: 2,
+        category: 'selector',
+        number: 2,
+        mode: 'selector',
+        stage: '선택자 기초',
+        title: '제목 선택',
+        question: '제목을 선택하세요.',
+        html: '<main><h2>제목</h2></main>',
+        starterCode: '',
+        examples: [],
+        constraints: [],
+        hints: ['제목 태그를 사용하세요.']
+      }
+    ])
+    mockedApi.submit.mockResolvedValueOnce({
+      correct: true,
+      firstSolve: true,
+      status: 'CORRECT',
+      diagnosticCode: 'NONE',
+      message: '정답입니다.',
+      intentExplanation: '문단을 정확히 선택했습니다.',
+      guidance: ''
+    })
+    const regradeRequest = deferred<Submission>()
+    mockedApi.submit.mockImplementationOnce(() => regradeRequest.promise)
+    render(<App />)
+    const editor = await screen.findByRole('textbox', { name: 'CSS 답안' })
+
+    fireEvent.change(editor, { target: { value: 'p' } })
+    fireEvent.keyDown(editor, { key: 'Enter', ctrlKey: true })
+    await screen.findByRole('button', { name: /다음 문제 바로 풀기/ })
+
+    fireEvent.click(screen.getByRole('button', { name: /정답 확인/ }))
+    fireEvent.keyDown(editor, { key: 'Enter', ctrlKey: true })
+
+    expect(mockedApi.submit).toHaveBeenCalledTimes(2)
+    expect(screen.getByRole('heading', { name: '1. 문단 선택' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /채점 중/ })).toBeDisabled()
+
+    await act(async () => {
+      regradeRequest.resolve({
+        correct: true,
+        firstSolve: false,
+        status: 'CORRECT',
+        diagnosticCode: 'NONE',
+        message: '다시 확인한 정답입니다.',
+        intentExplanation: '문단을 정확히 선택했습니다.',
+        guidance: ''
+      })
+      await regradeRequest.promise
+    })
+
+    expect(await screen.findByText('다시 확인한 정답입니다.')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '1. 문단 선택' })).toBeInTheDocument()
+  })
+
+  it('does not resubmit or leave the final problem when no next step exists', async () => {
+    localStorage.setItem('codequest-last-track', 'algorithm')
+    localStorage.setItem('codequest-last-category', 'algorithm-intermediate')
+    mockedApi.problems.mockResolvedValueOnce([{
+      id: 599,
+      category: 'algorithm-intermediate',
+      number: 1,
+      mode: 'algorithm',
+      stage: 'Tree·Heap 및 그래프 응용',
+      title: '마지막 문제',
+      question: '마지막 결과를 반환하세요.',
+      html: '',
+      starterCode: 'public class Solution {}',
+      examples: [],
+      constraints: [],
+      hints: ['return을 확인하세요.']
+    }])
+    mockedApi.submit.mockResolvedValueOnce({
+      correct: true,
+      firstSolve: true,
+      status: 'CORRECT',
+      diagnosticCode: 'NONE',
+      message: '정답입니다.',
+      intentExplanation: '마지막 문제를 해결했습니다.',
+      guidance: ''
+    })
+    render(<App />)
+    const editor = await screen.findByRole('textbox', { name: 'Java 답안' })
+
+    fireEvent.keyDown(editor, { key: 'Enter', ctrlKey: true })
+    await screen.findByText('마지막 문제를 해결했습니다.')
+    expect(screen.queryByRole('button', { name: /계속하기|다음 문제/ })).not.toBeInTheDocument()
+
+    fireEvent.keyDown(editor, { key: 'Enter', ctrlKey: true })
+    expect(mockedApi.submit).toHaveBeenCalledTimes(1)
+    expect(screen.getByRole('heading', { name: '1. 마지막 문제' })).toBeInTheDocument()
   })
 
   it('shows a retryable CSS judge error without exposing solved actions', async () => {
@@ -655,10 +912,12 @@ describe('App accessibility', () => {
       intentExplanation: '배열의 길이를 반환했습니다.',
       guidance: ''
     })
-    fireEvent.click(screen.getByRole('button', { name: /코드 실행 및 채점/ }))
+    const editor = screen.getByRole('textbox', { name: 'Java 답안' })
+    fireEvent.keyDown(editor, { key: 'Enter', ctrlKey: true })
     const bridgeAction = await screen.findByRole('button', {
       name: /Java Bridge · 타입·메서드로 계속하기/
     })
+    expect(bridgeAction).toHaveTextContent('Ctrl/⌘↵')
 
     mockedApi.problems.mockResolvedValueOnce([{
       id: 313,
@@ -674,9 +933,10 @@ describe('App accessibility', () => {
       constraints: [],
       hints: ['메서드 이름을 확인하세요.']
     }])
-    fireEvent.click(bridgeAction)
+    fireEvent.keyDown(editor, { key: 'Enter', ctrlKey: true })
 
     await screen.findByRole('heading', { name: '1. Bridge 시작' })
+    expect(mockedApi.submit).toHaveBeenCalledTimes(1)
     expect(mockedApi.problems).toHaveBeenLastCalledWith('java-bridge')
     expect(within(screen.getByRole('navigation', { name: 'Java Quest 학습 단계' }))
       .getByRole('button', { name: /Java Bridge/ })).toHaveAttribute('aria-current', 'step')

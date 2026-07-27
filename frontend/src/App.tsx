@@ -133,6 +133,15 @@ const LAST_CATEGORY_KEY = 'codequest-last-category'
 const CSS_DRAFT_CATALOG_REVISION = 'css-155-v1'
 const CSS_CATEGORIES = new Set(['selector', 'property', 'flex', 'grid', 'ui'])
 
+function withDirectionalParticle(label: string) {
+  const lastCharacter = label.at(-1)
+  if (!lastCharacter) return label
+  const codePoint = lastCharacter.charCodeAt(0)
+  if (codePoint < 0xac00 || codePoint > 0xd7a3) return `${label}로`
+  const finalConsonant = (codePoint - 0xac00) % 28
+  return `${label}${finalConsonant === 0 || finalConsonant === 8 ? '로' : '으로'}`
+}
+
 function initialLearningLocation() {
   const savedTrack = localStorage.getItem(LAST_TRACK_KEY)
   const definition = tracks.find(item => item.id === savedTrack)
@@ -317,6 +326,7 @@ export default function App() {
   const [answer, setAnswer] = useState('')
   const [result, setResult] = useState<Submission | null>(null)
   const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [hint, setHint] = useState(0)
   const [solved, setSolved] = useState<Set<number>>(new Set())
@@ -335,6 +345,7 @@ export default function App() {
   const codeEditorRef = useRef<CodeEditorHandle>(null)
   const categoryRequestGenerationRef = useRef(0)
   const submissionGenerationRef = useRef(0)
+  const activeSubmissionRef = useRef<number | null>(null)
   const openHomeAtFirstProblemRef = useRef(false)
   const problem = problems[index]
   const currentTrack = tracks.find(item => item.id === track) ?? tracks[0]
@@ -356,8 +367,8 @@ export default function App() {
     ? '다음 문제 바로 풀기'
     : nextCategory
       ? currentStage && nextStage?.id !== currentStage.id
-        ? `${nextStage?.label} · ${nextCategory.label}로 계속하기`
-        : `${nextCategory.label}로 계속하기`
+        ? `${nextStage?.label} · ${withDirectionalParticle(nextCategory.label)} 계속하기`
+        : `${withDirectionalParticle(nextCategory.label)} 계속하기`
       : ''
   const problemContext = [
     currentTrack.label,
@@ -388,7 +399,7 @@ export default function App() {
 
   useEffect(() => {
     const requestGeneration = ++categoryRequestGenerationRef.current
-    submissionGenerationRef.current += 1
+    invalidateSubmission()
     const openAtFirstProblem = openHomeAtFirstProblemRef.current
     openHomeAtFirstProblemRef.current = false
     const source = currentCategory.source
@@ -475,11 +486,14 @@ export default function App() {
   })
 
   async function submit() {
-    if (!problem) return
+    if (!problem || activeSubmissionRef.current !== null) return
     const submittedProblem = problem
     const submissionGeneration = ++submissionGenerationRef.current
+    activeSubmissionRef.current = submissionGeneration
+    setSubmitting(true)
     try {
       setError('')
+      setResult(null)
       const response = await api.submit(submittedProblem, learnerKey(), answer)
       if (submissionGenerationRef.current !== submissionGeneration) return
       setResult(response)
@@ -492,7 +506,18 @@ export default function App() {
     } catch (e) {
       if (submissionGenerationRef.current !== submissionGeneration) return
       setError(e instanceof Error ? e.message : '오류가 발생했습니다.')
+    } finally {
+      if (activeSubmissionRef.current === submissionGeneration) {
+        activeSubmissionRef.current = null
+        setSubmitting(false)
+      }
     }
+  }
+
+  function invalidateSubmission() {
+    submissionGenerationRef.current += 1
+    activeSubmissionRef.current = null
+    setSubmitting(false)
   }
 
   function closeProblemPicker() {
@@ -518,7 +543,7 @@ export default function App() {
 
   function move(next: number) {
     if (next < 0 || next >= problems.length) return
-    submissionGenerationRef.current += 1
+    invalidateSubmission()
     const restorePickerFocus = pickerOpen
     setIndex(next)
     localStorage.setItem(`codequest-last-${category}`, String(next + 1))
@@ -553,7 +578,7 @@ export default function App() {
     localStorage.setItem(LAST_CATEGORY_KEY, nextCategory)
     if (nextTrack === track && nextCategory === category) return
     categoryRequestGenerationRef.current += 1
-    submissionGenerationRef.current += 1
+    invalidateSubmission()
     setTrack(nextTrack)
     setCategory(nextCategory)
   }
@@ -576,7 +601,7 @@ export default function App() {
 
     localStorage.setItem(LAST_TRACK_KEY, DEFAULT_TRACK)
     localStorage.setItem(LAST_CATEGORY_KEY, DEFAULT_CATEGORY)
-    submissionGenerationRef.current += 1
+    invalidateSubmission()
     if (loading || error || problems.length === 0) {
       openHomeAtFirstProblemRef.current = true
       categoryRequestGenerationRef.current += 1
@@ -602,13 +627,22 @@ export default function App() {
     if (nextCategory) changeCategory(nextCategory.id)
   }
 
+  function handleEditorPrimaryAction() {
+    if (activeSubmissionRef.current !== null) return
+    if (result?.correct) {
+      moveToNextStep()
+      return
+    }
+    void submit()
+  }
+
   function clearProblemQuery() {
     setQuery('')
     requestAnimationFrame(() => searchRef.current?.focus())
   }
 
   function updateAnswer(nextAnswer: string) {
-    submissionGenerationRef.current += 1
+    invalidateSubmission()
     setAnswer(nextAnswer)
     setResult(null)
     if (problem) localStorage.setItem(answerDraftKey(problem), nextAnswer)
@@ -620,7 +654,7 @@ export default function App() {
     if (answer !== resetValue && !window.confirm(
       resetValue ? '작성 중인 답안을 지우고 시작 코드로 복원할까요?' : '작성 중인 답안을 모두 지울까요?'
     )) return
-    submissionGenerationRef.current += 1
+    invalidateSubmission()
     localStorage.removeItem(answerDraftKey(problem))
     setAnswer(resetValue)
     setResult(null)
@@ -865,12 +899,14 @@ export default function App() {
             aria-describedby="code-editor-keyboard-help"
             value={answer}
             onChange={updateAnswer}
-            onSubmit={submit}
+            onSubmit={handleEditorPrimaryAction}
           />
           <div className="answer-workbench html-actions">
             <div className="panel-title answer-title"><span>VALIDATE HTML</span><button onClick={() => setHint(value => (value + 1) % problem.hints.length)}>힌트</button></div>
             <p className="hint" aria-live="polite">{problem.hints[hint]}</p>
-            <button className="submit" onClick={submit}>HTML 구조 검사 <kbd>Ctrl/⌘↵</kbd></button>
+            <button className="submit" onClick={submit} disabled={submitting} aria-busy={submitting}>
+              {submitting ? 'HTML 검사 중…' : 'HTML 구조 검사'} <kbd>Ctrl/⌘↵</kbd>
+            </button>
             {result && <div ref={resultRef} className={`result ${result.status.toLowerCase()}`} role="status">
               <div className="result-heading">
                 <strong>{result.message}</strong>
@@ -879,7 +915,8 @@ export default function App() {
               <span className="result-intent">{result.intentExplanation}</span>
               <span className="result-guidance">{result.guidance}</span>
               {result.correct && nextStepLabel && <button type="button" className="result-next" onClick={moveToNextStep}>
-                <span>{nextStepLabel}</span><b aria-hidden="true">→</b>
+                <span>{nextStepLabel}</span>
+                <span className="result-next-meta"><kbd>Ctrl/⌘↵</kbd><b aria-hidden="true">→</b></span>
               </button>}
               <SolutionLessonPanel result={result}/>
             </div>}
@@ -923,10 +960,12 @@ export default function App() {
               value={answer}
               onChange={updateAnswer}
               placeholder={problem.mode === 'selector' ? '.target' : 'display: flex;'}
-              onSubmit={submit}
+              onSubmit={handleEditorPrimaryAction}
             />
             <p className="hint" aria-live="polite">{problem.hints[hint]}</p>
-            <button className="submit" onClick={submit}>정답 확인 <kbd>Ctrl/⌘↵</kbd></button>
+            <button className="submit" onClick={submit} disabled={submitting} aria-busy={submitting}>
+              {submitting ? '채점 중…' : '정답 확인'} <kbd>Ctrl/⌘↵</kbd>
+            </button>
             {result && <div ref={resultRef} className={`result ${result.status.toLowerCase()}`} role="status">
               <div className="result-heading">
                 <strong>{result.message}</strong>
@@ -935,7 +974,8 @@ export default function App() {
               <span className="result-intent">{result.intentExplanation}</span>
               <span className="result-guidance">{result.guidance}</span>
               {result.correct && nextStepLabel && <button type="button" className="result-next" onClick={moveToNextStep}>
-                <span>{nextStepLabel}</span><b aria-hidden="true">→</b>
+                <span>{nextStepLabel}</span>
+                <span className="result-next-meta"><kbd>Ctrl/⌘↵</kbd><b aria-hidden="true">→</b></span>
               </button>}
               <SolutionLessonPanel result={result}/>
             </div>}
@@ -1014,7 +1054,7 @@ export default function App() {
             aria-invalid={result?.errorLine ? true : undefined}
             value={answer}
             onChange={updateAnswer}
-            onSubmit={submit}
+            onSubmit={handleEditorPrimaryAction}
           />
           {result?.errorLine && <section
             className="code-error-location"
@@ -1033,7 +1073,9 @@ export default function App() {
               <button onClick={() => setHint(value => (value + 1) % problem.hints.length)}>힌트</button>
             </div>
             <p className="hint" aria-live="polite">{problem.hints[hint]}</p>
-            <button className="submit" onClick={submit}>코드 실행 및 채점 <kbd>Ctrl/⌘↵</kbd></button>
+            <button className="submit" onClick={submit} disabled={submitting} aria-busy={submitting}>
+              {submitting ? '실행 중…' : '코드 실행 및 채점'} <kbd>Ctrl/⌘↵</kbd>
+            </button>
             {result && <div ref={resultRef} className={`result ${result.status.toLowerCase()}`} role="status">
               <div className="result-heading">
                 <strong>{result.message}</strong>
@@ -1042,7 +1084,8 @@ export default function App() {
               <span className="result-intent">{result.intentExplanation}</span>
               <span className="result-guidance">{result.guidance}</span>
               {result.correct && nextStepLabel && <button type="button" className="result-next" onClick={moveToNextStep}>
-                <span>{nextStepLabel}</span><b aria-hidden="true">→</b>
+                <span>{nextStepLabel}</span>
+                <span className="result-next-meta"><kbd>Ctrl/⌘↵</kbd><b aria-hidden="true">→</b></span>
               </button>}
               {result.testReport && <TestReportPanel report={result.testReport}/>}
               <SolutionLessonPanel result={result}/>
@@ -1060,7 +1103,8 @@ export default function App() {
       </footer>
       <p className="sr-only" id="code-editor-keyboard-help">
         Tab과 Shift+Tab으로 코드를 들여쓰거나 내어씁니다. 편집기 밖으로 이동하려면 Escape를 누른 다음
-        Tab 또는 Shift+Tab을 누르세요. Ctrl 또는 Command와 Enter를 함께 누르면 코드를 검사합니다.
+        Tab 또는 Shift+Tab을 누르세요. Ctrl 또는 Command와 Enter를 함께 누르면 코드를 검사하고,
+        정답 확인 후 다시 누르면 다음 단계가 있을 때 이동합니다.
       </p>
     </main>}
   </div>
