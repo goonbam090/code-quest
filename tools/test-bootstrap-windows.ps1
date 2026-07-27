@@ -162,7 +162,7 @@ try {
         (Get-EnvValue -Path $repairEnvPath -Name "POSTGRES_PASSWORD") -eq "keep-existing-database-password"
     ) "token repair changed the database password"
     Assert-True (
-        (Get-ChildItem -LiteralPath $repairCase -Filter ".env.backup-*" -File).Count -gt 0
+        @(Get-ChildItem -LiteralPath $repairCase -Filter ".env.backup-*" -File).Count -gt 0
     ) "token repair did not create a backup"
     $repairedJavaToken = Get-EnvValue -Path $repairEnvPath -Name "JAVA_RUNNER_TOKEN"
     $repairedJavascriptToken = Get-EnvValue -Path $repairEnvPath -Name "JAVASCRIPT_RUNNER_TOKEN"
