@@ -45,7 +45,9 @@ runner token만 발견되면 원본을 `.env.backup-*`으로 보관한 뒤 해�
 docker compose down
 ```
 
-처음 실행하는 사람을 위한 짧은 안내는 [`START_HERE.md`](START_HERE.md)에서도 확인할 수 있습니다.
+Docker를 전혀 모르는 사용자를 위한 설치, 운영체제별 실행, 종료, 진도 보존과 오류 해결 절차는
+[`START_HERE.md`](START_HERE.md)에 단계별로 정리되어 있습니다. 압축 파일을 전달받은 사용자는
+이 문서부터 읽으면 됩니다.
 
 ## 학습 구성
 
@@ -306,8 +308,9 @@ docker compose exec javascript-runner wget -q -O - http://localhost:3003/health
 docker compose down
 ```
 
-로컬 DB 볼륨까지 지우는 `docker compose down --volumes`는 학습 진도를 모두 삭제하므로
-초기화가 필요한 경우에만 사용하세요.
+로컬 DB 볼륨까지 지우는 `docker compose down --volumes`는 서버에 저장된 정답 여부와 시도
+횟수를 삭제하므로 초기화가 필요한 경우에만 사용하세요. 브라우저에 자동 저장된 답안 초안과
+마지막 문제 위치는 브라우저 데이터를 별도로 지워야 초기화됩니다.
 
 `.env`를 삭제했지만 기존 `codequest-data` 볼륨이 남아 있다면 새로 생성한 PostgreSQL
 비밀번호와 기존 볼륨의 비밀번호가 달라질 수 있으므로 시작 파일이 자동 실행을 중단합니다. 학습
