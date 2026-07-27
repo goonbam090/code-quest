@@ -180,6 +180,58 @@ describe('CodeEditor', () => {
     expect(screen.getByTestId('controlled-value').textContent).toBe('const answer = 1;')
   })
 
+  it.each([
+    [
+      'html',
+      '<main>\n<section>\n<p>Hello</p>\n</section>\n</main>',
+      '<main>\n  <section>\n    <p>Hello</p>\n  </section>\n</main>'
+    ],
+    [
+      'css',
+      '.card {\ncolor: red;\n}',
+      '.card {\n  color: red;\n}'
+    ],
+    [
+      'javascript',
+      'function answer() {\nif (true) {\nreturn 1;\n}\n}',
+      'function answer() {\n  if (true) {\n    return 1;\n  }\n}'
+    ],
+    [
+      'java',
+      'class Main {\nstatic void run() {\nSystem.out.println("x");\n}\n}',
+      'class Main {\n    static void run() {\n        System.out.println("x");\n    }\n}'
+    ]
+  ] as const)('reindents the entire %s document with Alt/Option+Shift+F', (
+    language,
+    source,
+    expected
+  ) => {
+    render(<ControlledEditor initialValue={source} language={language} />)
+    const editor = screen.getByRole('textbox', { name: `${language} 답안` })
+
+    act(() => {
+      editor.focus()
+      fireEvent.keyDown(editor, {
+        key: 'F',
+        code: 'KeyF',
+        altKey: true,
+        shiftKey: true
+      })
+    })
+
+    expect(screen.getByTestId('controlled-value').textContent).toBe(expected)
+  })
+
+  it('shows auto-indentation before autocomplete in the shortcut guide', () => {
+    render(<ControlledEditor initialValue="" language="javascript" />)
+
+    const shortcutGuide = screen.getByRole('note', { name: '에디터 단축키' })
+    expect(shortcutGuide).toHaveTextContent('자동 들여쓰기 Alt/⌥ ⇧ F')
+    expect(shortcutGuide).toHaveTextContent('자동 완성 Ctrl Space')
+    expect(shortcutGuide.textContent?.indexOf('자동 들여쓰기'))
+      .toBeLessThan(shortcutGuide.textContent?.indexOf('자동 완성') ?? 0)
+  })
+
   it('submits with Mod+Enter without adding a line', () => {
     const onSubmit = vi.fn()
     render(<ControlledEditor initialValue="return 42;" language="java" onSubmit={onSubmit} />)

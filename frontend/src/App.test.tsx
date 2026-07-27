@@ -373,6 +373,7 @@ describe('App accessibility', () => {
     expect(fireEvent.keyDown(editor, { key: 'Tab' })).toBe(false)
     await vi.waitFor(() => expect(screen.getByRole('button', { name: '힌트' })).toHaveFocus())
     expect(editor).toHaveAccessibleDescription(/Escape를 누른 다음 Tab/)
+    expect(editor).toHaveAccessibleDescription(/Alt 또는 Option과 Shift, F/)
     expect(editor).toHaveAccessibleDescription(/정답 확인 후 다시 누르면 다음 단계/)
   })
 

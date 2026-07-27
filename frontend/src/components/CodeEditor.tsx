@@ -18,6 +18,7 @@ import { javascript } from '@codemirror/lang-javascript'
 import {
   HighlightStyle,
   LanguageSupport,
+  indentRange,
   indentUnit,
   syntaxHighlighting
 } from '@codemirror/language'
@@ -30,7 +31,8 @@ import {
 import {
   EditorView,
   keymap,
-  placeholder as editorPlaceholder
+  placeholder as editorPlaceholder,
+  showPanel
 } from '@codemirror/view'
 import type { Extension } from '@codemirror/state'
 import { tags } from '@lezer/highlight'
@@ -120,6 +122,40 @@ function ariaInvalidIsTrue(value: AriaAttributes['aria-invalid']) {
   return value !== undefined && value !== false && value !== 'false'
 }
 
+function editorShortcutPanel() {
+  const dom = document.createElement('div')
+  dom.className = 'code-editor-shortcuts'
+  dom.setAttribute('role', 'note')
+  dom.setAttribute('aria-label', '에디터 단축키')
+
+  const shortcuts = [
+    ['자동 들여쓰기', 'Alt/⌥ ⇧ F'],
+    ['자동 완성', 'Ctrl Space']
+  ]
+  for (const [label, shortcut] of shortcuts) {
+    const item = document.createElement('span')
+    const key = document.createElement('kbd')
+    item.append(`${label} `)
+    key.textContent = shortcut
+    item.append(key)
+    dom.append(item)
+  }
+
+  return { dom, top: true }
+}
+
+function formatDocument(view: EditorView) {
+  if (view.state.readOnly) return false
+  const changes = indentRange(view.state, 0, view.state.doc.length)
+  if (!changes.empty) {
+    view.dispatch({
+      changes,
+      userEvent: 'input.format'
+    })
+  }
+  return true
+}
+
 function contentAttributes({
   ariaLabel,
   ariaDescribedBy,
@@ -195,6 +231,7 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
   const languageCompartmentRef = useRef(new Compartment())
   const indentCompartmentRef = useRef(new Compartment())
   const readOnlyCompartmentRef = useRef(new Compartment())
+  const shortcutPanelCompartmentRef = useRef(new Compartment())
   const attributesCompartmentRef = useRef(new Compartment())
   const placeholderCompartmentRef = useRef(new Compartment())
 
@@ -246,6 +283,9 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
           EditorState.readOnly.of(readOnly),
           EditorView.editable.of(!readOnly)
         ]),
+        shortcutPanelCompartmentRef.current.of(
+          readOnly ? [] : showPanel.of(editorShortcutPanel)
+        ),
         attributesCompartmentRef.current.of(contentAttributes({
           ariaLabel,
           ariaDescribedBy,
@@ -297,7 +337,19 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
           }
         ])),
         EditorView.domEventHandlers({
-          keydown(event) {
+          keydown(event, view) {
+            const formatKey = event.code === 'KeyF' || event.key.toLowerCase() === 'f'
+            if (
+              formatKey
+              && event.altKey
+              && event.shiftKey
+              && !event.ctrlKey
+              && !event.metaKey
+            ) {
+              event.preventDefault()
+              tabExitArmedRef.current = false
+              return formatDocument(view)
+            }
             if (event.key !== 'Escape' && event.key !== 'Tab') tabExitArmedRef.current = false
             return false
           },
@@ -360,10 +412,15 @@ export const CodeEditor = forwardRef<CodeEditorHandle, CodeEditorProps>(function
     const view = viewRef.current
     if (!view) return
     view.dispatch({
-      effects: readOnlyCompartmentRef.current.reconfigure([
-        EditorState.readOnly.of(readOnly),
-        EditorView.editable.of(!readOnly)
-      ])
+      effects: [
+        readOnlyCompartmentRef.current.reconfigure([
+          EditorState.readOnly.of(readOnly),
+          EditorView.editable.of(!readOnly)
+        ]),
+        shortcutPanelCompartmentRef.current.reconfigure(
+          readOnly ? [] : showPanel.of(editorShortcutPanel)
+        )
+      ]
     })
   }, [readOnly])
 

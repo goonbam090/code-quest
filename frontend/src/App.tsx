@@ -1103,8 +1103,9 @@ export default function App() {
       </footer>
       <p className="sr-only" id="code-editor-keyboard-help">
         Tab과 Shift+Tab으로 코드를 들여쓰거나 내어씁니다. 편집기 밖으로 이동하려면 Escape를 누른 다음
-        Tab 또는 Shift+Tab을 누르세요. Ctrl 또는 Command와 Enter를 함께 누르면 코드를 검사하고,
-        정답 확인 후 다시 누르면 다음 단계가 있을 때 이동합니다.
+        Tab 또는 Shift+Tab을 누르세요. Alt 또는 Option과 Shift, F를 함께 누르면 문서 전체에 자동
+        들여쓰기를 적용합니다. Ctrl 또는 Command와 Enter를 함께 누르면 코드를 검사하고, 정답 확인 후 다시
+        누르면 다음 단계가 있을 때 이동합니다.
       </p>
     </main>}
   </div>

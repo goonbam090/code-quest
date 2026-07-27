@@ -410,6 +410,27 @@ h1{font-size:38px;letter-spacing:-2px;margin:0;color:#fff}
 .code-mirror-editor .cm-content ::selection{background:#554496!important}
 .code-mirror-editor .cm-cursor{border-left-color:#c6baff}
 .code-mirror-editor .cm-panels{border-color:#302a3b;background:#131019;color:#e6e0ef}
+.code-mirror-editor .code-editor-shortcuts{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+  min-height:30px;
+  padding:5px 10px;
+  border-bottom:1px solid #2d2837;
+  background:#100e15;
+  color:#8f8999;
+  font:9px var(--font-sans);
+}
+.code-mirror-editor .code-editor-shortcuts span{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.code-mirror-editor .code-editor-shortcuts kbd{
+  padding:2px 5px;
+  border:1px solid #443a59;
+  border-radius:4px;
+  background:#201a2c;
+  color:#bcaef5;
+  font:700 8px var(--font-mono);
+}
 .code-mirror-editor .cm-tooltip{
   border:1px solid #3d354b;
   background:#17131e;
@@ -777,6 +798,8 @@ h2:focus-visible{outline:3px solid #b9a8ff;outline-offset:5px;border-radius:4px}
   .panel-tools{gap:7px}
   .panel-tools button{font-size:9px}
   .answer-title{height:auto;min-height:32px}
+  .code-mirror-editor .code-editor-shortcuts{gap:8px;padding-inline:8px}
+  .code-mirror-editor .code-editor-shortcuts kbd{padding-inline:4px}
 }
 
 @media(prefers-reduced-motion:reduce){
