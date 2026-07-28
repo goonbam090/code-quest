@@ -258,3 +258,29 @@ jobs:
             cd "$release_root"
             docker compose down --volumes
           fi
+
+  ci-gate:
+    name: CI gate
+    if: always()
+    needs:
+      - catalog
+      - bootstrap-unix
+      - bootstrap-windows
+      - backend
+      - frontend
+      - renderer
+      - java-runner
+      - javascript-runner
+      - integration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: "22.22.0"
+      - name: Test required job result handling
+        run: node --test tools/verify-ci-results.test.mjs
+      - name: Verify every required job succeeded
+        env:
+          REQUIRED_JOB_RESULTS: ${{ toJSON(needs) }}
+        run: node tools/verify-ci-results.mjs
