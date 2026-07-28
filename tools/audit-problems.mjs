@@ -6,11 +6,13 @@ const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const problemsRoot = resolve(repositoryRoot, 'backend/src/main/resources/problems')
 const expectedCounts = new Map([
   ['html', 15],
-  ['selector', 35],
-  ['property', 45],
-  ['flex', 25],
-  ['grid', 25],
-  ['ui', 25],
+  ['selector', 19],
+  ['property', 24],
+  ['motion', 15],
+  ['flex', 13],
+  ['grid', 12],
+  ['responsive', 7],
+  ['ui', 10],
   ['java', 47],
   ['java-bridge', 17],
   ['java-advanced', 22],
@@ -19,7 +21,7 @@ const expectedCounts = new Map([
   ['algorithm-intermediate', 20]
 ])
 const codeModes = new Set(['java', 'javascript', 'algorithm'])
-const allowedModes = new Set(['html', 'selector', 'declaration', ...codeModes])
+const allowedModes = new Set(['html', 'selector', 'declaration', 'stylesheet', ...codeModes])
 const allowedSourceContracts = new Set([
   'insertion-sort',
   'member-badge-constructor-delegation',
@@ -186,6 +188,15 @@ function nonBlank(value) {
 
 function normalized(value) {
   return String(value ?? '').normalize('NFKC').replace(/\s+/g, '').toLowerCase()
+}
+
+function containsExternalCssUrl(value) {
+  const pattern = /url\(\s*(?:"([^"]*)"|'([^']*)'|([^)]*))\s*\)/gi
+  for (const match of String(value ?? '').matchAll(pattern)) {
+    const url = (match[1] ?? match[2] ?? match[3] ?? '').trim()
+    if (url && !url.startsWith('#') && !url.toLowerCase().startsWith('data:')) return true
+  }
+  return false
 }
 
 function sameIntegerArray(actual, expected) {
@@ -411,6 +422,13 @@ function validateProblem(problem, category, expectedId) {
 
   indexUnique(`${category} 제목`, problem.title, location)
   indexUnique(`${category} 질문`, problem.question, location)
+  if (['selector', 'declaration', 'stylesheet'].includes(problem.mode)) {
+    indexUnique(
+      'CSS 채점 계약',
+      `${problem.mode}|${problem.html ?? ''}|${problem.answer}`,
+      location
+    )
+  }
   validateSolution(problem.solution, location, problem.mode)
   validateLearning(problem.learning, problem, location)
 
@@ -427,6 +445,81 @@ function validateProblem(problem, category, expectedId) {
         && (!problem.required || typeof problem.required !== 'object'
           || Array.isArray(problem.required) || Object.keys(problem.required).length === 0)) {
       fail(location, 'required가 있다면 한 개 이상의 CSS 속성을 가진 객체여야 합니다.')
+    }
+  }
+
+  if (problem.mode === 'stylesheet') {
+    if (!nonBlank(problem.html)) fail(location, 'stylesheet 문제의 미리보기 HTML이 비어 있습니다.')
+    if (!nonBlank(problem.starterCode)) fail(location, 'stylesheet 시작 코드가 비어 있습니다.')
+    if (!Array.isArray(problem.constraints) || problem.constraints.length === 0) {
+      fail(location, 'stylesheet 문제에는 구현 범위를 설명하는 제약사항이 필요합니다.')
+    } else if (problem.constraints.some(constraint => /\brequired\./i.test(constraint))) {
+      fail(location, '공개 제약사항에서 비공개 required 필드명을 참조할 수 없습니다.')
+    }
+    if (containsExternalCssUrl(problem.answer) || containsExternalCssUrl(problem.starterCode)) {
+      fail(location, 'stylesheet 기준 답안과 시작 코드에는 외부 URL을 사용할 수 없습니다.')
+    }
+    if (!problem.required || typeof problem.required !== 'object'
+        || Array.isArray(problem.required)) {
+      fail(location, 'stylesheet 문제에는 viewport와 상태 채점을 위한 required 객체가 필요합니다.')
+    } else {
+      const allowedValidationFields = new Set(['viewports', 'hover', 'focus'])
+      for (const field of Object.keys(problem.required)) {
+        if (!allowedValidationFields.has(field)) {
+          fail(location, `stylesheet required에는 지원하지 않는 ${field} 필드를 사용할 수 없습니다.`)
+        }
+      }
+
+      const viewports = problem.required.viewports
+      if (!Array.isArray(viewports) || viewports.length < 1 || viewports.length > 4) {
+        fail(location, 'stylesheet required.viewports는 1~4개의 화면 크기 배열이어야 합니다.')
+      } else {
+        const viewportKeys = new Set()
+        for (const [index, viewport] of viewports.entries()) {
+          if (!viewport || typeof viewport !== 'object' || Array.isArray(viewport)
+              || !Number.isInteger(viewport.width) || viewport.width < 1 || viewport.width > 1920
+              || !Number.isInteger(viewport.height) || viewport.height < 1 || viewport.height > 1200) {
+            fail(location, `required.viewports[${index}]의 width·height 범위가 올바르지 않습니다.`)
+            continue
+          }
+          const viewportKey = `${viewport.width}x${viewport.height}`
+          if (viewportKeys.has(viewportKey)) {
+            fail(location, `required.viewports에 ${viewportKey}가 중복됩니다.`)
+          }
+          viewportKeys.add(viewportKey)
+        }
+      }
+
+      let stateCount = 0
+      for (const field of ['hover', 'focus']) {
+        const selectors = problem.required[field]
+        if (selectors === undefined) continue
+        if (!Array.isArray(selectors) || selectors.length === 0
+            || selectors.some(selector => !nonBlank(selector) || selector.length > 500)) {
+          fail(location, `stylesheet required.${field}에는 유효한 selector 문자열 배열이 필요합니다.`)
+          continue
+        }
+        if (new Set(selectors.map(normalized)).size !== selectors.length) {
+          fail(location, `stylesheet required.${field}에 중복 selector가 있습니다.`)
+        }
+        stateCount += selectors.length
+      }
+      if (stateCount > 4) {
+        fail(location, 'stylesheet hover와 focus 시나리오는 합쳐서 4개 이하여야 합니다.')
+      }
+      if (Array.isArray(viewports) && viewports.length * (stateCount + 1) > 12) {
+        fail(location, 'stylesheet viewport와 상태 조합은 12개 이하여야 합니다.')
+      }
+    }
+    if (problem.learning === undefined) {
+      fail(location, 'stylesheet 문제에는 실습 전에 읽을 learning 교안이 필요합니다.')
+    }
+    if (/@(?:-webkit-)?keyframes\b/i.test(problem.answer)
+        || /(?:^|[;{])\s*(?:animation|transition)(?:-[\w-]+)?\s*:/i.test(problem.answer)) {
+      fail(
+        location,
+        'stylesheet 시각 채점은 시간축을 검증하지 않으므로 animation·transition은 declaration 문제로 출제해야 합니다.'
+      )
     }
   }
 

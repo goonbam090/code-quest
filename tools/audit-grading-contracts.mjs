@@ -220,7 +220,7 @@ const gradingCases = [
   {
     id: 'selector-typo',
     category: 'selector',
-    number: 2,
+    number: 3,
     answer: '.ntoe',
     status: 'TYPO',
     diagnosticCode: 'SELECTOR_TYPO'
@@ -244,24 +244,24 @@ const gradingCases = [
   {
     id: 'declaration-alternative',
     category: 'property',
-    number: 1,
-    answer: 'color: #ff0000;',
+    number: 17,
+    answer: 'background-color: rgb(49, 46, 129);',
     status: 'CORRECT',
     diagnosticCode: 'NONE'
   },
   {
     id: 'declaration-concept-error',
     category: 'property',
-    number: 1,
-    answer: 'color: blue;',
+    number: 17,
+    answer: 'background-color: blue;',
     status: 'INCORRECT',
     diagnosticCode: 'VALUE_MISMATCH'
   },
   {
     id: 'declaration-property-typo',
     category: 'property',
-    number: 1,
-    answer: 'colour: red;',
+    number: 17,
+    answer: 'backround-color: #312e81;',
     status: 'TYPO',
     diagnosticCode: 'PROPERTY_NAME_TYPO'
   },
@@ -551,13 +551,13 @@ function assertPublicProblem(result, category, number) {
 
 async function assertSelectorLearningCatalog() {
   const selectors = await requestJson('/api/problems?category=selector')
-  assert(Array.isArray(selectors) && selectors.length === 35,
-    `선택자 공개 문제 API는 35문제여야 합니다: ${JSON.stringify(selectors)}`)
+  assert(Array.isArray(selectors) && selectors.length === 19,
+    `선택자 공개 문제 API는 19문제여야 합니다: ${JSON.stringify(selectors)}`)
   const numbers = selectors.map(problem => problem.number).sort((left, right) => left - right)
   assert(numbers.every((number, index) => number === index + 1),
-    `선택자 공개 문제 번호가 1~35와 일치하지 않습니다: ${JSON.stringify(numbers)}`)
+    `선택자 공개 문제 번호가 1~19와 일치하지 않습니다: ${JSON.stringify(numbers)}`)
   selectors.forEach(problem => assertPublicProblem(problem, 'selector', problem.number))
-  console.log('선택자 35문제의 공개 learning 교안과 비공개 필드 경계를 검증했습니다.')
+  console.log('선택자 19문제의 공개 learning 교안과 비공개 필드 경계를 검증했습니다.')
 }
 
 async function publicProblem(category, number) {

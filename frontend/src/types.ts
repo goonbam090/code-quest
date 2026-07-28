@@ -19,7 +19,7 @@ export type Problem = {
   category: string
   number: number
   displayNumber?: number
-  mode: 'selector' | 'declaration' | 'html' | 'java' | 'javascript' | 'algorithm'
+  mode: 'selector' | 'declaration' | 'stylesheet' | 'html' | 'java' | 'javascript' | 'algorithm'
   stage: string
   title: string
   question: string
@@ -73,6 +73,9 @@ export type Submission = {
     | 'UNKNOWN_PROPERTY'
     | 'INVALID_PROPERTY_VALUE'
     | 'MISSING_UNIT'
+    | 'FORBIDDEN_RESOURCE'
+    | 'INPUT_TOO_LARGE'
+    | 'RENDER_LIMIT'
     | 'UNBALANCED_DELIMITER'
     | 'MALFORMED_DECLARATION'
     | 'MISSING_REQUIRED_PROPERTY'

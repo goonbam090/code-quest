@@ -1,9 +1,6 @@
 import { type MouseEvent, type RefObject } from 'react'
 import { createLearningConcept, createLearningGuide, type LearningGuide } from '../lib/learningConcept'
-import {
-  splitProblemGroupsIntoUnits,
-  type ProblemGroup
-} from '../lib/problemNavigation'
+import type { ProblemGroup } from '../lib/problemNavigation'
 import type { Problem } from '../types'
 
 type LearningReviewProps = {
@@ -23,14 +20,6 @@ function displayNumber(problem: Problem) {
 
 function formatNumber(number: number) {
   return String(number).padStart(2, '0')
-}
-
-function codeLabel(problem: Problem) {
-  if (problem.mode === 'selector') return 'CSS SELECTOR'
-  if (problem.mode === 'declaration') return 'CSS'
-  if (problem.mode === 'html') return 'HTML'
-  if (problem.mode === 'javascript') return 'JAVASCRIPT'
-  return problem.mode === 'algorithm' ? 'JAVA · ALGORITHM' : 'JAVA'
 }
 
 function conceptTitle(problem: Problem, guide: LearningGuide) {
@@ -65,7 +54,6 @@ export function LearningReview({
   onSelectProblem
 }: LearningReviewProps) {
   const problems = groups.flatMap(group => group.problems)
-  const units = splitProblemGroupsIntoUnits(groups)
   const learnedProblems = problems.filter(problem => solvedIds.has(problem.id))
   const remainingProblems = problems.filter(problem => !solvedIds.has(problem.id))
   const concepts = new Map(problems.map(problem => [problem.id, createLearningConcept(problem)]))
@@ -84,8 +72,7 @@ export function LearningReview({
       <span className="review-eyebrow">LEARNING MAP · {trackLabel}</span>
       <h2 ref={headingRef} tabIndex={-1}>{categoryLabel} 학습 지도</h2>
       <p>
-        핵심 개념을 먼저 이해하고, 5개 이하의 Quest 묶음에서 직접 사용해 보세요.
-        개념 학습과 실전 연습이 하나의 순서로 이어집니다.
+        아래 교안에서 개념과 예시를 순서대로 익힌 뒤, 각 개념 끝의 Quest에서 직접 작성해 보세요.
       </p>
       <section className="review-summary" aria-label={`${categoryLabel} 학습 요약`}>
         <div>
@@ -104,104 +91,6 @@ export function LearningReview({
           <small>{learnedProblems.length} / {problems.length} 완료</small>
         </div>
       </section>
-    </section>
-
-    <nav className="review-stage-map" aria-label="5문제 단위 학습 지도">
-      {units.map(unit => {
-        const learnedCount = unit.problems.filter(problem => solvedIds.has(problem.id)).length
-        const unitPercent = Math.round((learnedCount / unit.problems.length) * 100)
-        const unitHeadingId = `review-unit-heading-${unit.id}`
-        return <a
-          href={`#${unitHeadingId}`}
-          key={unit.id}
-          onClick={event => focusReviewHeading(event, unitHeadingId)}
-        >
-          <span>UNIT {formatNumber(unit.number)}</span>
-          <strong>Quest {formatNumber(unit.start)}–{formatNumber(unit.end)}</strong>
-          <small>{unit.stage} · {learnedCount} / {unit.problems.length}개 완료</small>
-          <div aria-hidden="true"><i style={{ width: `${unitPercent}%` }}/></div>
-        </a>
-      })}
-    </nav>
-
-    <section className="review-stage-list" aria-label="5문제 단위 실습 안내">
-      {units.map(unit => {
-        const learnedCount = unit.problems.filter(problem => solvedIds.has(problem.id)).length
-        const unitHeadingId = `review-unit-heading-${unit.id}`
-        return <section
-          className="review-stage review-problem-unit"
-          id={`review-unit-${unit.id}`}
-          key={unit.id}
-          aria-labelledby={unitHeadingId}
-        >
-          <header>
-            <div>
-              <span>UNIT {formatNumber(unit.number)}</span>
-              <h3 id={unitHeadingId} tabIndex={-1}>
-                {unit.stage} · Quest {formatNumber(unit.start)}–{formatNumber(unit.end)}
-              </h3>
-            </div>
-            <p>
-              Quest {formatNumber(unit.start)}–{formatNumber(unit.end)}
-              {' · '}{learnedCount} / {unit.problems.length}개 완료
-            </p>
-          </header>
-          <div className="review-card-grid">
-            {unit.problems.map(problem => {
-              const problemIndex = problemIndexById.get(problem.id)!
-              const number = displayNumber(problem)
-              const learned = solvedIds.has(problem.id)
-              const concept = concepts.get(problem.id)!
-              const guide = guides.get(problem.id)!
-              return <article
-                className={`review-card ${learned ? 'is-complete' : 'is-upcoming'}`}
-                key={problem.id}
-                aria-labelledby={`review-card-title-${problem.id}`}
-              >
-                <span className="review-card-state">
-                  <b>{learned ? '복습' : '예습'}</b>
-                  {learned ? '완료한 Quest' : '학습할 Quest'} {formatNumber(number)}
-                </span>
-                <h4 id={`review-card-title-${problem.id}`}>{problem.title}</h4>
-                <div className="review-keywords">
-                  <span>핵심 키워드</span>
-                  <ul aria-label={`${number}번 문제 핵심 키워드`}>
-                    {guide.keywords.map(keyword => <li key={keyword}><code>{keyword}</code></li>)}
-                  </ul>
-                </div>
-                <div className="review-concept">
-                  <span>이 Quest에서 확인할 개념</span>
-                  <p>{concept.overview}</p>
-                  {concept.usage.kind === 'code'
-                    ? <figure className="review-usage-example">
-                      <figcaption>
-                        <span>유사 사용 예시 <em>정답 예시 아님</em></span>
-                        <small>{codeLabel(problem)}</small>
-                      </figcaption>
-                      <pre><code dir="ltr">{concept.usage.value}</code></pre>
-                      {concept.usage.note && <p>{concept.usage.note}</p>}
-                    </figure>
-                    : <div className="review-usage-context">
-                      <span>사용 맥락</span>
-                      <p>{concept.usage.value}</p>
-                    </div>}
-                </div>
-                <div className="review-practice-context">
-                  <span>직접 확인할 실습</span>
-                  <small>{problem.question}</small>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => onSelectProblem(problemIndex)}
-                  aria-label={`${number}번 ${problem.title} ${learned ? '다시 풀기' : '학습 시작하기'}`}
-                >
-                  {learned ? '다시 풀어 감각 확인' : '직접 실습 시작'} <b aria-hidden="true">→</b>
-                </button>
-              </article>
-            })}
-          </div>
-        </section>
-      })}
     </section>
 
     <section className="review-handbook" aria-labelledby="review-handbook-title">

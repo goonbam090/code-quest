@@ -1,6 +1,7 @@
 package com.codequest.platform.service;
 
 import com.codequest.platform.model.Problem;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +36,17 @@ public class BrowserCssRenderingEvaluator implements CssRenderingEvaluator {
     @Override
     public Result evaluate(Problem problem, String submittedCss) {
         try {
+            JsonNode validation = problem.getValidationJson() == null
+                    ? null
+                    : objectMapper.readTree(problem.getValidationJson());
+            boolean stylesheet = "stylesheet".equals(problem.getMode());
             RendererRequest payload = new RendererRequest(
                     problem.getHtml(),
                     problem.getAnswer(),
                     submittedCss,
-                    "ui".equals(problem.getCategory()) ? "visual" : "computed"
+                    stylesheet || "ui".equals(problem.getCategory()) ? "visual" : "computed",
+                    problem.getMode(),
+                    validation
             );
             HttpRequest request = HttpRequest.newBuilder(endpoint)
                     .timeout(Duration.ofSeconds(8))
@@ -76,7 +83,8 @@ public class BrowserCssRenderingEvaluator implements CssRenderingEvaluator {
         }
     }
 
-    private record RendererRequest(String html, String expectedCss, String actualCss, String policy) {}
+    private record RendererRequest(String html, String expectedCss, String actualCss, String policy,
+                                   String mode, JsonNode validation) {}
 
     private record RendererResponse(boolean syntaxValid, boolean matched, String matchType,
                                     boolean visualMatch, boolean computedMatch, String differingProperty,

@@ -666,7 +666,7 @@
       "question": "caption, thead, tbody와 scope=col인 열 제목을 가진 2열 표를 작성하세요.",
       "html": "",
       "starterCode": "<table>\n  \n</table>",
-      "answer": "<table>\n  <caption>트랙별 문제 수</caption>\n  <thead><tr><th scope=\"col\">트랙</th><th scope=\"col\">문제 수</th></tr></thead>\n  <tbody><tr><td>HTML</td><td>15</td></tr><tr><td>CSS</td><td>155</td></tr></tbody>\n</table>",
+      "answer": "<table>\n  <caption>트랙별 문제 수</caption>\n  <thead><tr><th scope=\"col\">트랙</th><th scope=\"col\">문제 수</th></tr></thead>\n  <tbody><tr><td>HTML</td><td>15</td></tr><tr><td>CSS</td><td>100</td></tr></tbody>\n</table>",
       "constraints": ["레이아웃 목적으로 table을 사용하지 않습니다.", "열 제목에는 scope=col을 지정합니다."],
       "hints": ["caption은 표 전체의 제목입니다.", "비슷한 코드 예시: <table><caption>점수</caption><thead><tr><th scope=\"col\">이름</th></tr></thead><tbody><tr><td>민수</td></tr></tbody></table>", "thead의 th 개수와 tbody의 td 열 수를 맞춰 보세요."],
       "required": {

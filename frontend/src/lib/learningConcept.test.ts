@@ -79,6 +79,36 @@ describe('learning concept content', () => {
     ])
   })
 
+  it('derives CSS properties and a reusable application from a stylesheet example', () => {
+    const problem = {
+      mode: 'stylesheet' as const,
+      title: '카드 목록 배치',
+      question: '카드 목록을 두 열의 그리드로 배치하세요.',
+      hints: [
+        '선택자와 선언 블록을 함께 작성합니다.',
+        '비슷한 코드 예시: .gallery { display: grid; gap: 1rem; }',
+        '중괄호 안에 CSS 선언을 작성합니다.'
+      ],
+      constraints: []
+    }
+
+    const concept = createLearningConcept(problem)
+    const guide = createLearningGuide(problem, concept)
+
+    expect(concept.usage).toEqual({
+      kind: 'code',
+      value: '.gallery { display: grid; gap: 1rem; }'
+    })
+    expect(guide.keywords).toEqual(['display', 'gap'])
+    expect(guide.syntax).toEqual([{
+      pattern: '.gallery { display: grid; gap: 1rem; }',
+      explanation: '선택자와 선언 블록을 함께 작성합니다.'
+    }])
+    expect(guide.applications.map(application => application.description)).toContain(
+      '카드·버튼·레이아웃에 같은 속성을 재사용하되 크기와 간격 값은 화면 요구사항에 맞게 조정합니다.'
+    )
+  })
+
   it('separates an inline selector example from its explanation', () => {
     expect(createLearningConcept({
       mode: 'selector',

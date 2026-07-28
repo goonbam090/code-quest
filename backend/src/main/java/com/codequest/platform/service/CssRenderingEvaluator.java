@@ -15,6 +15,8 @@ public interface CssRenderingEvaluator {
         UNKNOWN_PROPERTY,
         INVALID_PROPERTY_VALUE,
         MISSING_UNIT,
+        FORBIDDEN_RESOURCE,
+        RENDER_LIMIT,
         MISSING_REQUIRED_PROPERTY,
         VALUE_MISMATCH,
         RESULT_MISMATCH

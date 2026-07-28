@@ -25,7 +25,8 @@ async function readJson(request) {
 
 const server = http.createServer(async (request, response) => {
   if (request.method === 'GET' && request.url === '/health') {
-    json(response, 200, { status: 'UP' })
+    const healthy = await evaluator.healthy()
+    json(response, healthy ? 200 : 503, { status: healthy ? 'UP' : 'DOWN' })
     return
   }
   if (request.method !== 'POST' || request.url !== '/evaluate') {

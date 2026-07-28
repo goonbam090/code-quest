@@ -53,7 +53,7 @@ class ProblemServiceTest {
 
         var responses = service.list("selector");
 
-        assertThat(responses).hasSize(35);
+        assertThat(responses).hasSize(19);
         assertThat(responses)
                 .allSatisfy(response -> {
                     assertThat(response.html()).doesNotContain("data-target");

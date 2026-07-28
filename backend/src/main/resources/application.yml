@@ -18,7 +18,7 @@ server:
     include-stacktrace: never
 codequest:
   catalog:
-    expected-count: 343
+    expected-count: 288
   renderer:
     url: ${CSS_RENDERER_URL:http://localhost:3001}
   java-runner:

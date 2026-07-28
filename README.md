@@ -57,14 +57,20 @@ Docker를 전혀 모르는 사용자를 위한 설치, 운영체제별 실행, �
 | 트랙 | 학습 내용 | 문제 수 |
 |---|---|---:|
 | HTML | 문서 구조, 폼·접근성, 콘텐츠 모델 | 15 |
-| CSS | 선택자, 속성, Flex, Grid, UI 구현 | 155 |
+| CSS | 선택자, 기본 스타일, 위치·모션, Flex, Grid, 반응형, UI 구현 | 100 |
 | JavaScript | 문법, 조건·반복, 함수, 배열·객체, Map·Set·비동기 | 30 |
 | Java | 기초 → Bridge → Applied | 86 |
 | Algorithm | 탐색, 정렬, 자료구조, BFS·DFS, 트리·힙·그래프 | 57 |
-| 합계 | 12개 JSON 카테고리 | **343** |
+| 합계 | 14개 JSON 카테고리 | **288** |
 
-CSS Quest는 `선택자 35 → 속성 45 → Flex 25 → Grid 25 → UI 구현 25` 순서로
-기초 개념을 익힌 뒤 대표적인 실무 화면에 적용합니다.
+CSS Quest는 `선택자 19 → 기본 스타일 24 → 위치·모션 15 → Flex 13 → Grid 12 →
+반응형 7 → UI 구현 10` 순서로 진행합니다. CSS 기초부터 레이아웃과 반응형 화면까지 익힌 뒤,
+카드·갤러리·채팅·상품 목록처럼 자주 만나는 UI에 적용합니다.
+
+CSS 학습 범위는
+[핵심만 골라 배우는 CSS3의 공개 커리큘럼](https://www.inflearn.com/course/%ED%95%B5%EC%8B%AC%EB%A7%8C-%EB%B0%B0%EC%9A%B0%EB%8A%94-css3?cid=336232)
+흐름을 참고해 Code Quest만의 설명과 예제로 다시 구성했습니다. 강의 자료, Figma 원본,
+이미지와 원문 문구는 저장소에 포함하지 않으며 해당 강의 또는 인프런의 공식 프로젝트가 아닙니다.
 
 Java Quest 내부는 다음 세 단계로 이어집니다.
 
@@ -184,7 +190,7 @@ Chromium renderer, Java runner와 JavaScript runner는 각각 다른 내부 네�
 
 ### 채점·저장 경계
 
-- JSON 카탈로그가 문제 정의의 기준이며, 서버 시작 시 343문제를 PostgreSQL에 동기화합니다.
+- JSON 카탈로그가 문제 정의의 기준이며, 서버 시작 시 288문제를 PostgreSQL에 동기화합니다.
 - Flyway가 데이터베이스 스키마를 이력으로 관리하고 Hibernate는 시작 시 스키마를 `validate`합니다.
 - Chromium·Java·JavaScript 원격 채점은 데이터베이스 트랜잭션 밖에서 실행합니다.
 - 채점이 끝난 뒤 시도 횟수와 최초 정답 상태만 짧은 트랜잭션에서 기록합니다. 같은 학습자와 문제의
@@ -369,7 +375,7 @@ tools/build-release-zip.sh
 Maven 3.9.9와 JDK 21이 로컬에 설치되어 있다면 CI의 Backend 검증을
 `(cd backend && mvn --batch-mode --no-transfer-progress verify)`로 직접 실행할 수도 있습니다.
 
-전체 환경이 실행 중이면 343개 기준 답안을 실제 API와 각 채점기에 제출할 수 있습니다.
+전체 환경이 실행 중이면 288개 기준 답안을 실제 API와 각 채점기에 제출할 수 있습니다.
 
 ```bash
 docker compose up --detach --build
