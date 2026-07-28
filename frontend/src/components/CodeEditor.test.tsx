@@ -159,6 +159,25 @@ describe('CodeEditor', () => {
       .toEqual(expect.arrayContaining(['display', 'flex']))
   })
 
+  it('uses the complete CSS grammar for stylesheet answers', () => {
+    const { container } = render(
+      <CodeEditor
+        aria-label="CSS 규칙 답안"
+        language="css"
+        cssSyntaxMode="stylesheet"
+        value={'.card {\n  display: grid;\n}'}
+        onChange={() => {}}
+      />
+    )
+
+    expect(container.querySelector('.code-mirror-editor'))
+      .toHaveAttribute('data-css-syntax', 'stylesheet')
+    expect(screen.getByRole('textbox', { name: 'CSS 규칙 답안' }))
+      .toHaveTextContent(/\.card\s*\{\s*display:\s*grid;\s*\}/)
+    expect(Array.from(container.querySelectorAll('.cm-line span')).map(element => element.textContent))
+      .toEqual(expect.arrayContaining(['card', 'display', 'grid']))
+  })
+
   it('marks read-only code viewers without exposing an editable surface', () => {
     const { container } = render(
       <CodeEditor

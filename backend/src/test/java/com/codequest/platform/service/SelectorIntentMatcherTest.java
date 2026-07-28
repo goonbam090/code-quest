@@ -58,7 +58,7 @@ class SelectorIntentMatcherTest {
                 }
             }
 
-            assertThat(problems).hasSize(35);
+            assertThat(problems).hasSize(19);
             assertThat(bypassedProblems).isEmpty();
         }
     }
@@ -90,6 +90,14 @@ class SelectorIntentMatcherTest {
                     board.path("html").asText(),
                     ".post:not(.notice) > .title"
             ).intentMatched()).isTrue();
+            assertThat(matcher.match(
+                    login.path("html").asText(),
+                    ".login [required]"
+            ).intentMatched()).isFalse();
+            assertThat(matcher.match(
+                    board.path("html").asText(),
+                    ".post:not(.notice) a"
+            ).intentMatched()).isFalse();
         }
     }
 

@@ -13,23 +13,23 @@ class HealthControllerTest {
     @Test
     void reportsReadyOnlyAfterTheCompleteCatalogIsAvailable() {
         ProblemRepository problems = mock(ProblemRepository.class);
-        HealthController controller = new HealthController(problems, 343);
+        HealthController controller = new HealthController(problems, 288);
 
-        when(problems.count()).thenReturn(342L);
+        when(problems.count()).thenReturn(287L);
         var starting = controller.health();
         assertThat(starting.getStatusCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
         assertThat(starting.getBody().status()).isEqualTo("STARTING");
 
-        when(problems.count()).thenReturn(343L);
+        when(problems.count()).thenReturn(288L);
         var ready = controller.health();
         assertThat(ready.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(ready.getBody().problemCount()).isEqualTo(343);
+        assertThat(ready.getBody().problemCount()).isEqualTo(288);
     }
 
     @Test
     void reportsDownWhenTheDatabaseCannotBeQueried() {
         ProblemRepository problems = mock(ProblemRepository.class);
-        HealthController controller = new HealthController(problems, 343);
+        HealthController controller = new HealthController(problems, 288);
         when(problems.count()).thenThrow(new IllegalStateException("database unavailable"));
 
         var response = controller.health();

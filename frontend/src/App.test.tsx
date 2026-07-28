@@ -3,6 +3,7 @@ import { act, cleanup, fireEvent, render, screen, within } from '@testing-librar
 import App from './App'
 import { api } from './lib/api'
 import type { Problem, Submission } from './types'
+import htmlCatalog from '../../backend/src/main/resources/problems/html.json'
 
 vi.mock('./lib/api', () => ({
   api: {
@@ -89,6 +90,57 @@ function deferred<T>() {
     reject = rejectPromise
   })
   return { promise, resolve, reject }
+}
+
+function learningMapProblem(number: number, stage = '통합 단계'): Problem {
+  return {
+    id: number,
+    category: 'selector',
+    number,
+    mode: 'selector',
+    stage,
+    title: `학습 문제 ${number}`,
+    question: `${number}번 학습 대상을 선택하세요.`,
+    html: `<main><p class="target-${number}">학습 대상</p></main>`,
+    starterCode: '',
+    examples: [],
+    constraints: [],
+    hints: [
+      `${number}번 핵심 개념을 적용합니다.`,
+      `비슷한 코드 패턴: .sample-${number}`,
+      '선택 조건과 대상의 관계를 확인합니다.'
+    ],
+    learning: {
+      keywords: [`개념 ${number}`, `키워드 ${number}`],
+      summary: `${number}번 문제에서 확인할 개념을 이해합니다.`,
+      example: {
+        code: `.sample-${number}`,
+        explanation: `sample-${number} 클래스를 가진 요소를 선택합니다.`
+      },
+      principles: [
+        `${number}번 개념의 첫 번째 동작 원리입니다.`,
+        `${number}번 개념의 두 번째 동작 원리입니다.`
+      ],
+      applications: [{
+        title: `${number}번 응용`,
+        description: `${number}번 개념을 다른 화면에 적용합니다.`,
+        code: `.example-${number} { color: inherit; }`
+      }],
+      pitfalls: [`${number}번 개념의 조건을 다른 조건과 혼동하지 않습니다.`]
+    }
+  }
+}
+
+function htmlCatalogProblems(): Problem[] {
+  const learning = htmlCatalog.learning as Record<string, NonNullable<Problem['learning']>>
+  return htmlCatalog.problems.map((problem, index) => ({
+    ...problem,
+    category: 'html',
+    number: index + 1,
+    mode: 'html' as const,
+    examples: [],
+    learning: learning[String(problem.id)]
+  }))
 }
 
 describe('App accessibility', () => {
@@ -179,7 +231,74 @@ describe('App accessibility', () => {
     expect(editor).toHaveAttribute('data-css-syntax', 'stylesheet')
 
     fireEvent.change(editor, { target: { value: 'p' } })
-    expect(localStorage.getItem('codequest-draft-css-155-v1-1')).toBe('p')
+    expect(localStorage.getItem('codequest-draft-css-100-v1-1')).toBe('p')
+  })
+
+  it('starts redesigned HTML problems from their new starter code instead of an old draft', async () => {
+    localStorage.setItem('codequest-last-track', 'html')
+    localStorage.setItem('codequest-last-category', 'html-structure')
+    localStorage.setItem('codequest-draft-101', '<main>이전 문제 답안</main>')
+    mockedApi.problems.mockResolvedValueOnce([{
+      id: 101,
+      category: 'html',
+      number: 1,
+      mode: 'html',
+      stage: '문서 구조',
+      title: '기본 HTML 문서',
+      question: '문서 뼈대를 작성하세요.',
+      html: '',
+      starterCode: '<!doctype html>\n<html lang="ko">\n</html>',
+      examples: [],
+      constraints: [],
+      hints: ['문서 구조를 확인하세요.']
+    }])
+
+    render(<App />)
+
+    const editor = await screen.findByRole('textbox', { name: 'HTML 답안' })
+    expect(editor).toHaveValue('<!doctype html>\n<html lang="ko">\n</html>')
+
+    fireEvent.change(editor, { target: { value: '<main>새 답안</main>' } })
+    expect(localStorage.getItem('codequest-draft-html-15-v2-101')).toBe('<main>새 답안</main>')
+  })
+
+  it('loads and restores stylesheet starter code with responsive preview controls', async () => {
+    const starterCode = '.gallery {\n  display: grid;\n  /* 열을 완성하세요 */\n}'
+    mockedApi.problems.mockResolvedValueOnce([{
+      id: 201,
+      category: 'responsive',
+      number: 1,
+      mode: 'stylesheet',
+      stage: '반응형 기초',
+      title: '반응형 갤러리',
+      question: '화면 크기에 따라 열 수를 바꾸세요.',
+      html: '<main class="gallery"><article>하나</article><article>둘</article></main>',
+      starterCode,
+      examples: [],
+      constraints: [
+        '문제에 제시된 모든 화면 크기에서 요구된 배치를 만족합니다.',
+        '외부 URL과 외부 이미지를 사용하지 않습니다.'
+      ],
+      hints: ['미디어 쿼리를 사용하세요.']
+    }])
+    vi.spyOn(window, 'confirm').mockReturnValue(true)
+
+    render(<App/>)
+
+    const editor = await screen.findByRole('textbox', { name: 'CSS 답안' })
+    expect(editor).toHaveValue(starterCode)
+    expect(editor).toHaveAttribute('data-css-syntax', 'stylesheet')
+    expect(screen.getByRole('button', { name: '시작 코드로 복원' })).toBeInTheDocument()
+    expect(screen.getByLabelText('문제 제한사항')).toHaveTextContent('모든 화면 크기')
+    expect(screen.getByRole('group', { name: '미리보기 화면 크기' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /데스크톱1200px/ })).toHaveAttribute('aria-pressed', 'true')
+
+    fireEvent.click(screen.getByRole('button', { name: /모바일390px/ }))
+    expect(await screen.findByTitle('CSS 결과 미리보기 390px')).toBeInTheDocument()
+
+    fireEvent.change(editor, { target: { value: '.gallery { display: block; }' } })
+    fireEvent.click(screen.getByRole('button', { name: '시작 코드로 복원' }))
+    expect(editor).toHaveValue(starterCode)
   })
 
   it('honors the home action while the initial HTML request is still loading', async () => {
@@ -361,7 +480,7 @@ describe('App accessibility', () => {
     expect(screen.queryByRole('searchbox', { name: '문제 검색' })).not.toBeInTheDocument()
   })
 
-  it('opens a category learning map that previews every concept and marks completed practice', async () => {
+  it('renders every learning map as one continuous concept curriculum without preview cards', async () => {
     mockedApi.problems.mockResolvedValueOnce([
       {
         id: 1,
@@ -451,59 +570,204 @@ describe('App accessibility', () => {
 
     const mapHeading = await screen.findByRole('heading', { name: '선택자 학습 지도' })
     await vi.waitFor(() => expect(mapHeading).toHaveFocus())
-    const conceptMap = screen.getByRole('region', { name: '단계별 핵심 개념' })
-    expect(within(conceptMap).getByRole('heading', { name: '선택자 기초' })).toBeInTheDocument()
-    expect(within(conceptMap).getByRole('heading', { name: '관계 선택자' })).toBeInTheDocument()
-    expect(within(conceptMap).getByRole('heading', { name: '문단 선택' })).toBeInTheDocument()
-    expect(within(conceptMap).getByRole('heading', { name: '제목 선택' })).toBeInTheDocument()
-    expect(within(conceptMap).getByText(
-      '태그 이름으로 같은 종류의 요소를 한 번에 선택할 수 있습니다.'
+    expect(screen.getByText(
+      '아래 교안에서 개념과 예시를 순서대로 익힌 뒤, 각 개념 끝의 Quest에서 직접 작성해 보세요.'
     )).toBeInTheDocument()
-    expect(within(conceptMap).getByText('부모 바로 아래에 있는 직계 자식만 선택합니다.'))
-      .toBeInTheDocument()
-    expect(within(conceptMap).getAllByText(/유사 사용 예시/)).toHaveLength(2)
-    const completedCard = screen.getByRole('button', { name: '1번 문단 선택 다시 풀기' })
-      .closest('article')
-    const upcomingCard = screen.getByRole('button', { name: '2번 제목 선택 학습 시작하기' })
-      .closest('article')
-    expect(completedCard).toHaveTextContent('복습')
-    expect(completedCard).toHaveTextContent('완료한 실습 01')
-    expect(completedCard).toHaveTextContent('태그 선택자')
-    expect(completedCard).toHaveTextContent('article, button')
-    expect(upcomingCard).toHaveTextContent('예습')
-    expect(upcomingCard).toHaveTextContent('학습 전 실습 02')
-    expect(upcomingCard).toHaveTextContent('자식 결합자')
-    expect(upcomingCard).toHaveTextContent('section > h3')
+    expect(screen.queryByRole('navigation', {
+      name: '5문제 단위 학습 지도'
+    })).not.toBeInTheDocument()
+    expect(screen.queryByRole('region', {
+      name: '5문제 단위 실습 안내'
+    })).not.toBeInTheDocument()
+    expect(document.querySelector('.review-card')).not.toBeInTheDocument()
 
     const handbook = screen.getByRole('region', { name: '선택자 학습 교안' })
-    expect(handbook).toHaveTextContent('문제의 정답은 공개하지 않습니다.')
+    expect(handbook).toHaveTextContent('문제별 정답을 나열하지 않습니다.')
+    expect(handbook).toHaveTextContent('개념 이해')
+    expect(handbook).toHaveTextContent('예시 해석')
+    expect(handbook).toHaveTextContent('Quest 실전')
     expect(handbook).toHaveTextContent('문서 기본 요소 스타일')
     expect(handbook).toHaveTextContent('범위를 제한하지 않으면 같은 태그가 모두 선택됩니다.')
-    expect(within(handbook).getAllByText('개념과 동작 원리')).toHaveLength(2)
-    expect(within(handbook).getAllByText('사용 예시 해석')).toHaveLength(2)
-    expect(within(handbook).getAllByText('응용 활용')).toHaveLength(2)
+    expect(within(handbook).getAllByText('왜 필요한가와 동작 원리')).toHaveLength(2)
+    expect(within(handbook).getAllByText('예시를 코드 순서로 읽기')).toHaveLength(2)
+    expect(within(handbook).getAllByText('실제 화면과 코드에 응용하기')).toHaveLength(2)
     expect(within(handbook).getAllByText('자주 하는 실수')).toHaveLength(2)
-    const handbookChapters = handbook.querySelectorAll('details')
-    expect(handbookChapters).toHaveLength(2)
-    expect(handbookChapters[0]).toHaveAttribute('open')
-    expect(handbookChapters[1]).not.toHaveAttribute('open')
-    expect(within(handbook).queryByRole('region', { name: '학습 목표' })).not.toBeInTheDocument()
-    expect(handbook.querySelectorAll('article')).toHaveLength(2)
-    expect(handbook.querySelector('summary h1, summary h2, summary h3, summary h4, summary h5, summary h6'))
-      .not.toBeInTheDocument()
+    expect(handbook.querySelectorAll('details, summary')).toHaveLength(0)
+    const curriculumFlows = within(handbook).getAllByRole('list', { name: /개념 학습 순서/ })
+    expect(curriculumFlows).toHaveLength(2)
+    expect(curriculumFlows.flatMap(flow => Array.from(flow.children))).toHaveLength(2)
+    expect(within(handbook).getByRole('heading', {
+      name: '태그 선택자 · 문단 선택'
+    })).toBeInTheDocument()
+    const completedQuest = within(handbook).getByRole('button', {
+      name: 'Quest 1 문단 선택 다시 풀기'
+    }).closest('.review-curriculum-quest')
+    const upcomingQuest = within(handbook).getByRole('button', {
+      name: 'Quest 2 제목 선택 실습하기'
+    }).closest('.review-curriculum-quest')
+    expect(completedQuest).toHaveTextContent('복습')
+    expect(completedQuest).toHaveTextContent('문단 선택')
+    expect(upcomingQuest).toHaveTextContent('실전 학습')
+    expect(upcomingQuest).toHaveTextContent('제목 선택')
+    const secondConceptHeading = within(handbook).getByRole('heading', {
+      name: '자식 결합자 · 제목 선택'
+    })
 
-    fireEvent.click(within(handbook).getByRole('link', { name: /관계 선택자/ }))
-    expect(handbookChapters[1]).toHaveAttribute('open')
-    expect(handbookChapters[1].querySelector('summary')).toHaveFocus()
+    fireEvent.click(within(handbook).getByRole('link', { name: /자식 결합자/ }))
+    await vi.waitFor(() => expect(secondConceptHeading).toHaveFocus())
     expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({
       behavior: 'auto',
       block: 'start'
     })
-    expect(handbookChapters[1]).toHaveTextContent('중간 래퍼가 생기면')
+    expect(secondConceptHeading.closest('.review-curriculum-topic'))
+      .toHaveTextContent('중간 래퍼가 생기면')
 
-    fireEvent.click(screen.getByRole('button', { name: '2번 제목 선택 학습 시작하기' }))
+    fireEvent.click(within(handbook).getByRole('button', {
+      name: 'Quest 2 제목 선택 실습하기'
+    }))
     const practiceHeading = await screen.findByRole('heading', { name: '2. 제목 선택' })
     await vi.waitFor(() => expect(practiceHeading).toHaveFocus())
+  })
+
+  it('renders six problems in one ordered curriculum and keeps every Quest link aligned', async () => {
+    mockedApi.problems.mockResolvedValueOnce(
+      Array.from({ length: 6 }, (_, index) => learningMapProblem(index + 1))
+    )
+
+    render(<App />)
+    await screen.findByRole('heading', { name: '1. 학습 문제 1' })
+    fireEvent.click(screen.getByRole('button', { name: /전체 문제 보기/ }))
+    fireEvent.click(screen.getByRole('button', { name: '학습 지도 열기' }))
+
+    const handbook = await screen.findByRole('region', { name: '선택자 학습 교안' })
+    expect(screen.queryByRole('navigation', {
+      name: '5문제 단위 학습 지도'
+    })).not.toBeInTheDocument()
+    expect(screen.queryByRole('region', {
+      name: '5문제 단위 실습 안내'
+    })).not.toBeInTheDocument()
+    expect(document.querySelector('.review-card')).not.toBeInTheDocument()
+    const handbookIndex = within(handbook).getByRole('navigation', {
+      name: '선택자 학습 교안 목차'
+    })
+    expect(within(handbookIndex).getAllByRole('link')).toHaveLength(6)
+    const flow = within(handbook).getByRole('list', { name: '통합 단계 개념 학습 순서' })
+    const topics = Array.from(flow.children)
+    expect(topics).toHaveLength(6)
+    expect(topics.map(topic =>
+      within(topic as HTMLElement).getByRole('heading', { level: 5 }).textContent
+    )).toEqual([
+      '개념 1 · 학습 문제 1',
+      '개념 2 · 학습 문제 2',
+      '개념 3 · 학습 문제 3',
+      '개념 4 · 학습 문제 4',
+      '개념 5 · 학습 문제 5',
+      '개념 6 · 학습 문제 6'
+    ])
+    expect(topics.map(topic =>
+      within(topic as HTMLElement).getByRole('button').getAttribute('aria-label')
+    )).toEqual([
+      'Quest 1 학습 문제 1 실습하기',
+      'Quest 2 학습 문제 2 실습하기',
+      'Quest 3 학습 문제 3 실습하기',
+      'Quest 4 학습 문제 4 실습하기',
+      'Quest 5 학습 문제 5 실습하기',
+      'Quest 6 학습 문제 6 실습하기'
+    ])
+
+    fireEvent.click(within(topics[5] as HTMLElement).getByRole('button'))
+    const sixthProblem = await screen.findByRole('heading', { name: '6. 학습 문제 6' })
+    await vi.waitFor(() => expect(sixthProblem).toHaveFocus())
+  })
+
+  it('renders the real HTML document-structure category as a curriculum without preview cards', async () => {
+    localStorage.setItem('codequest-last-track', 'html')
+    localStorage.setItem('codequest-last-category', 'html-structure')
+    const catalogProblems = htmlCatalogProblems()
+    const documentStructureProblems = catalogProblems.filter(problem => problem.stage === '문서 구조')
+    mockedApi.problems.mockResolvedValueOnce(catalogProblems)
+
+    render(<App />)
+    await screen.findByRole('heading', { name: '1. 달빛 우편함의 첫 문서' })
+    fireEvent.click(screen.getByRole('button', { name: /전체 문제 보기/ }))
+    fireEvent.click(screen.getByRole('button', { name: '학습 지도 열기' }))
+
+    await screen.findByRole('heading', { name: '문서 구조 학습 지도' })
+    expect(screen.getByText(
+      '아래 교안에서 개념과 예시를 순서대로 익힌 뒤, 각 개념 끝의 Quest에서 직접 작성해 보세요.'
+    )).toBeInTheDocument()
+    expect(screen.queryByText(/5개 이하의 Quest 묶음/)).not.toBeInTheDocument()
+    expect(screen.queryByRole('navigation', {
+      name: '5문제 단위 학습 지도'
+    })).not.toBeInTheDocument()
+    expect(screen.queryByRole('region', {
+      name: '5문제 단위 실습 안내'
+    })).not.toBeInTheDocument()
+    expect(document.querySelector('.review-card')).not.toBeInTheDocument()
+
+    const handbook = screen.getByRole('region', { name: '문서 구조 학습 교안' })
+    const topics = handbook.querySelectorAll('.review-curriculum-topic')
+    expect(topics).toHaveLength(documentStructureProblems.length)
+    expect(within(handbook).getAllByRole('button', {
+      name: /Quest \d+ .* 실습하기/
+    })).toHaveLength(5)
+
+    documentStructureProblems.forEach((problem, index) => {
+      const learning = problem.learning!
+      const topic = topics[index] as HTMLElement
+      expect(within(topic).getByRole('heading', {
+        level: 5,
+        name: problem.title
+      })).toBeInTheDocument()
+      expect(topic).toHaveTextContent(learning.summary)
+      learning.principles.forEach(principle => expect(topic).toHaveTextContent(principle))
+      expect(topic).toHaveTextContent(learning.example.explanation)
+      learning.applications.forEach(application => {
+        expect(topic).toHaveTextContent(application.title)
+        expect(topic).toHaveTextContent(application.description)
+      })
+      learning.pitfalls.forEach(pitfall => expect(topic).toHaveTextContent(pitfall))
+    })
+
+    fireEvent.click(within(handbook).getByRole('button', {
+      name: 'Quest 5 마을 영화 밤의 페이지 구조 실습하기'
+    }))
+    const fifthProblem = await screen.findByRole('heading', { name: '5. 마을 영화 밤의 페이지 구조' })
+    await vi.waitFor(() => expect(fifthProblem).toHaveFocus())
+  })
+
+  it('keeps non-contiguous repeated stages as distinct curriculum chapters without duplicate keys', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    mockedApi.problems.mockResolvedValueOnce([
+      learningMapProblem(1, '반복 단계'),
+      learningMapProblem(2, '중간 단계'),
+      learningMapProblem(3, '반복 단계')
+    ])
+
+    render(<App />)
+    await screen.findByRole('heading', { name: '1. 학습 문제 1' })
+    fireEvent.click(screen.getByRole('button', { name: /전체 문제 보기/ }))
+    const stageFilters = screen.getByRole('navigation', { name: '학습 단계 필터' })
+    expect(within(stageFilters).getAllByRole('button', { name: /반복 단계/ })).toHaveLength(1)
+    expect(within(stageFilters).getByRole('button', { name: /반복 단계/ }))
+      .toHaveTextContent('1–3 · 2개')
+    fireEvent.click(screen.getByRole('button', { name: '학습 지도 열기' }))
+
+    const handbook = await screen.findByRole('region', { name: '선택자 학습 교안' })
+    const chapters = handbook.querySelectorAll('.review-curriculum-chapter')
+    expect(chapters).toHaveLength(3)
+    expect(Array.from(chapters, chapter =>
+      within(chapter as HTMLElement).getByRole('heading', { level: 4 }).textContent
+    )).toEqual(['반복 단계', '중간 단계', '반복 단계'])
+    expect(new Set(Array.from(chapters, chapter =>
+      chapter.querySelector('h4')?.getAttribute('id')
+    )).size)
+      .toBe(chapters.length)
+
+    const duplicateKeyWarnings = consoleError.mock.calls.filter(call =>
+      call.some(value => String(value).includes('same key'))
+    )
+    expect(duplicateKeyWarnings).toEqual([])
   })
 
   it('shows a natural-language usage context instead of an empty handbook example', async () => {
@@ -534,7 +798,7 @@ describe('App accessibility', () => {
     fireEvent.click(screen.getByRole('button', { name: '학습 지도 열기' }))
 
     const handbook = await screen.findByRole('region', { name: '코딩테스트 중급 학습 교안' })
-    expect(within(handbook).getByRole('heading', { name: '사용 맥락 해석' })).toBeInTheDocument()
+    expect(within(handbook).getByRole('heading', { name: '사용 맥락 이해하기' })).toBeInTheDocument()
     expect(handbook.querySelector('.review-lesson-context')).toHaveTextContent(
       '사용한 열과 두 대각선을 boolean[]로 표시하고 재귀 후 원상복구합니다.'
     )
@@ -792,7 +1056,7 @@ describe('App accessibility', () => {
       await submissionRequest.promise
     })
 
-    expect(await screen.findByRole('button', { name: /CSS 속성으로 계속하기/ })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: /기본 스타일로 계속하기/ })).toBeInTheDocument()
     expect(mockedApi.submit).toHaveBeenCalledTimes(1)
   })
 

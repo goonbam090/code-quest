@@ -57,8 +57,8 @@ const tracks: TrackDefinition[] = [
     description: '문서 구조와 접근성',
     categories: [
       { id: 'html-structure', label: '문서 구조', source: 'html', stage: '문서 구조' },
-      { id: 'html-form', label: '폼·접근성', source: 'html', stage: '폼·접근성' },
-      { id: 'html-content', label: '콘텐츠 모델', source: 'html', stage: '콘텐츠 모델' }
+      { id: 'html-form', label: '폼·입력', source: 'html', stage: '폼·입력' },
+      { id: 'html-content', label: '데이터·미디어', source: 'html', stage: '데이터·미디어' }
     ]
   },
   {
@@ -67,9 +67,11 @@ const tracks: TrackDefinition[] = [
     description: '화면 구성과 레이아웃',
     categories: [
       { id: 'selector', label: '선택자', source: 'selector' },
-      { id: 'property', label: 'CSS 속성', source: 'property' },
+      { id: 'property', label: '기본 스타일', source: 'property' },
+      { id: 'motion', label: '위치·모션', source: 'motion' },
       { id: 'flex', label: 'Flex', source: 'flex' },
       { id: 'grid', label: 'Grid', source: 'grid' },
+      { id: 'responsive', label: '반응형', source: 'responsive' },
       { id: 'ui', label: 'UI 구현', source: 'ui' }
     ]
   },
@@ -132,8 +134,17 @@ const DEFAULT_TRACK: TrackId = 'html'
 const DEFAULT_CATEGORY = 'html-structure'
 const LAST_TRACK_KEY = 'codequest-last-track'
 const LAST_CATEGORY_KEY = 'codequest-last-category'
-const CSS_DRAFT_CATALOG_REVISION = 'css-155-v1'
-const CSS_CATEGORIES = new Set(['selector', 'property', 'flex', 'grid', 'ui'])
+const CSS_DRAFT_CATALOG_REVISION = 'css-100-v1'
+const HTML_DRAFT_CATALOG_REVISION = 'html-15-v2'
+const CSS_CATEGORIES = new Set([
+  'selector',
+  'property',
+  'motion',
+  'flex',
+  'grid',
+  'responsive',
+  'ui'
+])
 
 function withDirectionalParticle(label: string) {
   const lastCharacter = label.at(-1)
@@ -169,6 +180,9 @@ const diagnosticLabels: Record<Submission['diagnosticCode'], string> = {
   UNKNOWN_PROPERTY: '알 수 없는 속성',
   INVALID_PROPERTY_VALUE: '지원되지 않는 값',
   MISSING_UNIT: '단위 누락',
+  FORBIDDEN_RESOURCE: '외부 리소스 차단',
+  INPUT_TOO_LARGE: '입력 길이 초과',
+  RENDER_LIMIT: '렌더링 크기 초과',
   UNBALANCED_DELIMITER: '괄호·따옴표 오류',
   MALFORMED_DECLARATION: '선언 형식 오류',
   MISSING_REQUIRED_PROPERTY: '필요한 속성 누락',
@@ -215,10 +229,15 @@ function isHtmlProblem(problem?: Problem) {
 }
 
 function starterAnswer(problem?: Problem) {
-  return isCodeProblem(problem) || isHtmlProblem(problem) ? problem?.starterCode ?? '' : ''
+  return isCodeProblem(problem) || isHtmlProblem(problem) || problem?.mode === 'stylesheet'
+    ? problem?.starterCode ?? ''
+    : ''
 }
 
 function answerDraftKey(problem: Problem) {
+  if (problem.category === 'html') {
+    return `codequest-draft-${HTML_DRAFT_CATALOG_REVISION}-${problem.id}`
+  }
   if (CSS_CATEGORIES.has(problem.category)) {
     return `codequest-draft-${CSS_DRAFT_CATALOG_REVISION}-${problem.id}`
   }
@@ -341,6 +360,91 @@ function ResultExplanation({ result }: { result: Submission }) {
   </section>
 }
 
+function ProblemConstraints({ problem }: { problem: Problem }) {
+  if (problem.constraints.length === 0) return null
+  return <section className="constraints" aria-label="문제 제한사항">
+    <div className="panel-title">
+      <span>CONSTRAINTS</span>
+      <small>채점 전에 확인할 조건</small>
+    </div>
+    <ul>
+      {problem.constraints.map((constraint, constraintIndex) =>
+        <li key={`${problem.id}-constraint-${constraintIndex}`}>{constraint}</li>
+      )}
+    </ul>
+  </section>
+}
+
+const stylesheetPreviewViewports = [
+  { label: '데스크톱', width: 1200, height: 800 },
+  { label: '태블릿', width: 760, height: 800 },
+  { label: '모바일', width: 390, height: 780 }
+] as const
+
+function StylesheetPreview({ srcDoc }: { srcDoc: string }) {
+  const [viewportIndex, setViewportIndex] = useState(0)
+  const [availableWidth, setAvailableWidth] = useState(520)
+  const canvasRef = useRef<HTMLDivElement>(null)
+  const viewport = stylesheetPreviewViewports[viewportIndex]
+
+  useLayoutEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const updateWidth = () => {
+      const measured = canvas.getBoundingClientRect().width
+      if (measured > 0) setAvailableWidth(measured)
+    }
+    updateWidth()
+    if (typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver(updateWidth)
+    observer.observe(canvas)
+    return () => observer.disconnect()
+  }, [])
+
+  const scale = Math.min(
+    1,
+    Math.max(0.2, (availableWidth - 4) / viewport.width),
+    480 / viewport.height
+  )
+  const renderedHeight = Math.max(280, Math.ceil(viewport.height * scale))
+
+  return <div className="stylesheet-preview">
+    <div className="viewport-picker" role="group" aria-label="미리보기 화면 크기">
+      {stylesheetPreviewViewports.map((candidate, candidateIndex) =>
+        <button
+          type="button"
+          key={candidate.label}
+          className={viewportIndex === candidateIndex ? 'active' : ''}
+          aria-pressed={viewportIndex === candidateIndex}
+          onClick={() => setViewportIndex(candidateIndex)}
+        >
+          <span>{candidate.label}</span>
+          <small>{candidate.width}px</small>
+        </button>
+      )}
+    </div>
+    <p className="viewport-status" aria-live="polite">
+      {viewport.width} × {viewport.height}px · hover와 focus 상태는 미리보기 안에서 직접 확인할 수 있습니다.
+    </p>
+    <div
+      ref={canvasRef}
+      className="viewport-canvas"
+      style={{ height: `${renderedHeight}px` }}
+    >
+      <iframe
+        title={`CSS 결과 미리보기 ${viewport.width}px`}
+        sandbox=""
+        srcDoc={srcDoc}
+        style={{
+          width: `${viewport.width}px`,
+          height: `${viewport.height}px`,
+          transform: `translateX(-50%) scale(${scale})`
+        }}
+      />
+    </div>
+  </div>
+}
+
 export default function App() {
   const [initialLocation] = useState(initialLearningLocation)
   const [track, setTrack] = useState<TrackId>(initialLocation.track)
@@ -417,6 +521,24 @@ export default function App() {
   const syntaxGuide = useMemo(() => createSyntaxGuide(problem), [problem])
   const executionTrace = useMemo(() => createExecutionTrace(problem), [problem])
   const stageGroups = useMemo(() => groupProblemsByStage(problems), [problems])
+  const stageFilterOptions = useMemo(() => {
+    const options = new Map<string, { stage: string; start: number; end: number; count: number }>()
+    for (const group of stageGroups) {
+      const existing = options.get(group.stage)
+      if (existing) {
+        existing.end = group.end
+        existing.count += group.problems.length
+      } else {
+        options.set(group.stage, {
+          stage: group.stage,
+          start: group.start,
+          end: group.end,
+          count: group.problems.length
+        })
+      }
+    }
+    return [...options.values()]
+  }, [stageGroups])
   const visibleGroups = useMemo(
     () => filterProblemGroups(stageGroups, query, stageFilter, progressFilter, solved),
     [stageGroups, query, stageFilter, progressFilter, solved]
@@ -961,7 +1083,7 @@ export default function App() {
           <button type="button" className={stageFilter === 'all' ? 'active' : ''} aria-pressed={stageFilter === 'all'} onClick={() => setStageFilter('all')}>
             전체 <small>1–{problems.length}</small>
           </button>
-          {stageGroups.map(group =>
+          {stageFilterOptions.map(group =>
             <button
               type="button"
               key={group.stage}
@@ -969,14 +1091,17 @@ export default function App() {
               aria-pressed={stageFilter === group.stage}
               onClick={() => setStageFilter(group.stage)}
             >
-              {group.stage} <small>{group.start}–{group.end}</small>
+              {group.stage} <small>{group.start}–{group.end} · {group.count}개</small>
             </button>
           )}
         </nav>
 
         <div className="problem-groups">
           <div className="navigator-result"><span>{visibleCount}개 문제</span><kbd>Alt</kbd> + <kbd>/</kbd> 키로 탐색기 열기</div>
-          {visibleGroups.map(group => <section className="problem-group" key={group.stage}>
+          {visibleGroups.map(group => <section
+            className="problem-group"
+            key={`${group.stage}-${group.problems[0]?.id}-${group.problems.at(-1)?.id}`}
+          >
             <header>
               <div><h3>{group.stage}</h3><p>{group.start}번–{group.end}번 · {group.problems.length}개 표시</p></div>
               <span>{group.start}—{group.end}</span>
@@ -1026,6 +1151,7 @@ export default function App() {
           />
           <div className="answer-workbench html-actions">
             <div className="panel-title answer-title"><span>VALIDATE HTML</span><button onClick={() => setHint(value => (value + 1) % problem.hints.length)}>힌트</button></div>
+            <ProblemConstraints problem={problem}/>
             <p className="hint" aria-live="polite">{problem.hints[hint]}</p>
             <button className="submit" onClick={submit} disabled={submitting} aria-busy={submitting}>
               {submitting ? 'HTML 검사 중…' : 'HTML 구조 검사'} <kbd>Ctrl/⌘↵</kbd>
@@ -1063,28 +1189,37 @@ export default function App() {
         </section>
         <section className="preview panel">
           <div className="panel-title"><span>LIVE PREVIEW</span><small>{problem.mode === 'selector' ? '보라색이 선택 결과입니다' : '입력 즉시 적용됩니다'}</small></div>
-          <iframe title="CSS 결과 미리보기" sandbox="" srcDoc={preview} />
+          {problem.mode === 'stylesheet'
+            ? <StylesheetPreview srcDoc={preview}/>
+            : <iframe title="CSS 결과 미리보기" sandbox="" srcDoc={preview}/>}
           <div className="answer-workbench">
             <div className="panel-title answer-title">
               <span>CSS 답안</span>
               <div className="panel-tools">
                 <small className="draft-status">● 자동 저장</small>
-                <button type="button" onClick={resetAnswer}>답안 지우기</button>
+                <button type="button" onClick={resetAnswer}>
+                  {problem.mode === 'stylesheet' ? '시작 코드로 복원' : '답안 지우기'}
+                </button>
                 <button type="button" onClick={() => setHint(value => (value + 1) % problem.hints.length)}>힌트</button>
               </div>
             </div>
             <CodeEditor
               ref={codeEditorRef}
-              className="css-answer-editor"
+              className={`css-answer-editor ${problem.mode === 'stylesheet' ? 'is-stylesheet' : ''}`}
               language="css"
-              cssSyntaxMode={problem.mode === 'selector' ? 'stylesheet' : 'declarations'}
+              cssSyntaxMode={problem.mode === 'declaration' ? 'declarations' : 'stylesheet'}
               aria-label="CSS 답안"
               aria-describedby="code-editor-keyboard-help"
               value={answer}
               onChange={updateAnswer}
-              placeholder={problem.mode === 'selector' ? '.target' : 'display: flex;'}
+              placeholder={problem.mode === 'selector'
+                ? '.target'
+                : problem.mode === 'stylesheet'
+                  ? '.card {\n  display: grid;\n}'
+                  : 'display: flex;'}
               onSubmit={handleEditorPrimaryAction}
             />
+            <ProblemConstraints problem={problem}/>
             <p className="hint" aria-live="polite">{problem.hints[hint]}</p>
             <button className="submit" onClick={submit} disabled={submitting} aria-busy={submitting}>
               {submitting ? '채점 중…' : '정답 확인'} <kbd>Ctrl/⌘↵</kbd>
@@ -1118,14 +1253,7 @@ export default function App() {
             onChange={() => undefined}
             readOnly
           />
-          {problem.constraints.length > 0 && <section className="constraints" aria-label="문제 제한사항">
-            <div className="panel-title"><span>CONSTRAINTS</span><small>입력 크기에서 풀이 방향을 추론해 보세요</small></div>
-            <ul>
-              {problem.constraints.map((constraint, constraintIndex) =>
-                <li key={`${problem.id}-constraint-${constraintIndex}`}>{constraint}</li>
-              )}
-            </ul>
-          </section>}
+          <ProblemConstraints problem={problem}/>
           <div className="examples">
             <div className="panel-title"><span>PUBLIC EXAMPLES</span><small>숨은 테스트는 서버에서만 실행됩니다</small></div>
             {problem.examples.map((example, exampleIndex) =>

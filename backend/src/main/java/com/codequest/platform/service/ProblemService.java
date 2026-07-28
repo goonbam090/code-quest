@@ -350,6 +350,8 @@ public class ProblemService {
             case UNKNOWN_PROPERTY -> "오답으로 처리하지 않았습니다. 알 수 없는 CSS 속성이 있어요.";
             case INVALID_PROPERTY_VALUE -> "오답으로 처리하지 않았습니다. 브라우저가 지원하지 않는 값이에요.";
             case MISSING_UNIT -> "오답으로 처리하지 않았습니다. CSS 단위가 빠진 것 같아요.";
+            case INPUT_TOO_LARGE -> "오답으로 처리하지 않았습니다. CSS 답안 길이 제한을 확인해 주세요.";
+            case RENDER_LIMIT -> "오답으로 처리하지 않았습니다. CSS 렌더링 크기 제한을 확인해 주세요.";
             case UNBALANCED_DELIMITER -> "오답으로 처리하지 않았습니다. 괄호나 따옴표의 짝을 확인해 주세요.";
             case MALFORMED_DECLARATION -> "오답으로 처리하지 않았습니다. CSS 선언 형식을 확인해 주세요.";
             case HTML_SYNTAX -> "오답으로 처리하지 않았습니다. HTML 문법을 먼저 확인해 주세요.";

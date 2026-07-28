@@ -200,12 +200,14 @@ jobs:
             const health = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
             if (
               health.status !== "UP"
-              || health.problemCount !== 343
-              || health.expectedProblemCount !== 343
+              || health.problemCount !== 288
+              || health.expectedProblemCount !== 288
             ) process.exit(1);
           ' "$RUNNER_TEMP/code-quest-health.json"
       - name: Verify every reference answer through the real judges
         working-directory: "${{ runner.temp }}/Code Quest release/code-quest"
+        env:
+          CODE_QUEST_AUDIT_WORKERS: "1"
         run: node tools/audit-reference-answers.mjs
       - name: Verify grading status, attempts, and solution exposure contracts
         working-directory: "${{ runner.temp }}/Code Quest release/code-quest"

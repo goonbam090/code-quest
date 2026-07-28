@@ -1,0 +1,403 @@
+{
+  "id": "motion",
+  "name": "3단계 · 위치·움직임",
+  "description": "위치, 쌓임, 변형, 전환과 애니메이션을 익히는 15문제",
+  "problems": [
+    {
+      "id": 1,
+      "mode": "declaration",
+      "stage": "위치·쌓임",
+      "title": "기본 위치 흐름",
+      "question": "요소가 문서의 기본 배치 흐름을 따르도록 지정하세요.",
+      "html": "<div class=\"demo\" data-preview>기본 위치 박스</div>",
+      "starterCode": "",
+      "answer": "position: static;",
+      "required": {
+        "position": "static"
+      },
+      "hints": [
+        "static은 일반 문서 흐름에 따라 배치되는 position의 기본값입니다.",
+        "비슷한 코드 예시: .sample { position: relative; }",
+        "static 요소에는 top과 left 같은 위치 오프셋이 적용되지 않습니다."
+      ]
+    },
+    {
+      "id": 2,
+      "mode": "declaration",
+      "stage": "위치·쌓임",
+      "title": "상대 위치 이동",
+      "question": "원래 자리를 유지한 채 요소를 아래로 8px, 오른쪽으로 12px 이동하세요.",
+      "html": "<div><span>앞</span><span class=\"demo\" data-preview>이동 대상</span><span>뒤</span></div>",
+      "starterCode": "",
+      "answer": "position: relative; top: 8px; left: 12px;",
+      "required": {
+        "position": "relative",
+        "top": "8px",
+        "left": "12px"
+      },
+      "hints": [
+        "relative는 원래 공간을 유지하면서 자기 위치를 기준으로 시각적 위치를 옮깁니다.",
+        "비슷한 코드 예시: .sample { position: relative; top: 4px; left: 6px; }",
+        "주변 형제는 이동 전 자리를 기준으로 계속 배치됩니다."
+      ]
+    },
+    {
+      "id": 3,
+      "mode": "declaration",
+      "stage": "위치·쌓임",
+      "title": "부모 안 배지",
+      "question": "배지를 절대 위치로 바꾸고 부모의 위쪽 10px, 오른쪽 10px에 배치하세요.",
+      "html": "<article style=\"position:relative;width:260px;height:140px\"><span class=\"demo\" data-preview>NEW</span></article>",
+      "starterCode": "",
+      "answer": "position: absolute; top: 10px; right: 10px;",
+      "required": {
+        "position": "absolute",
+        "top": "10px",
+        "right": "10px"
+      },
+      "hints": [
+        "absolute는 일반 흐름에서 빠지고 position이 static이 아닌 가장 가까운 조상을 기준으로 배치됩니다.",
+        "비슷한 코드 예시: .sample { position: absolute; bottom: 8px; left: 8px; }",
+        "기준이 될 부모에 position: relative가 있는지 확인하세요."
+      ]
+    },
+    {
+      "id": 4,
+      "mode": "declaration",
+      "stage": "위치·쌓임",
+      "title": "화면 고정 도움말",
+      "question": "도움말 버튼을 화면 오른쪽 20px, 아래쪽 20px에 고정하세요.",
+      "html": "<button class=\"demo\" data-preview>도움말</button>",
+      "starterCode": "",
+      "answer": "position: fixed; right: 20px; bottom: 20px;",
+      "required": {
+        "position": "fixed",
+        "right": "20px",
+        "bottom": "20px"
+      },
+      "hints": [
+        "fixed는 보통 뷰포트를 기준으로 요소를 고정합니다.",
+        "비슷한 코드 예시: .sample { position: fixed; left: 16px; bottom: 16px; }",
+        "콘텐츠를 가리지 않도록 화면 가장자리 간격을 함께 지정하세요."
+      ]
+    },
+    {
+      "id": 5,
+      "mode": "declaration",
+      "stage": "위치·쌓임",
+      "title": "스크롤 고정 제목",
+      "question": "제목이 스크롤 중 상단 0px 지점에서 붙어 있도록 지정하세요.",
+      "html": "<h3 class=\"demo\" data-preview>오늘의 목차</h3>",
+      "starterCode": "",
+      "answer": "position: sticky; top: 0;",
+      "required": {
+        "position": "sticky",
+        "top": "0"
+      },
+      "hints": [
+        "sticky는 평소에는 일반 흐름을 따르다가 지정한 스크롤 경계에 닿으면 붙습니다.",
+        "비슷한 코드 예시: .sample { position: sticky; top: 12px; }",
+        "붙을 기준인 top, bottom 등의 inset 값을 반드시 함께 지정하세요."
+      ]
+    },
+    {
+      "id": 6,
+      "mode": "declaration",
+      "stage": "위치·쌓임",
+      "title": "앞쪽 쌓임 순서",
+      "question": "겹친 배지가 주변 요소보다 앞에 보이도록 z-index를 10으로 지정하세요.",
+      "html": "<span class=\"demo\" data-preview style=\"position:relative\">알림 3</span>",
+      "starterCode": "",
+      "answer": "z-index: 10;",
+      "required": {
+        "z-index": "10"
+      },
+      "hints": [
+        "z-index는 같은 쌓임 맥락 안에서 겹친 요소의 앞뒤 순서를 정합니다.",
+        "비슷한 코드 예시: .sample { z-index: 2; }",
+        "position이나 다른 쌓임 맥락 조건 때문에 값만 크게 해도 다른 맥락을 넘지 못할 수 있습니다."
+      ]
+    },
+    {
+      "id": 7,
+      "mode": "declaration",
+      "stage": "위치·쌓임",
+      "title": "본문 속 왼쪽 이미지",
+      "question": "이미지를 왼쪽으로 띄우고 오른쪽에 16px 여백을 주세요.",
+      "html": "<article><img class=\"demo\" data-preview src=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='120' viewBox='0 0 160 120'%3E%3Crect width='160' height='120' fill='%2324212e'/%3E%3Ccircle cx='54' cy='45' r='24' fill='%237c3aed'/%3E%3Cpath d='M18 104L70 66l28 22 20-16 30 32z' fill='%23a78bfa'/%3E%3C/svg%3E\" alt=\"추상 풍경\" width=\"120\" height=\"90\"><p>텍스트가 이미지 옆에서 시작해 아래쪽으로 자연스럽게 이어집니다.</p></article>",
+      "starterCode": "",
+      "answer": "float: left; margin-right: 16px;",
+      "required": {
+        "float": "left",
+        "margin-right": "16px"
+      },
+      "hints": [
+        "float는 요소를 한쪽으로 띄우고 뒤따르는 인라인 콘텐츠가 주변을 흐르게 합니다.",
+        "비슷한 코드 예시: .sample { float: right; margin-left: 12px; }",
+        "전체 페이지 레이아웃보다 글 안의 이미지 둘레 흐름처럼 제한된 용도에 사용하세요."
+      ]
+    },
+    {
+      "id": 8,
+      "mode": "declaration",
+      "stage": "변형·전환",
+      "title": "가로 이동 변형",
+      "question": "요소를 현재 위치에서 오른쪽으로 24px 이동하세요.",
+      "html": "<div class=\"demo\" data-preview>이동하는 카드</div>",
+      "starterCode": "",
+      "answer": "transform: translateX(24px);",
+      "required": {
+        "transform": "translateX(24px)"
+      },
+      "hints": [
+        "transform은 문서 흐름을 다시 계산하지 않고 요소의 시각적 좌표를 변형합니다.",
+        "비슷한 코드 예시: .sample { transform: translateY(-6px); }",
+        "translateX의 양수는 오른쪽 방향입니다."
+      ]
+    },
+    {
+      "id": 9,
+      "mode": "declaration",
+      "stage": "변형·전환",
+      "title": "회전과 확대",
+      "question": "스티커를 시계 방향으로 6deg 회전하고 1.05배 확대하세요.",
+      "html": "<div class=\"demo\" data-preview>NEW QUEST</div>",
+      "starterCode": "",
+      "answer": "transform: rotate(6deg) scale(1.05);",
+      "required": {
+        "transform": "rotate(6deg) scale(1.05)"
+      },
+      "hints": [
+        "transform 함수는 왼쪽부터 행렬로 결합되므로 함수 순서도 결과에 영향을 줍니다.",
+        "비슷한 코드 예시: .sample { transform: rotate(-4deg) scale(.98); }",
+        "각도에는 deg, 비율에는 단위 없는 숫자를 사용하세요."
+      ]
+    },
+    {
+      "id": 10,
+      "mode": "declaration",
+      "stage": "변형·전환",
+      "title": "움직임 전환",
+      "question": "transform과 opacity 변화를 200ms 동안 ease로 전환하세요.",
+      "html": "<button class=\"demo\" data-preview>미리보기</button>",
+      "starterCode": "",
+      "answer": "transition: transform 200ms ease, opacity 200ms ease;",
+      "required": {
+        "transition": "transform 200ms ease, opacity 200ms ease"
+      },
+      "hints": [
+        "transition은 상태 사이의 속성값 변화를 지정한 시간과 속도 곡선으로 보간합니다.",
+        "비슷한 코드 예시: .sample { transition: color 150ms linear, background-color 150ms linear; }",
+        "all 대신 실제로 바뀌는 속성만 나열하면 의도하지 않은 전환을 줄일 수 있습니다."
+      ]
+    },
+    {
+      "id": 11,
+      "mode": "stylesheet",
+      "stage": "상태·애니메이션",
+      "title": "호버 카드 들기",
+      "question": "카드에 마우스를 올리면 8px 위로 이동하고 그림자가 진해지도록 완성하세요.",
+      "html": "<article class=\"motion-card\" tabindex=\"0\"><h3>다음 Quest</h3><p>상태 변화가 있는 카드입니다.</p></article>",
+      "starterCode": ".motion-card {\n  padding: 20px;\n}\n\n.motion-card:hover {\n  /* 호버 상태를 완성하세요 */\n}",
+      "answer": ".motion-card {\n  padding: 20px;\n}\n\n.motion-card:hover {\n  transform: translateY(-8px);\n  box-shadow: 0 12px 24px rgba(0, 0, 0, .28);\n}",
+      "required": {
+        "viewports": [
+          {
+            "width": 800,
+            "height": 600
+          }
+        ],
+        "hover": [
+          ".motion-card"
+        ]
+      },
+      "constraints": [
+        "제공된 HTML 구조와 class 이름을 변경하지 않습니다.",
+        "지정된 viewport에서 기본 상태의 배치와 모양을 만족합니다.",
+        "문제에서 지정한 요소의 hover 상태를 구현합니다.",
+        "외부 URL, @import, 외부 웹 글꼴과 외부 이미지를 사용하지 않습니다."
+      ],
+      "hints": [
+        "기본 카드 모양은 유지하고 :hover 규칙에 최종 위치와 그림자를 작성하세요.",
+        "비슷한 코드 예시: .tile:hover { transform: translateY(-4px); }",
+        "위쪽 이동은 translateY에 음수 길이를 사용합니다."
+      ],
+      "learning": {
+        "keywords": [
+          ":hover",
+          "상태 변화",
+          "translateY",
+          "box-shadow"
+        ],
+        "summary": "기본 배치는 유지하고 :hover에서 transform과 그림자를 바꾸면 포인터가 가리키는 카드를 분명하게 강조할 수 있습니다.",
+        "example": {
+          "code": ".notice:hover { opacity: .8; }",
+          "explanation": "notice에 마우스를 올렸을 때 불투명도를 바꾸는 정답과 다른 상태 예시입니다."
+        },
+        "principles": [
+          ":hover는 포인터가 요소 위에 있는 동안에만 최종 상태 규칙을 적용합니다.",
+          "transform은 주변 레이아웃을 밀지 않아 작은 상호작용 이동에 적합합니다."
+        ],
+        "applications": [
+          {
+            "title": "선택 가능한 카드 표시",
+            "description": "상품이나 학습 카드가 상호작용 가능하다는 사실을 움직임과 그림자로 전달할 수 있습니다.",
+            "code": ".course:hover { transform: translateY(-3px); }"
+          }
+        ],
+        "pitfalls": [
+          "움직임만으로 정보를 전달하지 말고 키보드 focus 상태도 별도로 제공해야 합니다."
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "mode": "stylesheet",
+      "stage": "상태·애니메이션",
+      "title": "키보드 포커스 강조",
+      "question": "키보드로 버튼에 초점이 왔을 때 3px 보라색 outline과 4px 간격을 표시하세요.",
+      "html": "<button class=\"motion-button\">저장하기</button>",
+      "starterCode": ".motion-button {\n  border-radius: 8px;\n}\n\n.motion-button:focus-visible {\n  /* 키보드 포커스를 표시하세요 */\n}",
+      "answer": ".motion-button {\n  border-radius: 8px;\n}\n\n.motion-button:focus-visible {\n  outline: 3px solid #a78bfa;\n  outline-offset: 4px;\n}",
+      "required": {
+        "viewports": [
+          {
+            "width": 800,
+            "height": 600
+          }
+        ],
+        "focus": [
+          ".motion-button"
+        ]
+      },
+      "constraints": [
+        "제공된 HTML 구조와 class 이름을 변경하지 않습니다.",
+        "지정된 viewport에서 기본 상태의 배치와 모양을 만족합니다.",
+        "문제에서 지정한 요소의 키보드 focus-visible 상태를 구현합니다.",
+        "외부 URL, @import, 외부 웹 글꼴과 외부 이미지를 사용하지 않습니다."
+      ],
+      "hints": [
+        ":focus-visible은 키보드 탐색처럼 뚜렷한 포커스 표시가 필요한 상황에 사용합니다.",
+        "비슷한 코드 예시: .link:focus-visible { outline: 2px solid orange; }",
+        "outline-offset으로 선과 요소 사이 간격을 만드세요."
+      ],
+      "learning": {
+        "keywords": [
+          ":focus-visible",
+          "outline",
+          "outline-offset"
+        ],
+        "summary": "focus-visible은 키보드 사용자가 현재 조작 위치를 잃지 않도록 포커스 표시를 제공합니다.",
+        "example": {
+          "code": ".menu-link:focus-visible { outline: 2px solid #22c55e; outline-offset: 2px; }",
+          "explanation": "다른 링크에 2px 초록색 포커스 선을 표시하는 예시입니다."
+        },
+        "principles": [
+          "outline은 박스 크기에 포함되지 않아 레이아웃을 밀지 않습니다.",
+          "포커스 표시는 배경과 충분히 대비되어야 합니다."
+        ],
+        "applications": [
+          {
+            "title": "키보드 내비게이션",
+            "description": "버튼, 링크, 입력 요소의 현재 초점을 명확하게 표시할 수 있습니다.",
+            "code": ".tab:focus-visible { outline: 2px solid currentColor; }"
+          }
+        ],
+        "pitfalls": [
+          "outline: none만 선언해 브라우저 기본 포커스 표시를 없애면 안 됩니다."
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "mode": "stylesheet",
+      "stage": "상태·애니메이션",
+      "title": "의사 요소 리본",
+      "question": "카드 왼쪽 위에 NEW라는 보라색 리본을 ::before로 추가하세요.",
+      "html": "<article class=\"release-card\"><h3>새 학습 경로</h3><p>선택자부터 차근차근 시작합니다.</p></article>",
+      "starterCode": ".release-card {\n  position: relative;\n  padding: 48px 20px 20px;\n}\n\n.release-card::before {\n  /* 장식 콘텐츠와 위치를 작성하세요 */\n}",
+      "answer": ".release-card {\n  position: relative;\n  padding: 48px 20px 20px;\n}\n\n.release-card::before {\n  content: \"NEW\";\n  position: absolute;\n  top: 12px;\n  left: 12px;\n  padding: 4px 8px;\n  border-radius: 999px;\n  background: #7c3aed;\n  color: white;\n}",
+      "required": {
+        "viewports": [
+          {
+            "width": 800,
+            "height": 600
+          }
+        ]
+      },
+      "constraints": [
+        "제공된 HTML 구조와 class 이름을 변경하지 않습니다.",
+        "지정된 viewport에서 기본 상태의 배치와 모양을 만족합니다.",
+        "외부 URL, @import, 외부 웹 글꼴과 외부 이미지를 사용하지 않습니다."
+      ],
+      "hints": [
+        "::before가 보이려면 content가 반드시 필요합니다.",
+        "비슷한 코드 예시: .tag::before { content: \"TIP\"; position: absolute; }",
+        "부모를 relative 기준으로 만들고 의사 요소를 absolute로 배치하세요."
+      ],
+      "learning": {
+        "keywords": [
+          "::before",
+          "content",
+          "absolute",
+          "장식 요소"
+        ],
+        "summary": "::before는 HTML을 추가하지 않고 요소의 첫 자식처럼 장식 콘텐츠를 생성합니다.",
+        "example": {
+          "code": ".note::before { content: \"i\"; display: inline-grid; place-items: center; }",
+          "explanation": "안내 문구 앞에 i 장식을 생성하는 다른 예시입니다."
+        },
+        "principles": [
+          "생성 의사 요소에는 content 선언이 있어야 렌더링됩니다.",
+          "의미 있는 정보는 의사 요소에만 의존하지 말고 HTML에도 제공해야 합니다."
+        ],
+        "applications": [
+          {
+            "title": "카드 배지",
+            "description": "추천, 신규, 실험 기능 같은 보조 상태를 카드 위에 시각적으로 표시할 수 있습니다.",
+            "code": ".beta::before { content: \"BETA\"; }"
+          }
+        ],
+        "pitfalls": [
+          "스크린 리더에 반드시 전달해야 하는 핵심 문구를 CSS content에만 넣지 마세요."
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "mode": "declaration",
+      "stage": "상태·애니메이션",
+      "title": "한 번 재생되는 강조",
+      "question": "미리 정의된 pulse-in을 700ms 동안 ease-out으로 한 번 실행하고 마지막 상태를 유지하세요.",
+      "html": "<style>@keyframes pulse-in { from { transform: scale(.9); opacity: .45; } to { transform: scale(1.1); opacity: 1; } }</style><strong class=\"pulse-badge\" data-preview>완료</strong>",
+      "starterCode": "",
+      "answer": "animation: pulse-in 700ms ease-out 1 forwards;",
+      "required": {
+        "animation": "pulse-in 700ms ease-out 1 forwards"
+      },
+      "hints": [
+        "animation 축약형은 이름, 시간, easing, 반복 횟수와 fill mode를 연결합니다.",
+        "비슷한 코드 예시: .sample { animation: appear 400ms ease 1 both; }",
+        "미리 정의된 keyframes 이름 pulse-in과 forwards를 정확히 사용하세요."
+      ]
+    },
+    {
+      "id": 15,
+      "mode": "declaration",
+      "stage": "상태·애니메이션",
+      "title": "로더 회전 연결",
+      "question": "미리 정의된 spin-loop를 800ms 동안 linear 속도로 계속 반복해 불러오는 상태를 표현하세요.",
+      "html": "<style>@keyframes spin-loop { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style><div class=\"motion-loader\" data-preview role=\"status\" aria-label=\"불러오는 중\" style=\"width:42px;height:42px;border:6px solid #4c4657;border-top-color:#a78bfa;border-radius:50%\"></div>",
+      "starterCode": "",
+      "answer": "animation: spin-loop 800ms linear infinite;",
+      "required": {
+        "animation": "spin-loop 800ms linear infinite"
+      },
+      "hints": [
+        "이미 정의된 @keyframes는 animation-name을 통해 대상 요소에 연결합니다.",
+        "비슷한 코드 예시: .sample { animation: orbit 600ms linear infinite; }",
+        "일정한 회전 속도에는 linear, 종료 전까지 반복하려면 infinite를 사용하세요."
+      ]
+    }
+  ]
+}

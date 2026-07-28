@@ -62,7 +62,12 @@ function splitResultNote(example: MarkedExample): MarkedExample {
 }
 
 function looksLikeCode(mode: Problem['mode'], value: string) {
-  if (mode === 'selector' || mode === 'declaration' || mode === 'html') return true
+  if (
+    mode === 'selector'
+    || mode === 'declaration'
+    || mode === 'stylesheet'
+    || mode === 'html'
+  ) return true
   if (!/[가-힣]/.test(value)) return true
   return /[;{}]|=>|::|\+\+|--|===|!==|\?\?|\s\?\s.+\s:\s|&&|\|\||\b(?:return|throw|new|if|for|while|switch|case|class|interface|record|enum|function|const|let|var|static|final|public|private|protected|extends|implements|try|catch|import)\b|\w+\s*\([^)]*\)/.test(value)
 }
@@ -303,7 +308,10 @@ function generalKeywords(problem: LearningProblem, concept: LearningConcept) {
   ].filter(Boolean).join(' ')
   const keywords: string[] = []
 
-  if (problem.mode === 'declaration' && concept.usage.kind === 'code') {
+  if (
+    (problem.mode === 'declaration' || problem.mode === 'stylesheet')
+    && concept.usage.kind === 'code'
+  ) {
     const propertyMatches = concept.usage.value.matchAll(/(?:^|[;{])\s*([a-z-]+)\s*:/gi)
     for (const match of propertyMatches) addUnique(keywords, match[1])
   } else if (problem.mode === 'html' && concept.usage.kind === 'code') {
@@ -333,6 +341,7 @@ function transferApplication(mode: Problem['mode']) {
     case 'html':
       return '다른 페이지에 적용할 때도 태그의 의미와 label·aria 속성의 연결 관계를 함께 유지합니다.'
     case 'declaration':
+    case 'stylesheet':
       return '카드·버튼·레이아웃에 같은 속성을 재사용하되 크기와 간격 값은 화면 요구사항에 맞게 조정합니다.'
     case 'javascript':
       return '입력값이 달라지는 함수에서도 같은 문법을 적용하고 빈 값과 경계값을 실행 결과로 확인합니다.'

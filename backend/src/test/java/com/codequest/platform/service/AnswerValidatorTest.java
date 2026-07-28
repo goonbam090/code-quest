@@ -2,7 +2,10 @@ package com.codequest.platform.service;
 
 import com.codequest.platform.model.Problem;
 import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 class AnswerValidatorTest {
     private static final JavaCodeEvaluator JAVA_UNAVAILABLE =
@@ -290,6 +293,136 @@ class AnswerValidatorTest {
         assertThat(result.diagnosticCode()).isEqualTo(AnswerValidator.DiagnosticCode.MISSING_REQUIRED_PROPERTY);
         assertThat(result.countsAsAttempt()).isTrue();
         assertThat(result.guidance()).doesNotContain("`gap`");
+    }
+
+    @Test void acceptsAStylesheetWhenAllConfiguredScreensAndStatesMatch() {
+        AnswerValidator browserValidator = matchingBrowserValidator(CssRenderingEvaluator.MatchType.VISUAL);
+        Problem p = problem("stylesheet", ".cards { display: grid; grid-template-columns: 1fr 1fr; }");
+
+        AnswerValidator.Evaluation result = browserValidator.evaluate(
+                p, ".cards { display:grid; grid-template-columns:repeat(2, 1fr); }");
+
+        assertThat(result.status()).isEqualTo(AnswerValidator.Status.CORRECT);
+        assertThat(result.exactMatch()).isFalse();
+        assertThat(result.guidance()).contains("모든 화면 크기와 상태");
+        assertThat(result.countsAsAttempt()).isTrue();
+    }
+
+    @Test void ignoresDelimiterCharactersInsideStylesheetComments() {
+        AnswerValidator browserValidator = matchingBrowserValidator(CssRenderingEvaluator.MatchType.VISUAL);
+        Problem p = problem("stylesheet", ".card { color: red; }");
+
+        AnswerValidator.Evaluation result =
+                browserValidator.evaluate(p, ".card { /* }는 예시 문자 */ color: red; }");
+
+        assertThat(result.status()).isEqualTo(AnswerValidator.Status.CORRECT);
+    }
+
+    @Test void classifiesAStylesheetRejectedByTheBrowserAsSyntaxHelp() {
+        AnswerValidator browserValidator = validatorWithDiagnostic(
+                false, CssRenderingEvaluator.DiagnosticCode.MALFORMED_DECLARATION,
+                null, null, null);
+        Problem p = problem("stylesheet", ".card { color: red; }");
+
+        AnswerValidator.Evaluation result = browserValidator.evaluate(p, ".card { color red; }");
+
+        assertThat(result.status()).isEqualTo(AnswerValidator.Status.SYNTAX);
+        assertThat(result.diagnosticCode()).isEqualTo(AnswerValidator.DiagnosticCode.MALFORMED_DECLARATION);
+        assertThat(result.guidance()).contains("전체 CSS 규칙");
+        assertThat(result.countsAsAttempt()).isFalse();
+    }
+
+    @Test void classifiesAStylesheetPropertyTypoPrecisely() {
+        AnswerValidator browserValidator = validatorWithDiagnostic(
+                false, CssRenderingEvaluator.DiagnosticCode.UNKNOWN_PROPERTY,
+                "colr", "blue", null);
+        Problem p = problem("stylesheet", ".card { color: red; }");
+
+        AnswerValidator.Evaluation result =
+                browserValidator.evaluate(p, ".card { color: red; colr: blue; }");
+
+        assertThat(result.status()).isEqualTo(AnswerValidator.Status.TYPO);
+        assertThat(result.diagnosticCode()).isEqualTo(AnswerValidator.DiagnosticCode.PROPERTY_NAME_TYPO);
+        assertThat(result.guidance()).contains("철자").doesNotContain("color");
+        assertThat(result.countsAsAttempt()).isFalse();
+    }
+
+    @Test void classifiesAStylesheetMissingUnitPrecisely() {
+        AnswerValidator browserValidator = validatorWithDiagnostic(
+                false, CssRenderingEvaluator.DiagnosticCode.MISSING_UNIT,
+                "width", "100", "100px");
+        Problem p = problem("stylesheet", ".card { width: 100px; }");
+
+        AnswerValidator.Evaluation result =
+                browserValidator.evaluate(p, ".card { width: 100; }");
+
+        assertThat(result.status()).isEqualTo(AnswerValidator.Status.SYNTAX);
+        assertThat(result.diagnosticCode()).isEqualTo(AnswerValidator.DiagnosticCode.MISSING_UNIT);
+        assertThat(result.guidance()).contains("width").contains("100px");
+        assertThat(result.countsAsAttempt()).isFalse();
+    }
+
+    @Test void rejectsExternalResourcesInAStylesheet() {
+        AnswerValidator browserValidator = validatorWithDiagnostic(
+                false, CssRenderingEvaluator.DiagnosticCode.FORBIDDEN_RESOURCE,
+                null, null, null);
+        Problem p = problem("stylesheet", ".card { color: red; }");
+
+        AnswerValidator.Evaluation result = browserValidator.evaluate(
+                p, ".card { color: red; background-image: url(https://example.com/a.png); }");
+
+        assertThat(result.status()).isEqualTo(AnswerValidator.Status.SYNTAX);
+        assertThat(result.diagnosticCode()).isEqualTo(AnswerValidator.DiagnosticCode.FORBIDDEN_RESOURCE);
+        assertThat(result.guidance()).contains("외부 URL");
+        assertThat(result.countsAsAttempt()).isFalse();
+    }
+
+    @Test void aStylesheetScreenOrInteractionMismatchCountsAsAConceptualAttempt() {
+        AnswerValidator browserValidator = new AnswerValidator((problem, submittedCss) ->
+                new CssRenderingEvaluator.Result(true, true, false,
+                        CssRenderingEvaluator.MatchType.NONE, null,
+                        CssRenderingEvaluator.DiagnosticCode.RESULT_MISMATCH,
+                        null, null, null), JAVA_UNAVAILABLE, JAVASCRIPT_UNAVAILABLE);
+        Problem p = problem("stylesheet", ".card:hover { color: red; }");
+
+        AnswerValidator.Evaluation result =
+                browserValidator.evaluate(p, ".card:hover { color: blue; }");
+
+        assertThat(result.status()).isEqualTo(AnswerValidator.Status.INCORRECT);
+        assertThat(result.diagnosticCode()).isEqualTo(AnswerValidator.DiagnosticCode.RESULT_MISMATCH);
+        assertThat(result.guidance()).contains("반응형 배치").contains("hover·focus");
+        assertThat(result.countsAsAttempt()).isTrue();
+    }
+
+    @Test void rejectsAnOversizedStylesheetBeforeCallingTheRenderer() {
+        CssRenderingEvaluator renderer = mock(CssRenderingEvaluator.class);
+        AnswerValidator sizeValidator =
+                new AnswerValidator(renderer, JAVA_UNAVAILABLE, JAVASCRIPT_UNAVAILABLE);
+        Problem p = problem("stylesheet", ".card { color: red; }");
+
+        AnswerValidator.Evaluation result =
+                sizeValidator.evaluate(p, ".card{" + "color:red;".repeat(2_001) + "}");
+
+        assertThat(result.status()).isEqualTo(AnswerValidator.Status.SYNTAX);
+        assertThat(result.diagnosticCode()).isEqualTo(AnswerValidator.DiagnosticCode.INPUT_TOO_LARGE);
+        assertThat(result.guidance()).contains("20,000자 이하");
+        assertThat(result.countsAsAttempt()).isFalse();
+        verifyNoInteractions(renderer);
+    }
+
+    @Test void classifiesAStylesheetRenderLimitAsUserInputGuidance() {
+        AnswerValidator browserValidator = validatorWithDiagnostic(
+                false, CssRenderingEvaluator.DiagnosticCode.RENDER_LIMIT,
+                null, null, null);
+        Problem p = problem("stylesheet", ".card { height: 100px; }");
+
+        AnswerValidator.Evaluation result =
+                browserValidator.evaluate(p, ".card { height: 100000px; }");
+
+        assertThat(result.status()).isEqualTo(AnswerValidator.Status.SYNTAX);
+        assertThat(result.diagnosticCode()).isEqualTo(AnswerValidator.DiagnosticCode.RENDER_LIMIT);
+        assertThat(result.guidance()).contains("허용 크기");
+        assertThat(result.countsAsAttempt()).isFalse();
     }
 
     @Test void acceptsDifferentJavaImplementationWhenAllTestsPass() {

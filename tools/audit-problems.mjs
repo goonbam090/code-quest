@@ -6,11 +6,13 @@ const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const problemsRoot = resolve(repositoryRoot, 'backend/src/main/resources/problems')
 const expectedCounts = new Map([
   ['html', 15],
-  ['selector', 35],
-  ['property', 45],
-  ['flex', 25],
-  ['grid', 25],
-  ['ui', 25],
+  ['selector', 19],
+  ['property', 24],
+  ['motion', 15],
+  ['flex', 13],
+  ['grid', 12],
+  ['responsive', 7],
+  ['ui', 10],
   ['java', 47],
   ['java-bridge', 17],
   ['java-advanced', 22],
@@ -19,7 +21,7 @@ const expectedCounts = new Map([
   ['algorithm-intermediate', 20]
 ])
 const codeModes = new Set(['java', 'javascript', 'algorithm'])
-const allowedModes = new Set(['html', 'selector', 'declaration', ...codeModes])
+const allowedModes = new Set(['html', 'selector', 'declaration', 'stylesheet', ...codeModes])
 const allowedSourceContracts = new Set([
   'insertion-sort',
   'member-badge-constructor-delegation',
@@ -188,6 +190,15 @@ function normalized(value) {
   return String(value ?? '').normalize('NFKC').replace(/\s+/g, '').toLowerCase()
 }
 
+function containsExternalCssUrl(value) {
+  const pattern = /url\(\s*(?:"([^"]*)"|'([^']*)'|([^)]*))\s*\)/gi
+  for (const match of String(value ?? '').matchAll(pattern)) {
+    const url = (match[1] ?? match[2] ?? match[3] ?? '').trim()
+    if (url && !url.startsWith('#') && !url.toLowerCase().startsWith('data:')) return true
+  }
+  return false
+}
+
 function sameIntegerArray(actual, expected) {
   return Array.isArray(actual)
     && actual.length === expected.length
@@ -225,6 +236,11 @@ function selectorExampleRevealsAnswer(answer, example) {
     'i'
   )
   return answerPattern.test(normalizedExample)
+}
+
+function htmlLearningStringRevealsAnswer(answer, value) {
+  const normalizedAnswer = normalized(answer)
+  return normalizedAnswer.length > 0 && normalized(value).includes(normalizedAnswer)
 }
 
 function validateSelectorHintSafety(problem, location) {
@@ -341,6 +357,10 @@ function validateLearning(learning, problem, location) {
         && selectorExampleRevealsAnswer(problem.answer, value)) {
       fail(location, `${path}이(가) 기준 선택자를 그대로 노출합니다.`)
     }
+    if (problem.mode === 'html'
+        && htmlLearningStringRevealsAnswer(problem.answer, value)) {
+      fail(location, `${path}이(가) HTML 기준 답안을 그대로 노출합니다.`)
+    }
   }
 
   const validateTextArray = (field, minimum, maximum) => {
@@ -402,6 +422,13 @@ function validateProblem(problem, category, expectedId) {
 
   indexUnique(`${category} 제목`, problem.title, location)
   indexUnique(`${category} 질문`, problem.question, location)
+  if (['selector', 'declaration', 'stylesheet'].includes(problem.mode)) {
+    indexUnique(
+      'CSS 채점 계약',
+      `${problem.mode}|${problem.html ?? ''}|${problem.answer}`,
+      location
+    )
+  }
   validateSolution(problem.solution, location, problem.mode)
   validateLearning(problem.learning, problem, location)
 
@@ -421,6 +448,81 @@ function validateProblem(problem, category, expectedId) {
     }
   }
 
+  if (problem.mode === 'stylesheet') {
+    if (!nonBlank(problem.html)) fail(location, 'stylesheet 문제의 미리보기 HTML이 비어 있습니다.')
+    if (!nonBlank(problem.starterCode)) fail(location, 'stylesheet 시작 코드가 비어 있습니다.')
+    if (!Array.isArray(problem.constraints) || problem.constraints.length === 0) {
+      fail(location, 'stylesheet 문제에는 구현 범위를 설명하는 제약사항이 필요합니다.')
+    } else if (problem.constraints.some(constraint => /\brequired\./i.test(constraint))) {
+      fail(location, '공개 제약사항에서 비공개 required 필드명을 참조할 수 없습니다.')
+    }
+    if (containsExternalCssUrl(problem.answer) || containsExternalCssUrl(problem.starterCode)) {
+      fail(location, 'stylesheet 기준 답안과 시작 코드에는 외부 URL을 사용할 수 없습니다.')
+    }
+    if (!problem.required || typeof problem.required !== 'object'
+        || Array.isArray(problem.required)) {
+      fail(location, 'stylesheet 문제에는 viewport와 상태 채점을 위한 required 객체가 필요합니다.')
+    } else {
+      const allowedValidationFields = new Set(['viewports', 'hover', 'focus'])
+      for (const field of Object.keys(problem.required)) {
+        if (!allowedValidationFields.has(field)) {
+          fail(location, `stylesheet required에는 지원하지 않는 ${field} 필드를 사용할 수 없습니다.`)
+        }
+      }
+
+      const viewports = problem.required.viewports
+      if (!Array.isArray(viewports) || viewports.length < 1 || viewports.length > 4) {
+        fail(location, 'stylesheet required.viewports는 1~4개의 화면 크기 배열이어야 합니다.')
+      } else {
+        const viewportKeys = new Set()
+        for (const [index, viewport] of viewports.entries()) {
+          if (!viewport || typeof viewport !== 'object' || Array.isArray(viewport)
+              || !Number.isInteger(viewport.width) || viewport.width < 1 || viewport.width > 1920
+              || !Number.isInteger(viewport.height) || viewport.height < 1 || viewport.height > 1200) {
+            fail(location, `required.viewports[${index}]의 width·height 범위가 올바르지 않습니다.`)
+            continue
+          }
+          const viewportKey = `${viewport.width}x${viewport.height}`
+          if (viewportKeys.has(viewportKey)) {
+            fail(location, `required.viewports에 ${viewportKey}가 중복됩니다.`)
+          }
+          viewportKeys.add(viewportKey)
+        }
+      }
+
+      let stateCount = 0
+      for (const field of ['hover', 'focus']) {
+        const selectors = problem.required[field]
+        if (selectors === undefined) continue
+        if (!Array.isArray(selectors) || selectors.length === 0
+            || selectors.some(selector => !nonBlank(selector) || selector.length > 500)) {
+          fail(location, `stylesheet required.${field}에는 유효한 selector 문자열 배열이 필요합니다.`)
+          continue
+        }
+        if (new Set(selectors.map(normalized)).size !== selectors.length) {
+          fail(location, `stylesheet required.${field}에 중복 selector가 있습니다.`)
+        }
+        stateCount += selectors.length
+      }
+      if (stateCount > 4) {
+        fail(location, 'stylesheet hover와 focus 시나리오는 합쳐서 4개 이하여야 합니다.')
+      }
+      if (Array.isArray(viewports) && viewports.length * (stateCount + 1) > 12) {
+        fail(location, 'stylesheet viewport와 상태 조합은 12개 이하여야 합니다.')
+      }
+    }
+    if (problem.learning === undefined) {
+      fail(location, 'stylesheet 문제에는 실습 전에 읽을 learning 교안이 필요합니다.')
+    }
+    if (/@(?:-webkit-)?keyframes\b/i.test(problem.answer)
+        || /(?:^|[;{])\s*(?:animation|transition)(?:-[\w-]+)?\s*:/i.test(problem.answer)) {
+      fail(
+        location,
+        'stylesheet 시각 채점은 시간축을 검증하지 않으므로 animation·transition은 declaration 문제로 출제해야 합니다.'
+      )
+    }
+  }
+
   if (problem.mode === 'html') {
     if (!nonBlank(problem.starterCode)) fail(location, 'HTML 시작 코드가 비어 있습니다.')
     if (!Array.isArray(problem.constraints) || problem.constraints.length === 0) {
@@ -433,6 +535,10 @@ function validateProblem(problem, category, expectedId) {
     const attributeMatches = problem.required?.attributeMatches
     const orders = problem.required?.orders
     const forbidden = problem.required?.forbidden
+    const doctype = problem.required?.doctype
+    if (doctype !== undefined && typeof doctype !== 'boolean') {
+      fail(location, 'doctype 규칙은 boolean이어야 합니다.')
+    }
     if (attributeFormats !== undefined && !Array.isArray(attributeFormats)) {
       fail(location, 'attributeFormats는 배열이어야 합니다.')
     }
@@ -464,26 +570,50 @@ function validateProblem(problem, category, expectedId) {
         fail(location, `${ruleIndex + 1}번째 orders 규칙이 올바르지 않습니다.`)
       }
     }
-    if (category === 'html' && problem.id === 4
-        && !(Array.isArray(attributeFormats) ? attributeFormats : []).some(rule =>
-          rule.attribute === 'datetime' && rule.format === 'iso-local-date')) {
-      fail(location, 'datetime의 실제 YYYY-MM-DD 날짜 형식 계약이 필요합니다.')
-    }
-    if (category === 'html' && problem.id === 8
-        && !(Array.isArray(attributeMatches) ? attributeMatches : []).some(rule =>
-          rule.sourceAttribute === 'for' && rule.targetAttribute === 'id')) {
-      fail(location, '검색 label의 for와 input id 연결 계약이 필요합니다.')
-    }
-    if (category === 'html' && problem.id === 15
-        && !(Array.isArray(orders) ? orders : []).some(rule =>
-          String(rule.beforeSelector ?? '').includes('a')
-          && String(rule.afterSelector ?? '').includes('nav'))) {
-      fail(location, '본문 바로가기 링크가 반복 nav보다 앞서는 순서 계약이 필요합니다.')
-    }
-    if (category === 'html' && problem.id === 5
-        && !(Array.isArray(forbidden) ? forbidden : []).some(rule =>
-          rule.selector === 'main > section:not(:has(> h2))')) {
-      fail(location, '각 section에 직계 h2가 있는지 확인하는 forbidden 계약이 필요합니다.')
+    if (category === 'html') {
+      const curriculumText = JSON.stringify(problem).replaceAll('\\', '')
+      const outOfScopePatterns = [
+        [/\baria-[\w-]*/i, 'ARIA 속성'],
+        [/\brole\s*=/i, 'role 속성'],
+        [/<\s*\/?\s*time\b|datetime/i, 'time·datetime'],
+        [/\btype\s*=\s*["']?(?:search|tel)\b/i, '교안 밖 input type'],
+        [/<\s*\/?\s*(?:figure|figcaption|details|summary|picture)\b/i, '교안 밖 요소'],
+        [/\bsrcset\s*=/i, 'srcset 속성'],
+        [/\btabindex\s*=\s*["']?-1\b/i, '본문 바로가기용 tabindex=-1']
+      ]
+      for (const [pattern, label] of outOfScopePatterns) {
+        if (pattern.test(curriculumText)) {
+          fail(location, `첨부 HTML 교안 범위를 벗어난 ${label}을 포함합니다.`)
+        }
+      }
+
+      const selectors = problem.required.rules.map(rule => String(rule.selector ?? ''))
+      if (problem.id === 1) {
+        if (doctype !== true) fail(location, '첫 문제는 표준 HTML doctype을 채점해야 합니다.')
+        const documentContracts = [
+          ['html[lang]', selector => selector.includes('html[lang')],
+          ['meta[charset]', selector => selector.includes('head > meta') && selector.includes('[charset')],
+          ['viewport meta', selector =>
+            selector.includes('head > meta') && selector.includes('[name=viewport]')],
+          ['head > title', selector => selector.includes('head > title')],
+          ['body > main', selector => selector.includes('body > main')]
+        ]
+        for (const [label, matches] of documentContracts) {
+          if (!selectors.some(matches)) {
+            fail(location, `첫 문제에 전체 문서 구조 계약 ${label}이(가) 필요합니다.`)
+          }
+        }
+      }
+
+      const connectsVisibleLabels = selectors.some(selector => selector.includes('label[for'))
+        && selectors.some(selector =>
+          selector.includes('input')
+          && (selector.includes('[id') || /\binput#[\w-]+/.test(selector)))
+      if (connectsVisibleLabels
+          && !(Array.isArray(attributeMatches) ? attributeMatches : []).some(rule =>
+            rule.sourceAttribute === 'for' && rule.targetAttribute === 'id')) {
+        fail(location, '명시적 label의 for와 input id를 연결하는 계약이 필요합니다.')
+      }
     }
   }
 
@@ -799,13 +929,18 @@ for (const file of files) {
       && (!categoryLearning || typeof categoryLearning !== 'object' || Array.isArray(categoryLearning))) {
     fail(file, '루트 learning은 문제 번호를 키로 사용하는 객체여야 합니다.')
   }
-  if (fileCategory === 'selector') {
+  if (fileCategory === 'selector' || fileCategory === 'html') {
     const expectedLearningKeys = catalog.problems.map(problem => String(problem.id)).sort()
     const actualLearningKeys = categoryLearning && typeof categoryLearning === 'object'
       ? Object.keys(categoryLearning).sort()
       : []
     if (JSON.stringify(actualLearningKeys) !== JSON.stringify(expectedLearningKeys)) {
-      fail(file, '선택자 learning은 모든 문제 번호와 정확히 일치해야 합니다.')
+      fail(
+        file,
+        fileCategory === 'selector'
+          ? '선택자 learning은 모든 문제 번호와 정확히 일치해야 합니다.'
+          : 'HTML learning은 모든 문제 번호와 정확히 일치해야 합니다.'
+      )
     }
   }
   catalog.problems.forEach((problem, index) => validateProblem({

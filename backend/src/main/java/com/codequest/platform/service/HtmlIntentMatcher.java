@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.DocumentType;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.ParseError;
 import org.jsoup.parser.Parser;
@@ -36,8 +37,7 @@ final class HtmlIntentMatcher {
                             + meaningfulErrors.getFirst().getErrorMessage());
         }
 
-        Element body = submitted.body();
-        if (!body.select(DANGEROUS_ELEMENTS).isEmpty() || hasEventHandler(body)) {
+        if (!submitted.select(DANGEROUS_ELEMENTS).isEmpty() || hasEventHandler(submitted)) {
             return new Result(true, false, false, false, 0, 0,
                     "학습용 HTML에는 script·iframe 같은 실행 요소나 on* 이벤트 속성을 사용할 수 없습니다.");
         }
@@ -54,10 +54,26 @@ final class HtmlIntentMatcher {
             int matched = 0;
             int total = 0;
 
+            if (validation.path("doctype").asBoolean(false)) {
+                total++;
+                boolean hasHtmlDoctype = submitted.childNodes().stream()
+                        .filter(DocumentType.class::isInstance)
+                        .map(DocumentType.class::cast)
+                        .anyMatch(documentType ->
+                                "html".equalsIgnoreCase(documentType.name())
+                                        && documentType.publicId().isBlank()
+                                        && documentType.systemId().isBlank());
+                if (hasHtmlDoctype) {
+                    matched++;
+                } else {
+                    failures.add("문서 첫 줄에 표준 `<!doctype html>` 선언을 작성하세요.");
+                }
+            }
+
             for (JsonNode rule : validation.path("rules")) {
                 total++;
                 String selector = rule.path("selector").asText();
-                int count = body.select(selector).size();
+                int count = submitted.select(selector).size();
                 int min = rule.path("min").asInt(1);
                 int max = rule.has("max") ? rule.path("max").asInt() : Integer.MAX_VALUE;
                 if (count >= min && count <= max) {
@@ -71,7 +87,7 @@ final class HtmlIntentMatcher {
             for (JsonNode rule : validation.path("forbidden")) {
                 total++;
                 String selector = rule.path("selector").asText();
-                if (body.select(selector).isEmpty()) {
+                if (submitted.select(selector).isEmpty()) {
                     matched++;
                 } else {
                     failures.add(rule.path("message").asText(
@@ -84,7 +100,7 @@ final class HtmlIntentMatcher {
                 String selector = rule.path("selector").asText();
                 String attribute = rule.path("attribute").asText();
                 String format = rule.path("format").asText();
-                List<Element> elements = body.select(selector);
+                List<Element> elements = submitted.select(selector);
                 boolean valid = !elements.isEmpty() && elements.stream()
                         .allMatch(element -> attributeMatchesFormat(element.attr(attribute), format));
                 if (valid) {
@@ -101,8 +117,8 @@ final class HtmlIntentMatcher {
                 String sourceAttribute = rule.path("sourceAttribute").asText();
                 String targetSelector = rule.path("targetSelector").asText();
                 String targetAttribute = rule.path("targetAttribute").asText();
-                List<Element> sources = body.select(sourceSelector);
-                List<Element> targets = body.select(targetSelector);
+                List<Element> sources = submitted.select(sourceSelector);
+                List<Element> targets = submitted.select(targetSelector);
                 Set<String> sourceValues = attributeValues(sources, sourceAttribute);
                 Set<String> targetValues = attributeValues(targets, targetAttribute);
                 boolean valid = !sources.isEmpty() && !targets.isEmpty()
@@ -121,9 +137,9 @@ final class HtmlIntentMatcher {
                 total++;
                 String beforeSelector = rule.path("beforeSelector").asText();
                 String afterSelector = rule.path("afterSelector").asText();
-                List<Element> before = body.select(beforeSelector);
-                List<Element> after = body.select(afterSelector);
-                List<Element> documentOrder = body.getAllElements();
+                List<Element> before = submitted.select(beforeSelector);
+                List<Element> after = submitted.select(afterSelector);
+                List<Element> documentOrder = submitted.getAllElements();
                 boolean valid = !before.isEmpty() && !after.isEmpty()
                         && before.stream().mapToInt(documentOrder::indexOf).max().orElse(Integer.MAX_VALUE)
                         < after.stream().mapToInt(documentOrder::indexOf).min().orElse(Integer.MIN_VALUE);
@@ -181,7 +197,7 @@ final class HtmlIntentMatcher {
     }
 
     private String canonical(String html) {
-        Document document = Jsoup.parseBodyFragment(html);
+        Document document = Jsoup.parse(html);
         document.outputSettings().prettyPrint(false);
         document.body().getAllElements().forEach(element -> {
             List<org.jsoup.nodes.Attribute> attributes = new ArrayList<>(element.attributes().asList());
@@ -189,6 +205,6 @@ final class HtmlIntentMatcher {
             element.clearAttributes();
             attributes.forEach(attribute -> element.attr(attribute.getKey(), attribute.getValue()));
         });
-        return document.body().html().replaceAll(">\\s+<", "><").trim();
+        return document.outerHtml().replaceAll(">\\s+<", "><").trim();
     }
 }

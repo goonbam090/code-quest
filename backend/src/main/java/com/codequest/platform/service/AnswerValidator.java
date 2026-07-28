@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 @Component
 public class AnswerValidator {
+    private static final int MAX_CSS_ANSWER_LENGTH = 20_000;
     private static final Pattern DECLARATION = Pattern.compile("([\\w-]+)\\s*:\\s*([^;{}]+)");
     private static final Pattern ZERO_WITH_UNIT = Pattern.compile("(?<![\\w.])-?0(?:px|rem|em|vh|vw|dvh|svh|lvh|%|fr|ms|s|deg)(?![\\w-])");
     private static final Pattern LEADING_DECIMAL = Pattern.compile("(?<![\\w.])(-?)\\.(\\d+)");
@@ -50,6 +51,9 @@ public class AnswerValidator {
         UNKNOWN_PROPERTY,
         INVALID_PROPERTY_VALUE,
         MISSING_UNIT,
+        FORBIDDEN_RESOURCE,
+        INPUT_TOO_LARGE,
+        RENDER_LIMIT,
         UNBALANCED_DELIMITER,
         MALFORMED_DECLARATION,
         MISSING_REQUIRED_PROPERTY,
@@ -97,6 +101,12 @@ public class AnswerValidator {
             return new Evaluation(Status.EMPTY, false, DiagnosticCode.EMPTY_ANSWER,
                     "답안을 입력하면 문제의 목표 상태와 비교해 드릴게요.");
         }
+        if (Set.of("declaration", "stylesheet").contains(problem.getMode())
+                && submitted.length() > MAX_CSS_ANSWER_LENGTH) {
+            return new Evaluation(Status.SYNTAX, false, DiagnosticCode.INPUT_TOO_LARGE,
+                    "CSS 답안은 20,000자 이하로 작성해 주세요. "
+                            + "반복된 규칙이나 문제 범위와 관계없는 코드를 줄이면 다시 채점할 수 있습니다.");
+        }
 
         if ("selector".equals(problem.getMode())) {
             return evaluateSelector(problem, submitted);
@@ -109,6 +119,9 @@ public class AnswerValidator {
         }
         if ("javascript".equals(problem.getMode())) {
             return evaluateCode(problem, submitted, javaScriptCodeEvaluator, "JavaScript");
+        }
+        if ("stylesheet".equals(problem.getMode())) {
+            return evaluateStylesheet(problem, submitted);
         }
         return evaluateDeclarations(problem, submitted);
     }
@@ -248,6 +261,10 @@ public class AnswerValidator {
                             "숫자에 필요한 단위가 빠졌습니다. `margin-block: 7px;`처럼 "
                                     + "숫자 뒤에 이 속성이 허용하는 단위를 붙여 보세요.");
                 }
+                if (rendered.diagnosticCode() == CssRenderingEvaluator.DiagnosticCode.RENDER_LIMIT) {
+                    return new Evaluation(Status.SYNTAX, false, DiagnosticCode.RENDER_LIMIT,
+                            "렌더링 결과가 허용 크기를 넘었습니다. 지나치게 큰 width·height·여백 값을 줄여 주세요.");
+                }
                 if (rendered.diagnosticCode() == CssRenderingEvaluator.DiagnosticCode.INVALID_PROPERTY_VALUE) {
                     return new Evaluation(Status.SYNTAX, false, DiagnosticCode.INVALID_PROPERTY_VALUE,
                             "`" + displayValue(rendered.diagnosticProperty()) + "` 속성은 입력한 값 `"
@@ -297,6 +314,71 @@ public class AnswerValidator {
         return new Evaluation(Status.ERROR, false, DiagnosticCode.JUDGE_UNAVAILABLE,
                 "CSS 브라우저 채점 서비스를 사용할 수 없어 결과를 확정하지 않았습니다. "
                         + "제출 내용은 시도 횟수에 반영하지 않았습니다. 잠시 후 다시 실행해 주세요.");
+    }
+
+    private Evaluation evaluateStylesheet(Problem problem, String submitted) {
+        Optional<String> delimiterIssue = delimiterIssue(submitted);
+        if (delimiterIssue.isPresent()) {
+            return new Evaluation(Status.SYNTAX, false, DiagnosticCode.UNBALANCED_DELIMITER,
+                    delimiterIssue.get());
+        }
+
+        CssRenderingEvaluator.Result rendered = cssRenderingEvaluator.evaluate(problem, submitted);
+        if (!rendered.available()) {
+            return new Evaluation(Status.ERROR, false, DiagnosticCode.JUDGE_UNAVAILABLE,
+                    "CSS 브라우저 채점 서비스를 사용할 수 없어 결과를 확정하지 않았습니다. "
+                            + "제출 내용은 시도 횟수에 반영하지 않았습니다. 잠시 후 다시 실행해 주세요.");
+        }
+        if (!rendered.syntaxValid()) {
+            if (rendered.diagnosticCode() == CssRenderingEvaluator.DiagnosticCode.FORBIDDEN_RESOURCE) {
+                return new Evaluation(Status.SYNTAX, false, DiagnosticCode.FORBIDDEN_RESOURCE,
+                        "외부 URL, @import, 외부 웹 글꼴과 외부 이미지는 사용할 수 없습니다. "
+                                + "문제에서 제공한 HTML과 data: 형식의 로컬 자료만 사용해 주세요.");
+            }
+            if (rendered.diagnosticCode() == CssRenderingEvaluator.DiagnosticCode.RENDER_LIMIT) {
+                return new Evaluation(Status.SYNTAX, false, DiagnosticCode.RENDER_LIMIT,
+                        "렌더링 결과가 허용 크기를 넘었습니다. 지나치게 큰 width·height·여백 값을 줄여 주세요.");
+            }
+            if (rendered.diagnosticCode() == CssRenderingEvaluator.DiagnosticCode.UNKNOWN_PROPERTY) {
+                Optional<String> typo = findPropertyTypo(
+                        parseDeclarations(problem.getAnswer()).keySet(),
+                        rendered.diagnosticProperty());
+                if (typo.isPresent()) {
+                    return new Evaluation(Status.TYPO, false, DiagnosticCode.PROPERTY_NAME_TYPO,
+                            typo.get());
+                }
+                return new Evaluation(Status.SYNTAX, false, DiagnosticCode.UNKNOWN_PROPERTY,
+                        "브라우저가 `" + displayValue(rendered.diagnosticProperty())
+                                + "`을 CSS 속성명으로 인식하지 못했습니다. "
+                                + "전체 규칙 안의 속성명 철자와 하이픈을 확인해 보세요.");
+            }
+            if (rendered.diagnosticCode() == CssRenderingEvaluator.DiagnosticCode.MISSING_UNIT) {
+                return new Evaluation(Status.SYNTAX, false, DiagnosticCode.MISSING_UNIT,
+                        "숫자에 필요한 단위가 빠졌습니다. `" + displayValue(rendered.diagnosticProperty())
+                                + ": " + displayValue(rendered.suggestedValue())
+                                + ";`처럼 숫자 뒤에 속성이 허용하는 단위를 붙여 보세요.");
+            }
+            if (rendered.diagnosticCode() == CssRenderingEvaluator.DiagnosticCode.INVALID_PROPERTY_VALUE) {
+                return new Evaluation(Status.SYNTAX, false, DiagnosticCode.INVALID_PROPERTY_VALUE,
+                        "`" + displayValue(rendered.diagnosticProperty()) + "` 속성은 입력한 값 `"
+                                + displayValue(rendered.diagnosticValue())
+                                + "`을 지원하지 않습니다. 값의 철자·단위·함수 구성을 확인해 보세요.");
+            }
+            return new Evaluation(Status.SYNTAX, false, DiagnosticCode.MALFORMED_DECLARATION,
+                    "브라우저가 전체 CSS 규칙을 적용하지 못했습니다. "
+                            + "선택자 뒤의 중괄호와 각 `속성: 값;` 선언을 확인해 보세요.");
+        }
+        if (rendered.matched()) {
+            boolean exact = problem.getAnswer().trim().equals(submitted.trim());
+            return new Evaluation(Status.CORRECT, exact, DiagnosticCode.NONE,
+                    exact
+                            ? "모든 화면 크기와 상태에서 목표 화면과 배치가 정확히 일치합니다."
+                            : "작성 방식은 다르지만 모든 화면 크기와 상태에서 목표 화면과 배치가 같아 "
+                                    + "정답으로 인정했습니다.");
+        }
+        return new Evaluation(Status.INCORRECT, false, DiagnosticCode.RESULT_MISMATCH,
+                "CSS 문법은 맞지만 화면 크기 또는 상호작용 상태 중 하나의 화면·배치가 목표와 다릅니다. "
+                        + "기본 화면, 반응형 배치와 hover·focus 상태를 차례로 확인해 보세요.");
     }
 
     private Optional<String> findPropertyTypo(Collection<String> expectedProperties, String actualProperty) {
@@ -625,7 +707,17 @@ public class AnswerValidator {
         Deque<Character> stack = new ArrayDeque<>();
         char quote = 0;
         boolean escaped = false;
-        for (char character : value.toCharArray()) {
+        boolean comment = false;
+        for (int index = 0; index < value.length(); index++) {
+            char character = value.charAt(index);
+            char next = index + 1 < value.length() ? value.charAt(index + 1) : 0;
+            if (comment) {
+                if (character == '*' && next == '/') {
+                    comment = false;
+                    index++;
+                }
+                continue;
+            }
             if (escaped) {
                 escaped = false;
                 continue;
@@ -638,7 +730,10 @@ public class AnswerValidator {
                 if (character == quote) quote = 0;
                 continue;
             }
-            if (character == '\'' || character == '"') {
+            if (character == '/' && next == '*') {
+                comment = true;
+                index++;
+            } else if (character == '\'' || character == '"') {
                 quote = character;
             } else if (character == '(' || character == '[' || character == '{') {
                 stack.push(character);
@@ -654,6 +749,9 @@ public class AnswerValidator {
                             + "`의 종류가 다릅니다. 괄호·대괄호·중괄호를 같은 종류끼리 닫아 주세요.");
                 }
             }
+        }
+        if (comment) {
+            return Optional.of("CSS 주석이 닫히지 않았습니다. `/* 설명 */`처럼 `*/`로 주석을 닫아 주세요.");
         }
         if (quote != 0) {
             return Optional.of("따옴표가 닫히지 않았습니다. `content: \"예시\";`처럼 같은 따옴표로 값을 닫아 주세요.");

@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 
 const rendererUrl = process.env.CSS_RENDERER_URL ?? 'http://localhost:3001'
 const problemsRoot = resolve(process.cwd(), '../backend/src/main/resources/problems')
-const categories = ['property', 'flex', 'grid', 'ui']
+const categories = ['property', 'motion', 'flex', 'grid', 'responsive', 'ui']
 const tasks = []
 
 for (const category of categories) {
@@ -22,23 +22,44 @@ async function worker() {
     const task = tasks[nextIndex]
     nextIndex += 1
     try {
-      const response = await fetch(`${rendererUrl}/evaluate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          html: task.problem.html,
-          expectedCss: task.problem.answer,
-          actualCss: task.problem.answer,
-          policy: task.category === 'ui' ? 'visual' : 'computed'
+      const evaluate = async actualCss => {
+        const response = await fetch(`${rendererUrl}/evaluate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            html: task.problem.html,
+            expectedCss: task.problem.answer,
+            actualCss,
+            policy: task.problem.mode === 'stylesheet' || task.category === 'ui'
+              ? 'visual'
+              : 'computed',
+            mode: task.problem.mode,
+            validation: task.problem.required ?? null
+          })
         })
-      })
-      const result = await response.json()
+        return { response, result: await response.json() }
+      }
+      const { response, result } = await evaluate(task.problem.answer)
       if (!response.ok || !result.matched || !result.syntaxValid) {
         failures.push({
           problem: `${task.category}#${task.problem.id}`,
+          check: 'reference-answer',
           status: response.status,
           result
         })
+      }
+
+      if (task.problem.mode === 'stylesheet') {
+        const starter = task.problem.starterCode ?? ''
+        const negative = await evaluate(starter)
+        if (negative.response.ok && negative.result.matched) {
+          failures.push({
+            problem: `${task.category}#${task.problem.id}`,
+            check: 'starter-code-must-fail',
+            status: negative.response.status,
+            result: negative.result
+          })
+        }
       }
     } catch (error) {
       failures.push({
@@ -53,11 +74,12 @@ async function worker() {
   }
 }
 
-await Promise.all(Array.from({ length: 6 }, () => worker()))
+await Promise.all(Array.from({ length: 2 }, () => worker()))
 
 if (failures.length > 0) {
   console.error(JSON.stringify(failures, null, 2))
   process.exitCode = 1
 } else {
-  console.log(`선언형 문제 ${tasks.length}개가 모두 Chromium 기준 답안 검증을 통과했습니다.`)
+  const stylesheetCount = tasks.filter(task => task.problem.mode === 'stylesheet').length
+  console.log(`CSS 문제 ${tasks.length}개의 기준 답안과 stylesheet 시작 코드 ${stylesheetCount}개를 검증했습니다.`)
 }

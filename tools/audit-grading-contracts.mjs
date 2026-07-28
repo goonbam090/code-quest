@@ -220,7 +220,7 @@ const gradingCases = [
   {
     id: 'selector-typo',
     category: 'selector',
-    number: 2,
+    number: 3,
     answer: '.ntoe',
     status: 'TYPO',
     diagnosticCode: 'SELECTOR_TYPO'
@@ -244,24 +244,24 @@ const gradingCases = [
   {
     id: 'declaration-alternative',
     category: 'property',
-    number: 1,
-    answer: 'color: #ff0000;',
+    number: 17,
+    answer: 'background-color: rgb(49, 46, 129);',
     status: 'CORRECT',
     diagnosticCode: 'NONE'
   },
   {
     id: 'declaration-concept-error',
     category: 'property',
-    number: 1,
-    answer: 'color: blue;',
+    number: 17,
+    answer: 'background-color: blue;',
     status: 'INCORRECT',
     diagnosticCode: 'VALUE_MISMATCH'
   },
   {
     id: 'declaration-property-typo',
     category: 'property',
-    number: 1,
-    answer: 'colour: red;',
+    number: 17,
+    answer: 'backround-color: #312e81;',
     status: 'TYPO',
     diagnosticCode: 'PROPERTY_NAME_TYPO'
   },
@@ -269,7 +269,7 @@ const gradingCases = [
     id: 'html-alternative',
     category: 'html',
     number: 1,
-    answer: '<main><h1>다른 제목</h1><p>다른 설명입니다.</p></main>',
+    answer: '<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Neighborhood Notes</title></head><body><main><h1>Repair Notes</h1><p>Today’s repair work is recorded here.</p></main></body></html>',
     status: 'CORRECT',
     diagnosticCode: 'NONE'
   },
@@ -277,7 +277,7 @@ const gradingCases = [
     id: 'html-concept-error',
     category: 'html',
     number: 5,
-    answer: '<main><h1>로드맵</h1><section><h2>HTML</h2><h2>CSS</h2></section><section></section></main>',
+    answer: '<header><h1>마을 상영회</h1><nav><a href="/films">상영작</a><a href="/place">장소</a></nav></header><main><section><h2>상영 안내</h2><article><h3>첫 영화</h3></article></section><aside><h2>준비 안내</h2></aside></main><footer><p>마을 영화 모임</p></footer>',
     status: 'INCORRECT',
     diagnosticCode: 'HTML_STRUCTURE_MISMATCH'
   },
@@ -285,7 +285,7 @@ const gradingCases = [
     id: 'html-unsafe-syntax',
     category: 'html',
     number: 1,
-    answer: '<main><h1>제목</h1><p>설명</p><script>alert(1)</script></main>',
+    answer: '<!doctype html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>위험한 문서</title><script>alert(1)</script></head><body><main><h1>제목</h1><p>설명</p></main></body></html>',
     status: 'SYNTAX',
     diagnosticCode: 'HTML_UNSAFE_CONTENT'
   },
@@ -551,13 +551,13 @@ function assertPublicProblem(result, category, number) {
 
 async function assertSelectorLearningCatalog() {
   const selectors = await requestJson('/api/problems?category=selector')
-  assert(Array.isArray(selectors) && selectors.length === 35,
-    `선택자 공개 문제 API는 35문제여야 합니다: ${JSON.stringify(selectors)}`)
+  assert(Array.isArray(selectors) && selectors.length === 19,
+    `선택자 공개 문제 API는 19문제여야 합니다: ${JSON.stringify(selectors)}`)
   const numbers = selectors.map(problem => problem.number).sort((left, right) => left - right)
   assert(numbers.every((number, index) => number === index + 1),
-    `선택자 공개 문제 번호가 1~35와 일치하지 않습니다: ${JSON.stringify(numbers)}`)
+    `선택자 공개 문제 번호가 1~19와 일치하지 않습니다: ${JSON.stringify(numbers)}`)
   selectors.forEach(problem => assertPublicProblem(problem, 'selector', problem.number))
-  console.log('선택자 35문제의 공개 learning 교안과 비공개 필드 경계를 검증했습니다.')
+  console.log('선택자 19문제의 공개 learning 교안과 비공개 필드 경계를 검증했습니다.')
 }
 
 async function publicProblem(category, number) {
