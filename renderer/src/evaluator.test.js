@@ -264,6 +264,81 @@ test('전체 stylesheet가 같은 화면과 배치를 만들면 구현 방식이
   assert.equal(result.matchType, 'VISUAL')
 })
 
+test('계산 스타일이 달라도 실제 픽셀이 같으면 stylesheet 대체 구현을 인정한다', async () => {
+  const result = await evaluator.evaluate({
+    mode: 'stylesheet',
+    html: '<div class="empty" aria-hidden="true"></div>',
+    expectedCss: '.empty { color: rgb(255, 0, 0); }',
+    actualCss: '.empty { color: rgb(0, 0, 255); }'
+  })
+
+  assert.equal(result.syntaxValid, true)
+  assert.equal(result.matched, true)
+  assert.equal(result.matchType, 'VISUAL')
+})
+
+test('픽셀 비교를 위해 복원한 기준 화면도 렌더링 제한을 다시 검사한다', async () => {
+  const html = `
+    <div class="empty" aria-hidden="true"></div>
+    <script>
+      window.name = String(Number(window.name || '0') + 1)
+      if (Number(window.name) >= 3) {
+        const oversized = document.createElement('div')
+        oversized.style.cssText =
+          'position: absolute; inset: 0 auto auto 0; width: 5001px; height: 1px'
+        document.body.append(oversized)
+      }
+    </script>
+  `
+
+  await assert.rejects(
+    evaluator.evaluate({
+      mode: 'stylesheet',
+      html,
+      expectedCss: '.empty { color: rgb(255, 0, 0); }',
+      actualCss: '.empty { color: rgb(0, 0, 255); }'
+    }),
+    /렌더링 결과가 허용 크기/
+  )
+})
+
+test('동일한 stylesheet도 상태 selector 검증을 우회하지 않는다', async () => {
+  await assert.rejects(
+    evaluator.evaluate({
+      mode: 'stylesheet',
+      html: '<button class="action">저장</button>',
+      expectedCss: '.action:hover { color: red; }',
+      actualCss: '.action:hover { color: red; }',
+      validation: { hover: ['.missing'] }
+    }),
+    /정확히 한 요소/
+  )
+})
+
+test('동일한 stylesheet도 모든 viewport의 렌더링 크기 제한을 검사한다', async () => {
+  await assert.rejects(
+    evaluator.evaluate({
+      mode: 'stylesheet',
+      html: '<div class="card">카드</div>',
+      expectedCss: `
+        .card { height: 1px; }
+        @media (max-width: 500px) { .card { height: 6001px; } }
+      `,
+      actualCss: `
+        .card { height: 1px; }
+        @media (max-width: 500px) { .card { height: 6001px; } }
+      `,
+      validation: {
+        viewports: [
+          { width: 800, height: 600 },
+          { width: 400, height: 600 }
+        ]
+      }
+    }),
+    /렌더링 결과가 허용 크기/
+  )
+})
+
 test('전체 stylesheet의 viewport는 body 기본 여백 없이 화면 전체를 기준으로 계산한다', async () => {
   const result = await evaluator.evaluate({
     mode: 'stylesheet',

@@ -219,6 +219,21 @@ function stylesheetSyntaxResult(diagnosticCode = 'MALFORMED_DECLARATION', detail
   }
 }
 
+function stylesheetMismatchResult() {
+  return {
+    syntaxValid: true,
+    matched: false,
+    matchType: 'NONE',
+    visualMatch: false,
+    computedMatch: false,
+    differingProperty: null,
+    diagnosticCode: 'RESULT_MISMATCH',
+    diagnosticProperty: null,
+    diagnosticValue: null,
+    suggestedValue: null
+  }
+}
+
 function analyzeStylesheetSource(value) {
   const parseErrors = []
   let ast
@@ -797,23 +812,27 @@ async function stylesheetSnapshot(page) {
       `렌더링 결과가 허용 크기 ${MAX_RENDER_WIDTH}x${MAX_RENDER_HEIGHT}px를 초과했습니다.`
     )
   }
+  return snapshot
+}
+
+async function stylesheetPixelHash(page) {
   const screenshot = await page.screenshot({
     fullPage: true,
     animations: 'disabled',
     caret: 'hide',
     timeout: 5_000
   })
-  return { ...snapshot, pixelHash: sha256(screenshot) }
+  return sha256(screenshot)
 }
 
-function sameStylesheetSnapshot(expected, actual) {
+function sameStylesheetGeometry(expected, actual) {
   return expected.documentWidth === actual.documentWidth
     && expected.documentHeight === actual.documentHeight
     && sameGeometry(expected.geometry, actual.geometry)
-    && (
-      expected.pixelHash === actual.pixelHash
-      || JSON.stringify(expected.computed) === JSON.stringify(actual.computed)
-    )
+}
+
+function sameStylesheetComputed(expected, actual) {
+  return JSON.stringify(expected.computed) === JSON.stringify(actual.computed)
 }
 
 async function withStylesheetDeadline(timeoutMs, task) {
@@ -1045,6 +1064,7 @@ export class CssEvaluator {
       return stylesheetSyntaxResult(actualSource.diagnosticCode)
     }
     const grading = normalizeStylesheetValidation(validation)
+    const identicalStylesheets = expectedCss === actualCss
 
     return withStylesheetDeadline(this.stylesheetTimeoutMs, async registerContext => {
       const browser = await this.browser()
@@ -1069,11 +1089,13 @@ export class CssEvaluator {
         expectedCss,
         expectedSource.declarations
       )
-      const actualParse = await parseStylesheet(
-        parserPage,
-        actualCss,
-        actualSource.declarations
-      )
+      const actualParse = identicalStylesheets
+        ? expectedParse
+        : await parseStylesheet(
+          parserPage,
+          actualCss,
+          actualSource.declarations
+        )
       await parserPage.close()
 
       if (!expectedParse.valid) {
@@ -1099,23 +1121,11 @@ export class CssEvaluator {
               throw new Error(`기준 답안에서 ${scenario.state} 시나리오를 적용할 수 없습니다.`)
             }
             const expected = await stylesheetSnapshot(page)
+            if (identicalStylesheets) continue
 
             await setStylesheetDocument(page, html, actualCss)
             const actualActive = await activateScenario(page, scenario, viewport)
-            if (!actualActive) {
-              return {
-                syntaxValid: true,
-                matched: false,
-                matchType: 'NONE',
-                visualMatch: false,
-                computedMatch: false,
-                differingProperty: null,
-                diagnosticCode: 'RESULT_MISMATCH',
-                diagnosticProperty: null,
-                diagnosticValue: null,
-                suggestedValue: null
-              }
-            }
+            if (!actualActive) return stylesheetMismatchResult()
             let actual
             try {
               actual = await stylesheetSnapshot(page)
@@ -1123,20 +1133,22 @@ export class CssEvaluator {
               if (error instanceof RenderLimitError) return stylesheetSyntaxResult('RENDER_LIMIT')
               throw error
             }
-            if (!sameStylesheetSnapshot(expected, actual)) {
-              return {
-                syntaxValid: true,
-                matched: false,
-                matchType: 'NONE',
-                visualMatch: false,
-                computedMatch: false,
-                differingProperty: null,
-                diagnosticCode: 'RESULT_MISMATCH',
-                diagnosticProperty: null,
-                diagnosticValue: null,
-                suggestedValue: null
-              }
+            if (!sameStylesheetGeometry(expected, actual)) return stylesheetMismatchResult()
+            if (sameStylesheetComputed(expected, actual)) continue
+
+            const actualPixelHash = await stylesheetPixelHash(page)
+            await setStylesheetDocument(page, html, expectedCss)
+            const restoredExpectedActive = await activateScenario(page, scenario, viewport)
+            if (!restoredExpectedActive) {
+              throw new Error(`기준 답안에서 ${scenario.state} 시나리오를 적용할 수 없습니다.`)
             }
+            const restoredExpected = await stylesheetSnapshot(page)
+            if (!sameStylesheetGeometry(expected, restoredExpected)
+                || !sameStylesheetComputed(expected, restoredExpected)) {
+              throw new Error('기준 답안 stylesheet의 렌더링 결과가 평가 중 달라졌습니다.')
+            }
+            const expectedPixelHash = await stylesheetPixelHash(page)
+            if (expectedPixelHash !== actualPixelHash) return stylesheetMismatchResult()
           }
         } finally {
           await page.close()
