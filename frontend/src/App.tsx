@@ -57,8 +57,8 @@ const tracks: TrackDefinition[] = [
     description: '문서 구조와 접근성',
     categories: [
       { id: 'html-structure', label: '문서 구조', source: 'html', stage: '문서 구조' },
-      { id: 'html-form', label: '폼·접근성', source: 'html', stage: '폼·접근성' },
-      { id: 'html-content', label: '콘텐츠 모델', source: 'html', stage: '콘텐츠 모델' }
+      { id: 'html-form', label: '폼·입력', source: 'html', stage: '폼·입력' },
+      { id: 'html-content', label: '데이터·미디어', source: 'html', stage: '데이터·미디어' }
     ]
   },
   {
@@ -135,6 +135,7 @@ const DEFAULT_CATEGORY = 'html-structure'
 const LAST_TRACK_KEY = 'codequest-last-track'
 const LAST_CATEGORY_KEY = 'codequest-last-category'
 const CSS_DRAFT_CATALOG_REVISION = 'css-100-v1'
+const HTML_DRAFT_CATALOG_REVISION = 'html-15-v2'
 const CSS_CATEGORIES = new Set([
   'selector',
   'property',
@@ -234,6 +235,9 @@ function starterAnswer(problem?: Problem) {
 }
 
 function answerDraftKey(problem: Problem) {
+  if (problem.category === 'html') {
+    return `codequest-draft-${HTML_DRAFT_CATALOG_REVISION}-${problem.id}`
+  }
   if (CSS_CATEGORIES.has(problem.category)) {
     return `codequest-draft-${CSS_DRAFT_CATALOG_REVISION}-${problem.id}`
   }

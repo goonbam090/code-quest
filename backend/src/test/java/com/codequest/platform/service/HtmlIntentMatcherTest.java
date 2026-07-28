@@ -51,6 +51,59 @@ class HtmlIntentMatcherTest {
     }
 
     @Test
+    void validatesACompleteHtmlDocumentIncludingItsDoctypeAndHead() {
+        String documentValidation = """
+                {
+                  "doctype": true,
+                  "rules": [
+                    {"selector": "html[lang=ko]", "min": 1, "max": 1},
+                    {"selector": "head > meta[charset]", "min": 1, "max": 1},
+                    {"selector": "head > meta[name=viewport][content]", "min": 1, "max": 1},
+                    {"selector": "head > title", "min": 1, "max": 1},
+                    {"selector": "body > main > h1", "min": 1, "max": 1}
+                  ]
+                }
+                """;
+
+        var valid = matcher.match(documentValidation, "", """
+                <!doctype html>
+                <html lang="ko">
+                  <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>우편함</title>
+                  </head>
+                  <body><main><h1>달빛 우편함</h1></main></body>
+                </html>
+                """);
+        var missingDoctype = matcher.match(documentValidation, "", """
+                <html lang="ko">
+                  <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>우편함</title>
+                  </head>
+                  <body><main><h1>달빛 우편함</h1></main></body>
+                </html>
+                """);
+
+        assertThat(valid.intentMatched()).isTrue();
+        assertThat(missingDoctype.intentMatched()).isFalse();
+        assertThat(missingDoctype.guidance()).contains("<!doctype html>");
+    }
+
+    @Test
+    void rejectsExecutableMarkupPlacedInTheDocumentHead() {
+        var result = matcher.match("""
+                        {"rules":[{"selector":"body > main","min":1,"max":1}]}
+                        """,
+                "<main></main>",
+                "<!doctype html><html><head><script>alert(1)</script></head><body><main></main></body></html>");
+
+        assertThat(result.safe()).isFalse();
+    }
+
+    @Test
     void requiresARealIsoDateInDatetimeAttribute() {
         String dateValidation = """
                 {
@@ -187,6 +240,28 @@ class HtmlIntentMatcherTest {
     }
 
     @Test
+    void rejectsARepresentativeConceptErrorForEveryHtmlProblem() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try (InputStream stream = getClass().getResourceAsStream("/problems/html.json")) {
+            assertThat(stream).isNotNull();
+            var catalog = objectMapper.readTree(stream);
+
+            for (var problem : catalog.path("problems")) {
+                int problemId = problem.path("id").asInt();
+                String required = objectMapper.writeValueAsString(problem.path("required"));
+                String answer = problem.path("answer").asText();
+                String nearMiss = representativeNearMiss(problemId, answer);
+                var result = matcher.match(required, answer, nearMiss);
+
+                assertThat(result.intentMatched())
+                        .as("html#%s의 핵심 개념이 빠진 답안은 오답이어야 합니다: %s",
+                                problemId, result.guidance())
+                        .isFalse();
+            }
+        }
+    }
+
+    @Test
     void publicHtmlLearningExamplesDoNotSolveTheirConnectedProblems() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         try (InputStream stream = getClass().getResourceAsStream("/problems/html.json")) {
@@ -219,5 +294,28 @@ class HtmlIntentMatcherTest {
                 }
             }
         }
+    }
+
+    private String representativeNearMiss(int problemId, String answer) {
+        return switch (problemId) {
+            case 1 -> answer.replace("<!doctype html>", "");
+            case 2 -> answer.replace("<strong>", "<span>").replace("</strong>", "</span>");
+            case 3 -> answer.replace("<li>표시된 자리에 놓습니다.</li>", "");
+            case 4 -> answer.replace(" loading=\"lazy\"", "");
+            case 5 -> answer.replace("<ul>", "<div>").replace("</ul>", "</div>");
+            case 6 -> answer.replace("for=\"note-keyword\"", "for=\"missing-keyword\"");
+            case 7 -> answer.replace("for=\"member-email\"", "for=\"missing-email\"");
+            case 8 -> answer.replace("name=\"tools\"", "name=\"tool\"");
+            case 9 -> answer.replace(" label=\"마을길\"", "");
+            case 10 -> answer.replace(" enctype=\"multipart/form-data\"", "");
+            case 11 -> answer.replace(
+                    "<dd>흙 표면이 마르면 뿌리 주변에 물을 줍니다.</dd>",
+                    "<p>흙 표면이 마르면 뿌리 주변에 물을 줍니다.</p>");
+            case 12 -> answer.replace(" scope=\"col\"", "");
+            case 13 -> answer.replace(" poster=\"/images/forest-path.jpg\"", "");
+            case 14 -> answer.replace(" data-action=\"show-guide\"", "");
+            case 15 -> answer.replace("<h4>준비물</h4>", "");
+            default -> throw new IllegalArgumentException("검증하지 않은 HTML 문제 번호: " + problemId);
+        };
     }
 }

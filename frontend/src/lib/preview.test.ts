@@ -35,4 +35,15 @@ describe('previewHtmlDocument', () => {
     expect(preview).toContain('<main><h1>HTML Quest</h1></main>')
     expect(preview).not.toContain('allow-scripts')
   })
+
+  it('preserves a complete submitted document without nesting another html document', () => {
+    const answer = '<!doctype html><html lang="ko"><head><title>우편함</title></head><body><main>편지</main></body></html>'
+    const preview = previewHtmlDocument(answer)
+
+    expect(preview.match(/<!doctype html>/gi)).toHaveLength(1)
+    expect(preview.match(/<html(?:\s|>)/gi)).toHaveLength(1)
+    expect(preview.match(/<body(?:\s|>)/gi)).toHaveLength(1)
+    expect(preview).toContain("default-src 'none'")
+    expect(preview.indexOf("default-src 'none'")).toBeLessThan(preview.indexOf('<title>우편함</title>'))
+  })
 })

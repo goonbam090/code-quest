@@ -269,7 +269,7 @@ const gradingCases = [
     id: 'html-alternative',
     category: 'html',
     number: 1,
-    answer: '<main><h1>다른 제목</h1><p>다른 설명입니다.</p></main>',
+    answer: '<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Neighborhood Notes</title></head><body><main><h1>Repair Notes</h1><p>Today’s repair work is recorded here.</p></main></body></html>',
     status: 'CORRECT',
     diagnosticCode: 'NONE'
   },
@@ -277,7 +277,7 @@ const gradingCases = [
     id: 'html-concept-error',
     category: 'html',
     number: 5,
-    answer: '<main><h1>로드맵</h1><section><h2>HTML</h2><h2>CSS</h2></section><section></section></main>',
+    answer: '<header><h1>마을 상영회</h1><nav><a href="/films">상영작</a><a href="/place">장소</a></nav></header><main><section><h2>상영 안내</h2><article><h3>첫 영화</h3></article></section><aside><h2>준비 안내</h2></aside></main><footer><p>마을 영화 모임</p></footer>',
     status: 'INCORRECT',
     diagnosticCode: 'HTML_STRUCTURE_MISMATCH'
   },
@@ -285,7 +285,7 @@ const gradingCases = [
     id: 'html-unsafe-syntax',
     category: 'html',
     number: 1,
-    answer: '<main><h1>제목</h1><p>설명</p><script>alert(1)</script></main>',
+    answer: '<!doctype html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>위험한 문서</title><script>alert(1)</script></head><body><main><h1>제목</h1><p>설명</p></main></body></html>',
     status: 'SYNTAX',
     diagnosticCode: 'HTML_UNSAFE_CONTENT'
   },

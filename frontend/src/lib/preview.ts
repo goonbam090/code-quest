@@ -22,8 +22,7 @@ export function previewDocument(html: string, answer: string, mode: Problem['mod
   </style></head><body>${html}</body></html>`
 }
 
-export function previewHtmlDocument(answer: string) {
-  return `<!doctype html><html><head>
+const htmlPreviewHead = `
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:">
     <style>
       :root{color-scheme:dark}
@@ -34,6 +33,19 @@ export function previewHtmlDocument(answer: string) {
       }
       input,button,select,textarea{color:#eee;background:#25212e;border:1px solid #4a4454;border-radius:6px;padding:8px}
       a{color:#ad9cff} img{max-width:100%} table{border-collapse:collapse} th,td{border:1px solid #4a4454;padding:7px}
-    </style>
+    </style>`
+
+export function previewHtmlDocument(answer: string) {
+  if (/<html(?:\s|>)/i.test(answer)) {
+    if (/<head(?:\s|>)/i.test(answer)) {
+      return answer.replace(/<head(\s[^>]*)?>/i, match => `${match}${htmlPreviewHead}`)
+    }
+    return answer.replace(
+      /<html(\s[^>]*)?>/i,
+      match => `${match}<head>${htmlPreviewHead}</head>`
+    )
+  }
+
+  return `<!doctype html><html><head>${htmlPreviewHead}
   </head><body>${answer}</body></html>`
 }

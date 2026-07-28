@@ -535,6 +535,10 @@ function validateProblem(problem, category, expectedId) {
     const attributeMatches = problem.required?.attributeMatches
     const orders = problem.required?.orders
     const forbidden = problem.required?.forbidden
+    const doctype = problem.required?.doctype
+    if (doctype !== undefined && typeof doctype !== 'boolean') {
+      fail(location, 'doctype 규칙은 boolean이어야 합니다.')
+    }
     if (attributeFormats !== undefined && !Array.isArray(attributeFormats)) {
       fail(location, 'attributeFormats는 배열이어야 합니다.')
     }
@@ -566,26 +570,50 @@ function validateProblem(problem, category, expectedId) {
         fail(location, `${ruleIndex + 1}번째 orders 규칙이 올바르지 않습니다.`)
       }
     }
-    if (category === 'html' && problem.id === 4
-        && !(Array.isArray(attributeFormats) ? attributeFormats : []).some(rule =>
-          rule.attribute === 'datetime' && rule.format === 'iso-local-date')) {
-      fail(location, 'datetime의 실제 YYYY-MM-DD 날짜 형식 계약이 필요합니다.')
-    }
-    if (category === 'html' && problem.id === 8
-        && !(Array.isArray(attributeMatches) ? attributeMatches : []).some(rule =>
-          rule.sourceAttribute === 'for' && rule.targetAttribute === 'id')) {
-      fail(location, '검색 label의 for와 input id 연결 계약이 필요합니다.')
-    }
-    if (category === 'html' && problem.id === 15
-        && !(Array.isArray(orders) ? orders : []).some(rule =>
-          String(rule.beforeSelector ?? '').includes('a')
-          && String(rule.afterSelector ?? '').includes('nav'))) {
-      fail(location, '본문 바로가기 링크가 반복 nav보다 앞서는 순서 계약이 필요합니다.')
-    }
-    if (category === 'html' && problem.id === 5
-        && !(Array.isArray(forbidden) ? forbidden : []).some(rule =>
-          rule.selector === 'main > section:not(:has(> h2))')) {
-      fail(location, '각 section에 직계 h2가 있는지 확인하는 forbidden 계약이 필요합니다.')
+    if (category === 'html') {
+      const curriculumText = JSON.stringify(problem).replaceAll('\\', '')
+      const outOfScopePatterns = [
+        [/\baria-[\w-]*/i, 'ARIA 속성'],
+        [/\brole\s*=/i, 'role 속성'],
+        [/<\s*\/?\s*time\b|datetime/i, 'time·datetime'],
+        [/\btype\s*=\s*["']?(?:search|tel)\b/i, '교안 밖 input type'],
+        [/<\s*\/?\s*(?:figure|figcaption|details|summary|picture)\b/i, '교안 밖 요소'],
+        [/\bsrcset\s*=/i, 'srcset 속성'],
+        [/\btabindex\s*=\s*["']?-1\b/i, '본문 바로가기용 tabindex=-1']
+      ]
+      for (const [pattern, label] of outOfScopePatterns) {
+        if (pattern.test(curriculumText)) {
+          fail(location, `첨부 HTML 교안 범위를 벗어난 ${label}을 포함합니다.`)
+        }
+      }
+
+      const selectors = problem.required.rules.map(rule => String(rule.selector ?? ''))
+      if (problem.id === 1) {
+        if (doctype !== true) fail(location, '첫 문제는 표준 HTML doctype을 채점해야 합니다.')
+        const documentContracts = [
+          ['html[lang]', selector => selector.includes('html[lang')],
+          ['meta[charset]', selector => selector.includes('head > meta') && selector.includes('[charset')],
+          ['viewport meta', selector =>
+            selector.includes('head > meta') && selector.includes('[name=viewport]')],
+          ['head > title', selector => selector.includes('head > title')],
+          ['body > main', selector => selector.includes('body > main')]
+        ]
+        for (const [label, matches] of documentContracts) {
+          if (!selectors.some(matches)) {
+            fail(location, `첫 문제에 전체 문서 구조 계약 ${label}이(가) 필요합니다.`)
+          }
+        }
+      }
+
+      const connectsVisibleLabels = selectors.some(selector => selector.includes('label[for'))
+        && selectors.some(selector =>
+          selector.includes('input')
+          && (selector.includes('[id') || /\binput#[\w-]+/.test(selector)))
+      if (connectsVisibleLabels
+          && !(Array.isArray(attributeMatches) ? attributeMatches : []).some(rule =>
+            rule.sourceAttribute === 'for' && rule.targetAttribute === 'id')) {
+        fail(location, '명시적 label의 for와 input id를 연결하는 계약이 필요합니다.')
+      }
     }
   }
 

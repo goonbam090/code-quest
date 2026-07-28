@@ -234,6 +234,34 @@ describe('App accessibility', () => {
     expect(localStorage.getItem('codequest-draft-css-100-v1-1')).toBe('p')
   })
 
+  it('starts redesigned HTML problems from their new starter code instead of an old draft', async () => {
+    localStorage.setItem('codequest-last-track', 'html')
+    localStorage.setItem('codequest-last-category', 'html-structure')
+    localStorage.setItem('codequest-draft-101', '<main>이전 문제 답안</main>')
+    mockedApi.problems.mockResolvedValueOnce([{
+      id: 101,
+      category: 'html',
+      number: 1,
+      mode: 'html',
+      stage: '문서 구조',
+      title: '기본 HTML 문서',
+      question: '문서 뼈대를 작성하세요.',
+      html: '',
+      starterCode: '<!doctype html>\n<html lang="ko">\n</html>',
+      examples: [],
+      constraints: [],
+      hints: ['문서 구조를 확인하세요.']
+    }])
+
+    render(<App />)
+
+    const editor = await screen.findByRole('textbox', { name: 'HTML 답안' })
+    expect(editor).toHaveValue('<!doctype html>\n<html lang="ko">\n</html>')
+
+    fireEvent.change(editor, { target: { value: '<main>새 답안</main>' } })
+    expect(localStorage.getItem('codequest-draft-html-15-v2-101')).toBe('<main>새 답안</main>')
+  })
+
   it('loads and restores stylesheet starter code with responsive preview controls', async () => {
     const starterCode = '.gallery {\n  display: grid;\n  /* 열을 완성하세요 */\n}'
     mockedApi.problems.mockResolvedValueOnce([{
@@ -660,7 +688,7 @@ describe('App accessibility', () => {
     mockedApi.problems.mockResolvedValueOnce(catalogProblems)
 
     render(<App />)
-    await screen.findByRole('heading', { name: '1. 페이지의 주 콘텐츠' })
+    await screen.findByRole('heading', { name: '1. 달빛 우편함의 첫 문서' })
     fireEvent.click(screen.getByRole('button', { name: /전체 문제 보기/ }))
     fireEvent.click(screen.getByRole('button', { name: '학습 지도 열기' }))
 
@@ -702,9 +730,9 @@ describe('App accessibility', () => {
     })
 
     fireEvent.click(within(handbook).getByRole('button', {
-      name: 'Quest 5 제목 계층 실습하기'
+      name: 'Quest 5 마을 영화 밤의 페이지 구조 실습하기'
     }))
-    const fifthProblem = await screen.findByRole('heading', { name: '5. 제목 계층' })
+    const fifthProblem = await screen.findByRole('heading', { name: '5. 마을 영화 밤의 페이지 구조' })
     await vi.waitFor(() => expect(fifthProblem).toHaveFocus())
   })
 
