@@ -8,9 +8,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ProblemService {
+    private static final Set<String> JAVA_BRIDGE_CATEGORIES =
+            Set.of("java-bridge", "java-object-core");
+    private static final Set<String> JAVA_APPLIED_CATEGORIES =
+            Set.of("java-advanced", "java-standard-library", "java-collection-core");
+
     private final ProblemRepository problems;
     private final LearningProgressRepository progress;
     private final ProgressRecorder progressRecorder;
@@ -88,12 +94,12 @@ public class ProblemService {
         if ("html".equals(problem.getMode())) {
             return basis + " 예시 마크업 문자열이 아니라 시맨틱 태그 구조, 속성 연결, 접근성 계약을 충족하는지 확인합니다.";
         }
-        if ("java-bridge".equals(problem.getCategory())) {
+        if (JAVA_BRIDGE_CATEGORIES.contains(problem.getCategory())) {
             return basis + " 기본 문법을 외우는 데서 그치지 않고 타입 변환, 메서드 계약, 객체 상태와 컬렉션 경계를 연결하는지 확인합니다.";
         }
-        if ("java-advanced".equals(problem.getCategory())) {
+        if (JAVA_APPLIED_CATEGORIES.contains(problem.getCategory())) {
             return basis + " 기준 답안 문자열이 아니라 Java 21 컴파일 결과, 요구된 클래스·인터페이스의 동작, "
-                    + "예외 계약과 여러 입력 테스트로 응용 설계를 확인합니다.";
+                    + "Object·예외·컬렉션 계약과 여러 입력 테스트로 응용 설계를 확인합니다.";
         }
         if ("java".equals(problem.getMode())) {
             return basis + " 예시 코드와 문자열이 같은지가 아니라 Java 21 컴파일 결과와 여러 입력 테스트로 기본 문법을 확인합니다.";

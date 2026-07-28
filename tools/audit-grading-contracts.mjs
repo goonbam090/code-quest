@@ -150,6 +150,65 @@ public class Solution {
     }
 }`.trim()
 
+const taskChainCollectionShortcut = `
+import java.util.*;
+
+public class Solution {}
+
+final class TaskChain {
+    private static final class Node {
+        final String value;
+        Node next;
+
+        Node(String value) {
+            this.value = value;
+        }
+    }
+
+    private Node head;
+    private Node tail;
+    private int size;
+    private final Deque<String> queue = new ArrayDeque<>();
+
+    void addLast(String value) {
+        queue.addLast(value);
+        size++;
+    }
+
+    String removeFirst() {
+        if (queue.isEmpty()) throw new NoSuchElementException();
+        size--;
+        return queue.removeFirst();
+    }
+
+    int size() {
+        return size;
+    }
+
+    List<String> snapshot() {
+        return List.copyOf(queue);
+    }
+}`.trim()
+
+const dequeWorkshopCollectionShortcut = `
+import java.util.*;
+
+public class Solution {}
+
+final class DequeWorkshop {
+    static List<String> reverse(List<String> values) {
+        Deque<String> ignored = new ArrayDeque<>();
+        List<String> result = new ArrayList<>(values);
+        Collections.reverse(result);
+        return List.copyOf(result);
+    }
+
+    static List<String> serve(List<String> values) {
+        Deque<String> ignored = new ArrayDeque<>();
+        return List.copyOf(values);
+    }
+}`.trim()
+
 const javascriptAlternative = `
 function solve(unitPrice, quantity, deliveryFee) {
   return deliveryFee + quantity * unitPrice;
@@ -358,6 +417,22 @@ const gradingCases = [
     category: 'algorithm',
     number: 15,
     answer: insertionSortShortcut,
+    status: 'INCORRECT',
+    diagnosticCode: 'SOURCE_CONTRACT'
+  },
+  {
+    id: 'java-collection-core-2-collection-shortcut',
+    category: 'java-collection-core',
+    number: 2,
+    answer: taskChainCollectionShortcut,
+    status: 'INCORRECT',
+    diagnosticCode: 'SOURCE_CONTRACT'
+  },
+  {
+    id: 'java-collection-core-3-collection-shortcut',
+    category: 'java-collection-core',
+    number: 3,
+    answer: dequeWorkshopCollectionShortcut,
     status: 'INCORRECT',
     diagnosticCode: 'SOURCE_CONTRACT'
   },

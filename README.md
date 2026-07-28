@@ -59,9 +59,9 @@ Docker를 전혀 모르는 사용자를 위한 설치, 운영체제별 실행, �
 | HTML | 문서 구조, 폼·접근성, 콘텐츠 모델 | 15 |
 | CSS | 선택자, 기본 스타일, 위치·모션, Flex, Grid, 반응형, UI 구현 | 100 |
 | JavaScript | 문법, 조건·반복, 함수, 배열·객체, Map·Set·비동기 | 30 |
-| Java | 기초 → Bridge → Applied | 86 |
+| Java | 기초 → Bridge → Applied | 100 |
 | Algorithm | 탐색, 정렬, 자료구조, BFS·DFS, 트리·힙·그래프 | 57 |
-| 합계 | 14개 JSON 카테고리 | **288** |
+| 합계 | 17개 JSON 카테고리 | **302** |
 
 CSS Quest는 `선택자 19 → 기본 스타일 24 → 위치·모션 15 → Flex 13 → Grid 12 →
 반응형 7 → UI 구현 10` 순서로 진행합니다. CSS 기초부터 레이아웃과 반응형 화면까지 익힌 뒤,
@@ -75,8 +75,14 @@ CSS 학습 범위는
 Java Quest 내부는 다음 세 단계로 이어집니다.
 
 - Java 기초: 변수, 연산자, 조건문, 반복문, 문자열, 배열
-- Java Bridge: 메서드, 객체, 컬렉션, 검증
-- Java Applied: 객체지향, 예외, 제네릭, 람다·스트림, 실무 모델링
+- Java Bridge: 메서드, 객체, 참조값, 방어적 복사, static·final, 컬렉션 경계
+- Java Applied: 객체지향, Object 계약, 날짜·시간, 예외·자원 정리, 제네릭,
+  컬렉션 내부 원리, Deque, Iterator, 정렬, 람다·스트림, 실무 모델링
+
+Java 학습 순서는 입문 문법에서 객체지향 기본, 표준 라이브러리와 컬렉션 원리로 이어지는
+일반적인 커리큘럼을 참고했습니다. 문제 제목, 요구사항, 클래스 이름, 데이터, 코드 예시와
+테스트는 Code Quest용으로 새로 작성했으며 참고 자료의 소스 코드·도표·원문 예제는 저장소에
+포함하지 않습니다. 프로젝트 실행 환경에 맞춰 Java 21에서 재현 가능한 문법만 사용합니다.
 
 Java·Algorithm 트랙은 다음 순서로 이어집니다.
 
@@ -90,8 +96,9 @@ Java 기초 문법 → 조건·반복 → 클래스·객체 → 배열·컬렉�
 JavaScript 트랙은 변수·연산에서 시작해 조건·반복, 함수·문자열, 배열·객체,
 Map·Set과 `Promise` 기반 비동기 처리까지 이어집니다.
 
-현재 콘텐츠는 프로젝트의 출발점이었던 CSS에 가장 많이 집중돼 있습니다. 문제 수보다 정확한
-지식, 겹치지 않는 학습 목표와 경계값 테스트를 우선합니다. `node tools/audit-problems.mjs`가
+현재 콘텐츠는 프로젝트의 출발점인 CSS와 객체·컬렉션 학습을 보강한 Java에 가장 많이
+집중돼 있습니다. 문제 수보다 정확한 지식, 겹치지 않는 학습 목표와 경계값 테스트를
+우선합니다. `node tools/audit-problems.mjs`가
 번호 연속성, 필수 메타데이터, 중복 제목·질문, 힌트 품질, Java·JavaScript 공개·비노출 테스트
 구조와 문법 학습 계약을 검사합니다.
 
@@ -190,7 +197,7 @@ Chromium renderer, Java runner와 JavaScript runner는 각각 다른 내부 네�
 
 ### 채점·저장 경계
 
-- JSON 카탈로그가 문제 정의의 기준이며, 서버 시작 시 288문제를 PostgreSQL에 동기화합니다.
+- JSON 카탈로그가 문제 정의의 기준이며, 서버 시작 시 302문제를 PostgreSQL에 동기화합니다.
 - Flyway가 데이터베이스 스키마를 이력으로 관리하고 Hibernate는 시작 시 스키마를 `validate`합니다.
 - Chromium·Java·JavaScript 원격 채점은 데이터베이스 트랜잭션 밖에서 실행합니다.
 - 채점이 끝난 뒤 시도 횟수와 최초 정답 상태만 짧은 트랜잭션에서 기록합니다. 같은 학습자와 문제의
@@ -375,7 +382,7 @@ tools/build-release-zip.sh
 Maven 3.9.9와 JDK 21이 로컬에 설치되어 있다면 CI의 Backend 검증을
 `(cd backend && mvn --batch-mode --no-transfer-progress verify)`로 직접 실행할 수도 있습니다.
 
-전체 환경이 실행 중이면 288개 기준 답안을 실제 API와 각 채점기에 제출할 수 있습니다.
+전체 환경이 실행 중이면 302개 기준 답안을 실제 API와 각 채점기에 제출할 수 있습니다.
 
 ```bash
 docker compose up --detach --build

@@ -20,7 +20,7 @@ public class HealthController {
 
     public HealthController(
             ProblemRepository problems,
-            @Value("${codequest.catalog.expected-count:288}") long expectedProblemCount
+            @Value("${codequest.catalog.expected-count:302}") long expectedProblemCount
     ) {
         this.problems = problems;
         this.expectedProblemCount = expectedProblemCount;

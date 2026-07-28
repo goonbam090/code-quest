@@ -1,0 +1,542 @@
+{
+  "id": "java-collection-core",
+  "name": "Java Applied · 컬렉션 원리",
+  "description": "동적 배열, 연결 구조, Deque, Iterator와 정렬 계약을 직접 구현하는 5문제",
+  "problems": [
+    {
+      "id": 1,
+      "mode": "java",
+      "stage": "List 내부 원리",
+      "title": "용량이 늘어나는 정수 버퍼",
+      "question": "IntBuffer.add가 저장 공간이 가득 차면 배열 용량을 두 배로 늘린 뒤 값을 추가하게 하세요. get은 유효한 인덱스만 반환하고 그 외에는 IndexOutOfBoundsException을 던집니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {}\n\nfinal class IntBuffer {\n    private int[] elements = new int[2];\n    private int size;\n\n    void add(int value) {\n        elements[size++] = value;\n    }\n\n    int get(int index) {\n        return elements[index];\n    }\n\n    int size() {\n        return size;\n    }\n\n    int capacity() {\n        return elements.length;\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {}\n\nfinal class IntBuffer {\n    private int[] elements = new int[2];\n    private int size;\n\n    void add(int value) {\n        if (size == elements.length) {\n            elements = Arrays.copyOf(elements, elements.length * 2);\n        }\n        elements[size++] = value;\n    }\n\n    int get(int index) {\n        if (index < 0 || index >= size) throw new IndexOutOfBoundsException(index);\n        return elements[index];\n    }\n\n    int size() {\n        return size;\n    }\n\n    int capacity() {\n        return elements.length;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "add(4), add(7), add(9)",
+          "output": "size=3, capacity=4, values=[4, 7, 9]"
+        }
+      ],
+      "constraints": [
+        "추가 횟수는 0 이상 1,000 이하입니다.",
+        "초기 용량은 2이고 가득 찰 때마다 정확히 두 배로 확장합니다.",
+        "get은 capacity가 아니라 size를 기준으로 인덱스를 검사합니다."
+      ],
+      "hints": [
+        "동적 배열은 연속된 배열을 사용하되 공간이 부족할 때 더 큰 배열로 원소를 복사합니다.",
+        "비슷한 코드 예시: values = Arrays.copyOf(values, values.length * 2);",
+        "값을 쓴 뒤 size를 늘리고, 조회는 0 이상 size 미만만 허용하세요."
+      ],
+      "learning": {
+        "keywords": ["동적 배열", "capacity", "size", "상각 O(1)"],
+        "summary": "ArrayList가 배열의 빠른 인덱스 접근을 유지하면서 용량 부족을 확장으로 해결하는 핵심 원리를 작은 구현으로 확인합니다.",
+        "example": {
+          "code": "if (count == names.length) {\n  names = Arrays.copyOf(names, names.length * 2);\n}\nnames[count++] = value;",
+          "explanation": "논리적인 원소 수 count와 실제 배열 길이를 구분하고 공간이 꽉 찬 순간에만 더 큰 배열로 복사합니다."
+        },
+        "principles": [
+          "size는 저장된 원소 수이고 capacity는 현재 배열이 담을 수 있는 칸 수입니다.",
+          "확장 한 번은 O(n)이지만 매 추가마다 발생하지 않아 연속 add의 평균 비용은 상각 O(1)입니다.",
+          "배열의 사용하지 않은 칸은 유효한 목록 원소가 아니므로 조회 범위는 size를 기준으로 합니다."
+        ],
+        "applications": [
+          {
+            "title": "수집 결과 버퍼",
+            "description": "최종 개수를 미리 모르는 데이터를 순서대로 모을 때 동적 배열 구조를 사용할 수 있습니다.",
+            "code": "if (size == data.length) data = Arrays.copyOf(data, data.length * 2);"
+          }
+        ],
+        "pitfalls": [
+          "배열 길이만 확인해 아직 추가하지 않은 칸을 유효한 원소처럼 반환하지 않습니다.",
+          "원소를 추가할 때마다 배열을 복사해 전체 성능을 O(n²)으로 만들지 않습니다."
+        ]
+      },
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "첫 용량 확장",
+            "expression": "((java.util.function.Supplier<int[]>) () -> { IntBuffer buffer = new IntBuffer(); buffer.add(4); buffer.add(7); buffer.add(9); return new int[]{buffer.size(), buffer.capacity(), buffer.get(0), buffer.get(1), buffer.get(2)}; }).get()",
+            "expected": "new int[]{3, 4, 4, 7, 9}"
+          },
+          {
+            "id": "case-2",
+            "label": "초기 상태",
+            "expression": "((java.util.function.Supplier<int[]>) () -> { IntBuffer buffer = new IntBuffer(); return new int[]{buffer.size(), buffer.capacity()}; }).get()",
+            "expected": "new int[]{0, 2}"
+          },
+          {
+            "id": "case-3",
+            "label": "두 번 확장",
+            "expression": "((java.util.function.Supplier<int[]>) () -> { IntBuffer buffer = new IntBuffer(); for (int value = 0; value < 5; value++) buffer.add(value * 10); return new int[]{buffer.size(), buffer.capacity(), buffer.get(4)}; }).get()",
+            "expected": "new int[]{5, 8, 40}"
+          },
+          {
+            "id": "case-4",
+            "label": "음수 인덱스",
+            "expression": "new IntBuffer().get(-1)",
+            "expectedException": "IndexOutOfBoundsException"
+          },
+          {
+            "id": "case-5",
+            "label": "size와 같은 인덱스",
+            "expression": "((java.util.function.IntSupplier) () -> { IntBuffer buffer = new IntBuffer(); buffer.add(1); return buffer.get(1); }).getAsInt()",
+            "expectedException": "IndexOutOfBoundsException"
+          },
+          {
+            "id": "case-6",
+            "label": "용량 안의 미사용 칸",
+            "expression": "new IntBuffer().get(0)",
+            "expectedException": "IndexOutOfBoundsException"
+          },
+          {
+            "id": "case-7",
+            "label": "연속 확장과 전체 값 보존",
+            "expression": "((java.util.function.Supplier<int[]>) () -> { IntBuffer buffer = new IntBuffer(); for (int value = 0; value < 1000; value++) buffer.add(value * 3 - 7); return new int[]{buffer.size(), buffer.capacity(), buffer.get(0), buffer.get(500), buffer.get(999)}; }).get()",
+            "expected": "new int[]{1000, 1024, -7, 1493, 2990}"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "size가 배열 길이와 같을 때 Arrays.copyOf로 용량을 두 배로 늘리고, get은 index < size 계약을 검사합니다.",
+        "keyPoints": [
+          "논리 크기와 물리 용량을 분리합니다.",
+          "간헐적인 O(n) 확장 덕분에 연속 추가의 평균 비용은 상각 O(1)입니다."
+        ],
+        "alternative": "실무에서는 검증된 ArrayList를 사용하고 이 구현은 내부 원리 학습용으로만 사용합니다.",
+        "complexity": "get O(1), add 평균 상각 O(1)·확장 시 O(n), 공간 O(capacity)"
+      }
+    },
+    {
+      "id": 2,
+      "mode": "java",
+      "stage": "List 내부 원리",
+      "title": "앞에서 꺼내는 연결 작업열",
+      "question": "TaskChain의 addLast와 removeFirst를 단일 연결 노드로 구현하세요. 입력 순서를 유지하고 빈 작업열에서 꺼내면 NoSuchElementException을 던져야 합니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {}\n\nfinal class TaskChain {\n    private static final class Node {\n        final String value;\n        Node next;\n\n        Node(String value) {\n            this.value = value;\n        }\n    }\n\n    private Node head;\n    private Node tail;\n    private int size;\n\n    void addLast(String value) {\n        head = new Node(value);\n        size++;\n    }\n\n    String removeFirst() {\n        return null;\n    }\n\n    int size() {\n        return size;\n    }\n\n    List<String> snapshot() {\n        return List.of();\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {}\n\nfinal class TaskChain {\n    private static final class Node {\n        final String value;\n        Node next;\n\n        Node(String value) {\n            this.value = value;\n        }\n    }\n\n    private Node head;\n    private Node tail;\n    private int size;\n\n    void addLast(String value) {\n        Node node = new Node(value);\n        if (tail == null) {\n            head = tail = node;\n        } else {\n            tail.next = node;\n            tail = node;\n        }\n        size++;\n    }\n\n    String removeFirst() {\n        if (head == null) throw new NoSuchElementException(\"작업열이 비어 있습니다.\");\n        String value = head.value;\n        head = head.next;\n        size--;\n        if (head == null) tail = null;\n        return value;\n    }\n\n    int size() {\n        return size;\n    }\n\n    List<String> snapshot() {\n        List<String> result = new ArrayList<>(size);\n        for (Node current = head; current != null; current = current.next) {\n            result.add(current.value);\n        }\n        return List.copyOf(result);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "addLast(\"compile\"), addLast(\"test\"), removeFirst()",
+          "output": "compile"
+        }
+      ],
+      "constraints": [
+        "value는 null이 아닙니다.",
+        "addLast와 removeFirst는 전체 노드를 순회하지 않고 head와 tail로 처리합니다.",
+        "마지막 원소를 제거한 뒤 head와 tail을 모두 빈 상태로 되돌립니다."
+      ],
+      "hints": [
+        "연결 리스트의 각 노드는 값과 다음 노드의 참조를 가집니다.",
+        "비슷한 코드 예시: tail.next = node; tail = node;",
+        "원소가 하나뿐일 때 removeFirst 후 head가 null이 되면 tail도 null로 바꾸세요."
+      ],
+      "learning": {
+        "keywords": ["연결 리스트", "Node", "head/tail", "O(1) 끝 연산"],
+        "summary": "노드가 다음 노드를 가리키는 연결 구조에서 head와 tail을 유지해 앞 제거와 뒤 추가를 순회 없이 처리합니다.",
+        "example": {
+          "code": "Node node = new Node(message);\nif (tail == null) {\n  head = tail = node;\n} else {\n  tail.next = node;\n  tail = node;\n}",
+          "explanation": "빈 구조와 기존 tail이 있는 구조를 나누고 마지막 노드가 새 노드를 가리키게 합니다."
+        },
+        "principles": [
+          "연결 리스트는 원소가 연속 배열이 아니라 노드 참조로 이어집니다.",
+          "tail을 유지하면 뒤 추가를 O(1)에 처리할 수 있습니다.",
+          "마지막 원소 제거 시 head와 tail의 불변식을 함께 복구해야 합니다."
+        ],
+        "applications": [
+          {
+            "title": "FIFO 대기열의 내부 구조",
+            "description": "앞에서 꺼내고 뒤에 추가하는 큐를 연결 노드로 구현할 때 같은 head/tail 패턴을 사용합니다.",
+            "code": "value = head.value; head = head.next;"
+          }
+        ],
+        "pitfalls": [
+          "빈 목록에 첫 노드를 추가할 때 head만 설정하고 tail을 빠뜨리지 않습니다.",
+          "마지막 노드를 제거한 뒤 과거 tail 참조를 남기지 않습니다."
+        ]
+      },
+      "required": {
+        "className": "Solution",
+        "sourceContract": "task-chain-linked-queue",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "입력 순서 제거",
+            "expression": "((java.util.function.Supplier<String>) () -> { TaskChain chain = new TaskChain(); chain.addLast(\"compile\"); chain.addLast(\"test\"); return chain.removeFirst(); }).get()",
+            "expected": "\"compile\""
+          },
+          {
+            "id": "case-2",
+            "label": "스냅샷 순서",
+            "expression": "((java.util.function.Supplier<java.util.List<String>>) () -> { TaskChain chain = new TaskChain(); chain.addLast(\"A\"); chain.addLast(\"B\"); chain.addLast(\"C\"); return chain.snapshot(); }).get()",
+            "expected": "java.util.List.of(\"A\", \"B\", \"C\")"
+          },
+          {
+            "id": "case-3",
+            "label": "크기 감소",
+            "expression": "((java.util.function.Supplier<int[]>) () -> { TaskChain chain = new TaskChain(); chain.addLast(\"A\"); chain.addLast(\"B\"); chain.removeFirst(); return new int[]{chain.size(), chain.snapshot().size()}; }).get()",
+            "expected": "new int[]{1, 1}"
+          },
+          {
+            "id": "case-4",
+            "label": "빈 작업열 제거",
+            "expression": "new TaskChain().removeFirst()",
+            "expectedException": "NoSuchElementException"
+          },
+          {
+            "id": "case-5",
+            "label": "모두 제거 후 재사용",
+            "expression": "((java.util.function.Supplier<java.util.List<String>>) () -> { TaskChain chain = new TaskChain(); chain.addLast(\"old\"); chain.removeFirst(); chain.addLast(\"new\"); return chain.snapshot(); }).get()",
+            "expected": "java.util.List.of(\"new\")"
+          },
+          {
+            "id": "case-6",
+            "label": "독립 인스턴스",
+            "expression": "((java.util.function.BooleanSupplier) () -> { TaskChain first = new TaskChain(); TaskChain second = new TaskChain(); first.addLast(\"first\"); second.addLast(\"second\"); return first.snapshot().equals(java.util.List.of(\"first\")) && second.snapshot().equals(java.util.List.of(\"second\")); }).getAsBoolean()",
+            "expected": "true"
+          },
+          {
+            "id": "case-7",
+            "label": "연속 추가와 제거 순서",
+            "expression": "((java.util.function.Supplier<java.util.List<String>>) () -> { TaskChain chain = new TaskChain(); chain.addLast(\"A\"); chain.addLast(\"B\"); chain.addLast(\"C\"); return java.util.List.of(chain.removeFirst(), chain.removeFirst(), chain.removeFirst()); }).get()",
+            "expected": "java.util.List.of(\"A\", \"B\", \"C\")"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "빈 경우 head와 tail을 함께 설정하고, 이후에는 tail.next를 연결한 뒤 tail을 이동합니다. 제거 후 비면 tail도 null로 복구합니다.",
+        "keyPoints": [
+          "head와 tail을 유지하면 앞 제거와 뒤 추가가 O(1)입니다.",
+          "빈 상태의 불변식은 head == null && tail == null입니다."
+        ],
+        "alternative": "실무 큐는 직접 구현하기보다 ArrayDeque를 우선 사용합니다.",
+        "complexity": "addLast·removeFirst O(1), snapshot 시간·공간 O(n)"
+      }
+    },
+    {
+      "id": 3,
+      "mode": "java",
+      "stage": "Stack·Queue·Deque",
+      "title": "한 Deque의 두 가지 처리 순서",
+      "question": "DequeWorkshop.reverse는 입력을 스택처럼 처리해 역순 목록을, serve는 큐처럼 처리해 입력 순서 목록을 반환하게 하세요. 두 메서드 모두 ArrayDeque를 사용합니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {}\n\nfinal class DequeWorkshop {\n    static List<String> reverse(List<String> values) {\n        return List.of();\n    }\n\n    static List<String> serve(List<String> values) {\n        return List.of();\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {}\n\nfinal class DequeWorkshop {\n    static List<String> reverse(List<String> values) {\n        Deque<String> deque = new ArrayDeque<>();\n        for (String value : values) deque.addLast(value);\n        List<String> result = new ArrayList<>(values.size());\n        while (!deque.isEmpty()) result.add(deque.removeLast());\n        return List.copyOf(result);\n    }\n\n    static List<String> serve(List<String> values) {\n        Deque<String> deque = new ArrayDeque<>();\n        for (String value : values) deque.addLast(value);\n        List<String> result = new ArrayList<>(values.size());\n        while (!deque.isEmpty()) result.add(deque.removeFirst());\n        return List.copyOf(result);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "reverse([draft, review, publish])",
+          "output": "[publish, review, draft]"
+        },
+        {
+          "testId": "case-2",
+          "input": "serve([draft, review, publish])",
+          "output": "[draft, review, publish]"
+        }
+      ],
+      "constraints": [
+        "values는 null이 아니고 null 원소를 포함하지 않습니다.",
+        "입력 목록을 수정하지 않습니다.",
+        "Stack 클래스 대신 Deque<String>과 ArrayDeque<String>을 사용합니다."
+      ],
+      "hints": [
+        "Deque는 양쪽 끝에 추가·제거할 수 있어 LIFO와 FIFO를 모두 표현합니다.",
+        "비슷한 코드 예시: deque.addLast(value); deque.removeLast();",
+        "스택은 넣은 쪽에서 꺼내고 큐는 넣은 반대쪽에서 꺼냅니다."
+      ],
+      "learning": {
+        "keywords": ["Deque", "ArrayDeque", "LIFO", "FIFO"],
+        "summary": "같은 Deque라도 어느 끝에서 제거하는지에 따라 스택의 후입선출과 큐의 선입선출을 표현할 수 있습니다.",
+        "example": {
+          "code": "deque.addLast(job);\nString newest = deque.removeLast();\nString oldest = deque.removeFirst();",
+          "explanation": "뒤에 넣은 뒤 뒤에서 빼면 LIFO, 앞에서 빼면 FIFO가 됩니다."
+        },
+        "principles": [
+          "스택은 가장 나중에 넣은 원소를 먼저 꺼내는 LIFO 구조입니다.",
+          "큐는 가장 먼저 넣은 원소를 먼저 꺼내는 FIFO 구조입니다.",
+          "ArrayDeque는 양 끝 연산을 제공하며 오래된 Stack 클래스보다 일반적으로 권장됩니다."
+        ],
+        "applications": [
+          {
+            "title": "되돌리기와 대기열",
+            "description": "최근 작업 취소에는 스택 순서를, 접수 순서 처리에는 큐 순서를 적용합니다.",
+            "code": "undo.removeLast(); waiting.removeFirst();"
+          }
+        ],
+        "pitfalls": [
+          "LIFO와 FIFO에서 제거할 끝을 반대로 사용하지 않습니다.",
+          "ArrayDeque는 null 원소를 허용하지 않는다는 점을 입력 계약에 반영합니다."
+        ]
+      },
+      "required": {
+        "className": "Solution",
+        "sourceContract": "deque-workshop-array-deque",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "스택 역순",
+            "expression": "DequeWorkshop.reverse(java.util.List.of(\"draft\", \"review\", \"publish\"))",
+            "expected": "java.util.List.of(\"publish\", \"review\", \"draft\")"
+          },
+          {
+            "id": "case-2",
+            "label": "큐 입력 순서",
+            "expression": "DequeWorkshop.serve(java.util.List.of(\"draft\", \"review\", \"publish\"))",
+            "expected": "java.util.List.of(\"draft\", \"review\", \"publish\")"
+          },
+          {
+            "id": "case-3",
+            "label": "빈 입력",
+            "expression": "DequeWorkshop.reverse(java.util.List.of()).isEmpty() && DequeWorkshop.serve(java.util.List.of()).isEmpty()",
+            "expected": "true"
+          },
+          {
+            "id": "case-4",
+            "label": "원소 하나",
+            "expression": "DequeWorkshop.reverse(java.util.List.of(\"only\"))",
+            "expected": "java.util.List.of(\"only\")"
+          },
+          {
+            "id": "case-5",
+            "label": "중복 원소 보존",
+            "expression": "DequeWorkshop.reverse(java.util.List.of(\"A\", \"B\", \"A\"))",
+            "expected": "java.util.List.of(\"A\", \"B\", \"A\")"
+          },
+          {
+            "id": "case-6",
+            "label": "입력 목록 보존",
+            "expression": "((java.util.function.BooleanSupplier) () -> { java.util.List<String> source = new java.util.ArrayList<>(java.util.List.of(\"A\", \"B\")); DequeWorkshop.reverse(source); DequeWorkshop.serve(source); return source.equals(java.util.List.of(\"A\", \"B\")); }).getAsBoolean()",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "모든 값을 addLast로 넣고 reverse는 removeLast, serve는 removeFirst로 꺼내 처리 순서를 구분합니다.",
+        "keyPoints": [
+          "같은 Deque API에서 제거 방향이 자료구조의 순서를 결정합니다.",
+          "입력과 독립된 결과 목록을 만들어 원본을 보존합니다."
+        ],
+        "alternative": "스택 표현에는 push/pop, 큐 표현에는 offer/poll 메서드를 일관되게 사용할 수도 있습니다.",
+        "complexity": "원소 수 n에 대해 각 메서드 시간 O(n), 추가 공간 O(n)"
+      }
+    },
+    {
+      "id": 4,
+      "mode": "java",
+      "stage": "순회 계약",
+      "title": "향상된 for로 순회하는 카운트다운",
+      "question": "Countdown이 start부터 1까지 순회하는 Iterable<Integer>가 되도록 iterator를 구현하세요. next를 모두 소비한 뒤 다시 호출하면 NoSuchElementException을 던져야 합니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {}\n\nfinal class Countdown implements Iterable<Integer> {\n    private final int start;\n\n    Countdown(int start) {\n        this.start = start;\n    }\n\n    @Override\n    public Iterator<Integer> iterator() {\n        return Collections.emptyIterator();\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {}\n\nfinal class Countdown implements Iterable<Integer> {\n    private final int start;\n\n    Countdown(int start) {\n        this.start = start;\n    }\n\n    @Override\n    public Iterator<Integer> iterator() {\n        return new Iterator<>() {\n            private int current = start;\n\n            @Override\n            public boolean hasNext() {\n                return current > 0;\n            }\n\n            @Override\n            public Integer next() {\n                if (!hasNext()) throw new NoSuchElementException();\n                return current--;\n            }\n        };\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "for (int value : new Countdown(3))",
+          "output": "[3, 2, 1]"
+        }
+      ],
+      "constraints": [
+        "0 ≤ start ≤ 1,000입니다.",
+        "iterator()를 호출할 때마다 독립된 순회 상태를 가진 새 Iterator를 반환합니다.",
+        "next는 더 이상 원소가 없을 때 NoSuchElementException을 던집니다."
+      ],
+      "hints": [
+        "Iterable은 iterator를 제공하고 향상된 for문은 그 Iterator의 hasNext와 next를 사용합니다.",
+        "비슷한 코드 예시: return new Iterator<>() { private int index; ... };",
+        "current는 Countdown 객체가 아니라 각 Iterator 안에 두어 순회를 서로 독립시킵니다."
+      ],
+      "learning": {
+        "keywords": ["Iterable", "Iterator", "hasNext", "NoSuchElementException"],
+        "summary": "컬렉션이 순회 방법을 Iterator로 분리해 향상된 for문과 여러 독립 순회를 지원하는 계약을 익힙니다.",
+        "example": {
+          "code": "public Iterator<String> iterator() {\n  return new Iterator<>() {\n    private int index;\n    public boolean hasNext() { return index < values.length; }\n    public String next() {\n      if (!hasNext()) throw new NoSuchElementException();\n      return values[index++];\n    }\n  };\n}",
+          "explanation": "각 iterator 호출이 새로운 index 상태를 가지므로 같은 객체를 여러 번 독립적으로 순회할 수 있습니다."
+        },
+        "principles": [
+          "Iterable은 새로운 Iterator를 제공하는 책임을 갖습니다.",
+          "hasNext는 상태를 소비하지 않고 다음 원소 존재 여부만 알려야 합니다.",
+          "next는 원소가 없으면 null이 아니라 NoSuchElementException을 던지는 계약입니다."
+        ],
+        "applications": [
+          {
+            "title": "도메인 컬렉션 순회",
+            "description": "내부 저장 방식을 숨기면서도 호출자가 향상된 for문으로 값을 읽게 할 수 있습니다.",
+            "code": "for (Entry entry : ledger) { ... }"
+          }
+        ],
+        "pitfalls": [
+          "iterator 상태를 원본 객체의 공용 필드에 두어 두 순회가 서로 방해하게 만들지 않습니다.",
+          "hasNext 안에서 current를 감소시켜 확인만으로 원소를 소비하지 않습니다."
+        ]
+      },
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "3부터 카운트다운",
+            "expression": "((java.util.function.Supplier<java.util.List<Integer>>) () -> { java.util.List<Integer> result = new java.util.ArrayList<>(); for (int value : new Countdown(3)) result.add(value); return result; }).get()",
+            "expected": "java.util.List.of(3, 2, 1)"
+          },
+          {
+            "id": "case-2",
+            "label": "0은 빈 순회",
+            "expression": "new Countdown(0).iterator().hasNext()",
+            "expected": "false"
+          },
+          {
+            "id": "case-3",
+            "label": "독립 Iterator",
+            "expression": "((java.util.function.BooleanSupplier) () -> { Countdown countdown = new Countdown(2); java.util.Iterator<Integer> first = countdown.iterator(); java.util.Iterator<Integer> second = countdown.iterator(); return first.next() == 2 && first.next() == 1 && second.next() == 2; }).getAsBoolean()",
+            "expected": "true"
+          },
+          {
+            "id": "case-4",
+            "label": "소진 뒤 next",
+            "expression": "((java.util.function.IntSupplier) () -> { java.util.Iterator<Integer> iterator = new Countdown(1).iterator(); iterator.next(); return iterator.next(); }).getAsInt()",
+            "expectedException": "NoSuchElementException"
+          },
+          {
+            "id": "case-5",
+            "label": "반복 hasNext 무부작용",
+            "expression": "((java.util.function.BooleanSupplier) () -> { java.util.Iterator<Integer> iterator = new Countdown(2).iterator(); return iterator.hasNext() && iterator.hasNext() && iterator.next() == 2; }).getAsBoolean()",
+            "expected": "true"
+          },
+          {
+            "id": "case-6",
+            "label": "Iterator 매번 새 객체",
+            "expression": "((java.util.function.BooleanSupplier) () -> { Countdown countdown = new Countdown(1); return countdown.iterator() != countdown.iterator(); }).getAsBoolean()",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "iterator()마다 current=start를 가진 새 익명 Iterator를 반환하고 next에서 소진 여부를 검사한 뒤 current를 감소시킵니다.",
+        "keyPoints": [
+          "순회 상태는 각 Iterator 인스턴스에 속합니다.",
+          "hasNext는 조회만 하고 next가 원소를 소비합니다."
+        ],
+        "alternative": "별도의 private Iterator 구현 클래스를 만들어 같은 계약을 구현할 수도 있습니다.",
+        "complexity": "원소당 hasNext·next O(1), Iterator당 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 5,
+      "mode": "java",
+      "stage": "순회·정렬",
+      "title": "자연 순서와 화면별 정렬 기준",
+      "question": "Candidate의 자연 순서는 name 오름차순이 되도록 Comparable을 구현하고, CandidateOrder.byScoreThenName은 score 내림차순 후 name 오름차순 Comparator를 반환하게 하세요.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {}\n\nfinal class Candidate implements Comparable<Candidate> {\n    private final String name;\n    private final int score;\n\n    Candidate(String name, int score) {\n        this.name = name;\n        this.score = score;\n    }\n\n    String name() {\n        return name;\n    }\n\n    int score() {\n        return score;\n    }\n\n    @Override\n    public int compareTo(Candidate other) {\n        return 0;\n    }\n}\n\nfinal class CandidateOrder {\n    static Comparator<Candidate> byScoreThenName() {\n        return (left, right) -> 0;\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {}\n\nfinal class Candidate implements Comparable<Candidate> {\n    private final String name;\n    private final int score;\n\n    Candidate(String name, int score) {\n        this.name = name;\n        this.score = score;\n    }\n\n    String name() {\n        return name;\n    }\n\n    int score() {\n        return score;\n    }\n\n    @Override\n    public int compareTo(Candidate other) {\n        return name.compareTo(other.name);\n    }\n}\n\nfinal class CandidateOrder {\n    static Comparator<Candidate> byScoreThenName() {\n        return Comparator.comparingInt(Candidate::score)\n                .reversed()\n                .thenComparing(Candidate::name);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "자연 순서: 라온, 가온, 나래",
+          "output": "[가온, 나래, 라온]"
+        },
+        {
+          "testId": "case-2",
+          "input": "점수: 라온 80, 가온 95, 나래 95",
+          "output": "[가온, 나래, 라온]"
+        }
+      ],
+      "constraints": [
+        "name은 null이 아닌 비어 있지 않은 문자열입니다.",
+        "score는 0 이상 100 이하입니다.",
+        "점수 비교에서 단순 뺄셈 대신 Comparator.comparingInt 또는 Integer.compare를 사용합니다."
+      ],
+      "hints": [
+        "Comparable은 타입의 대표 자연 순서를, Comparator는 화면이나 기능별 외부 순서를 표현합니다.",
+        "비슷한 코드 예시: Comparator.comparingInt(Item::priority).reversed().thenComparing(Item::code);",
+        "점수가 같을 때 name 비교를 추가해야 결과 순서가 결정적입니다."
+      ],
+      "learning": {
+        "keywords": ["Comparable", "Comparator", "자연 순서", "thenComparing"],
+        "summary": "타입이 갖는 기본 자연 순서와 특정 화면에서 필요한 별도 정렬 기준을 분리합니다.",
+        "example": {
+          "code": "class FileEntry implements Comparable<FileEntry> {\n  public int compareTo(FileEntry other) {\n    return name.compareTo(other.name);\n  }\n}\nComparator<FileEntry> largestFirst =\n    Comparator.comparingLong(FileEntry::size).reversed()\n        .thenComparing(FileEntry::name);",
+          "explanation": "파일의 자연 순서는 이름으로 두고, 용량 화면에서는 크기 내림차순이라는 별도 Comparator를 사용합니다."
+        },
+        "principles": [
+          "Comparable.compareTo는 해당 타입의 대표적인 자연 순서를 정의합니다.",
+          "Comparator는 원본 타입을 수정하지 않고 여러 정렬 전략을 만들 수 있습니다.",
+          "동점 기준을 연결하면 입력 순서와 무관한 결정적 결과를 얻습니다."
+        ],
+        "applications": [
+          {
+            "title": "화면별 정렬 옵션",
+            "description": "이름순, 최신순, 점수순처럼 같은 데이터에 여러 Comparator를 선택적으로 적용할 수 있습니다.",
+            "code": "rows.sort(byScoreThenName);"
+          }
+        ],
+        "pitfalls": [
+          "정수 비교를 left - right로 구현해 overflow 위험을 만들지 않습니다.",
+          "compare 결과가 0인데 equals는 항상 다르게 판단되는 객체를 TreeSet 키로 사용할 때의 영향을 검토합니다."
+        ]
+      },
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "이름 자연 순서",
+            "expression": "((java.util.function.Supplier<java.util.List<String>>) () -> { java.util.List<Candidate> values = new java.util.ArrayList<>(java.util.List.of(new Candidate(\"라온\", 80), new Candidate(\"가온\", 95), new Candidate(\"나래\", 95))); java.util.Collections.sort(values); return values.stream().map(Candidate::name).toList(); }).get()",
+            "expected": "java.util.List.of(\"가온\", \"나래\", \"라온\")"
+          },
+          {
+            "id": "case-2",
+            "label": "점수와 이름 복합 순서",
+            "expression": "((java.util.function.Supplier<java.util.List<String>>) () -> { java.util.List<Candidate> values = new java.util.ArrayList<>(java.util.List.of(new Candidate(\"라온\", 80), new Candidate(\"나래\", 95), new Candidate(\"가온\", 95))); values.sort(CandidateOrder.byScoreThenName()); return values.stream().map(Candidate::name).toList(); }).get()",
+            "expected": "java.util.List.of(\"가온\", \"나래\", \"라온\")"
+          },
+          {
+            "id": "case-3",
+            "label": "높은 점수 우선",
+            "expression": "CandidateOrder.byScoreThenName().compare(new Candidate(\"A\", 100), new Candidate(\"B\", 0)) < 0",
+            "expected": "true"
+          },
+          {
+            "id": "case-4",
+            "label": "동점 이름 기준",
+            "expression": "CandidateOrder.byScoreThenName().compare(new Candidate(\"가\", 50), new Candidate(\"나\", 50)) < 0",
+            "expected": "true"
+          },
+          {
+            "id": "case-5",
+            "label": "같은 값 비교",
+            "expression": "CandidateOrder.byScoreThenName().compare(new Candidate(\"같음\", 70), new Candidate(\"같음\", 70))",
+            "expected": "0"
+          },
+          {
+            "id": "case-6",
+            "label": "자연 순서와 점수 분리",
+            "expression": "new Candidate(\"가\", 0).compareTo(new Candidate(\"나\", 100)) < 0",
+            "expected": "true"
+          },
+          {
+            "id": "case-7",
+            "label": "같은 이름의 자연 순서 동등",
+            "expression": "new Candidate(\"동일\", 10).compareTo(new Candidate(\"동일\", 99))",
+            "expected": "0"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "compareTo는 name.compareTo로 자연 순서를 정의하고 외부 Comparator는 score 내림차순에 name 오름차순을 연결합니다.",
+        "keyPoints": [
+          "자연 순서와 기능별 정렬 전략의 책임을 분리합니다.",
+          "thenComparing으로 동점 순서를 명시해 결과를 결정적으로 만듭니다."
+        ],
+        "alternative": "Comparator 람다에서 Integer.compare(right.score(), left.score()) 후 이름을 비교해도 같은 계약을 구현할 수 있습니다.",
+        "complexity": "비교 1회는 이름 길이를 k라 할 때 O(k), n개 정렬은 평균 O(n log n)"
+      }
+    }
+  ]
+}

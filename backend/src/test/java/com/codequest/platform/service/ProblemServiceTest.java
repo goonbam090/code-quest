@@ -381,6 +381,79 @@ class ProblemServiceTest {
     }
 
     @Test
+    void explainsNewJavaCurriculumCategoriesAtTheirIntendedLevel() {
+        ProblemRepository problems = mock(ProblemRepository.class);
+        LearningProgressRepository progress = mock(LearningProgressRepository.class);
+        ProgressRecorder progressRecorder = mock(ProgressRecorder.class);
+        AnswerValidator validator = mock(AnswerValidator.class);
+        ProblemService service = new ProblemService(
+                problems, progress, progressRecorder, validator, new ObjectMapper());
+
+        Problem bridge = new Problem();
+        bridge.setCategory("java-object-core");
+        bridge.setNumber(1);
+        bridge.setMode("java");
+        bridge.setStage("참조형·객체 상태");
+        bridge.setTitle("참조값");
+        bridge.setQuestion("같은 객체를 가리키게 하세요.");
+        bridge.setHtml("");
+        bridge.setAnswer("answer");
+        bridge.setHints(List.of("참조값을 복사하세요."));
+
+        Problem applied = new Problem();
+        applied.setCategory("java-collection-core");
+        applied.setNumber(1);
+        applied.setMode("java");
+        applied.setStage("List 내부 원리");
+        applied.setTitle("동적 배열");
+        applied.setQuestion("배열 용량을 확장하세요.");
+        applied.setHtml("");
+        applied.setAnswer("answer");
+        applied.setHints(List.of("논리 크기와 용량을 구분하세요."));
+
+        when(problems.findByCategoryAndNumber("java-object-core", 1))
+                .thenReturn(Optional.of(bridge));
+        when(problems.findByCategoryAndNumber("java-collection-core", 1))
+                .thenReturn(Optional.of(applied));
+        when(validator.evaluate(bridge, "answer")).thenReturn(
+                new AnswerValidator.Evaluation(
+                        AnswerValidator.Status.CORRECT,
+                        true,
+                        AnswerValidator.DiagnosticCode.NONE,
+                        "통과"
+                )
+        );
+        when(validator.evaluate(applied, "answer")).thenReturn(
+                new AnswerValidator.Evaluation(
+                        AnswerValidator.Status.CORRECT,
+                        true,
+                        AnswerValidator.DiagnosticCode.NONE,
+                        "통과"
+                )
+        );
+        when(progressRecorder.recordAttempt("learner", null, true))
+                .thenReturn(new ProgressRecorder.AttemptResult(true));
+
+        var bridgeResponse = service.submit(
+                "java-object-core",
+                1,
+                new com.codequest.platform.dto.ApiDtos.SubmissionRequest("learner", "answer")
+        );
+        var appliedResponse = service.submit(
+                "java-collection-core",
+                1,
+                new com.codequest.platform.dto.ApiDtos.SubmissionRequest("learner", "answer")
+        );
+
+        assertThat(bridgeResponse.intentExplanation())
+                .contains("객체 상태")
+                .contains("컬렉션 경계");
+        assertThat(appliedResponse.intentExplanation())
+                .contains("Object·예외·컬렉션 계약")
+                .contains("응용 설계");
+    }
+
+    @Test
     void doesNotRecordAnAttemptWhenTheCssJudgeIsUnavailable() {
         ProblemRepository problems = mock(ProblemRepository.class);
         LearningProgressRepository progress = mock(LearningProgressRepository.class);

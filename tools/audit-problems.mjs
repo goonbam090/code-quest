@@ -15,7 +15,10 @@ const expectedCounts = new Map([
   ['ui', 10],
   ['java', 47],
   ['java-bridge', 17],
+  ['java-object-core', 4],
   ['java-advanced', 22],
+  ['java-standard-library', 5],
+  ['java-collection-core', 5],
   ['javascript', 30],
   ['algorithm', 37],
   ['algorithm-intermediate', 20]
@@ -26,6 +29,8 @@ const allowedSourceContracts = new Set([
   'insertion-sort',
   'member-badge-constructor-delegation',
   'checked-port-exception',
+  'task-chain-linked-queue',
+  'deque-workshop-array-deque',
   'function-declaration-helper',
   'arrow-function-helper',
   'rest-parameter',
@@ -622,6 +627,14 @@ function validateProblem(problem, category, expectedId) {
     if (category === 'java-advanced' && problem.id === 22
         && problem.required?.sourceContract !== 'checked-port-exception') {
       fail(location, '서비스 포트 문제에는 checked 예외 sourceContract가 필요합니다.')
+    }
+    if (category === 'java-collection-core' && problem.id === 2
+        && problem.required?.sourceContract !== 'task-chain-linked-queue') {
+      fail(location, '연결 작업열 문제에는 단일 연결 큐 sourceContract가 필요합니다.')
+    }
+    if (category === 'java-collection-core' && problem.id === 3
+        && problem.required?.sourceContract !== 'deque-workshop-array-deque') {
+      fail(location, 'Deque 처리 순서 문제에는 ArrayDeque sourceContract가 필요합니다.')
     }
     if (category === 'javascript') {
       const javascriptContracts = new Map([

@@ -42,10 +42,13 @@ const javaCategories: CategoryDefinition[] = [
   { id: 'java-collection', label: '배열·컬렉션', source: 'java', stage: '배열·컬렉션' },
   { id: 'bridge-method', label: '타입·메서드', source: 'java-bridge', stage: '타입·메서드 연결' },
   { id: 'bridge-object', label: '객체 입문', source: 'java-bridge', stage: '객체 입문' },
+  { id: 'bridge-reference', label: '참조·객체 상태', source: 'java-object-core' },
   { id: 'bridge-collection', label: '컬렉션·검증', source: 'java-bridge', stage: '컬렉션·검증' },
   { id: 'applied-oop', label: '객체지향', source: 'java-advanced', stage: '객체지향 설계' },
+  { id: 'applied-library', label: 'Object·표준 API', source: 'java-standard-library' },
   { id: 'applied-validation', label: '예외·검증', source: 'java-advanced', stage: '예외·검증' },
   { id: 'applied-generic', label: '제네릭·컬렉션', source: 'java-advanced', stage: '제네릭·컬렉션' },
+  { id: 'applied-collection-core', label: '컬렉션 원리', source: 'java-collection-core' },
   { id: 'applied-functional', label: '람다·스트림', source: 'java-advanced', stage: '람다·스트림' },
   { id: 'applied-modeling', label: '실무 모델링', source: 'java-advanced', stage: '실무 모델링' }
 ]
@@ -103,7 +106,7 @@ const tracks: TrackDefinition[] = [
         id: 'java-bridge',
         label: 'Java Bridge',
         description: '문법을 객체 설계로 연결',
-        categoryIds: ['bridge-method', 'bridge-object', 'bridge-collection']
+        categoryIds: ['bridge-method', 'bridge-object', 'bridge-reference', 'bridge-collection']
       },
       {
         id: 'java-applied',
@@ -111,8 +114,10 @@ const tracks: TrackDefinition[] = [
         description: '설계와 실무 문법으로 확장',
         categoryIds: [
           'applied-oop',
+          'applied-library',
           'applied-validation',
           'applied-generic',
+          'applied-collection-core',
           'applied-functional',
           'applied-modeling'
         ]

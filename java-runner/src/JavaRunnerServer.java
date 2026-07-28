@@ -45,7 +45,9 @@ public final class JavaRunnerServer {
             "none",
             "insertion-sort",
             "member-badge-constructor-delegation",
-            "checked-port-exception"
+            "checked-port-exception",
+            "task-chain-linked-queue",
+            "deque-workshop-array-deque"
     );
     private static final ExecutorService REQUESTS = Executors.newFixedThreadPool(4);
     private static final ExecutorService STREAMS = Executors.newVirtualThreadPerTaskExecutor();

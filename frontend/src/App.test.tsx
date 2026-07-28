@@ -1297,8 +1297,13 @@ describe('App accessibility', () => {
     await screen.findByRole('heading', { name: '1. 메서드 연결' })
     expect(mockedApi.problems).toHaveBeenLastCalledWith('java-bridge')
     expect(screen.getByText('Java Quest / Java Bridge / 타입·메서드 / 타입·메서드 연결')).toBeInTheDocument()
-    expect(within(screen.getByRole('navigation', { name: '학습 카테고리' })).getAllByRole('button'))
-      .toHaveLength(3)
+    const bridgeCategories = within(
+      screen.getByRole('navigation', { name: '학습 카테고리' })
+    ).getAllByRole('button')
+    expect(bridgeCategories).toHaveLength(4)
+    expect(bridgeCategories.map(button => button.textContent)).toEqual(expect.arrayContaining([
+      expect.stringContaining('참조·객체 상태')
+    ]))
 
     mockedApi.problems.mockResolvedValueOnce([{
       id: 303,
@@ -1320,8 +1325,14 @@ describe('App accessibility', () => {
     await screen.findByRole('heading', { name: '1. 객체 역할' })
     expect(mockedApi.problems).toHaveBeenLastCalledWith('java-advanced')
     expect(screen.getByText('Java Quest / Java Applied / 객체지향 / 객체지향 설계')).toBeInTheDocument()
-    expect(within(screen.getByRole('navigation', { name: '학습 카테고리' })).getAllByRole('button'))
-      .toHaveLength(5)
+    const appliedCategories = within(
+      screen.getByRole('navigation', { name: '학습 카테고리' })
+    ).getAllByRole('button')
+    expect(appliedCategories).toHaveLength(7)
+    expect(appliedCategories.map(button => button.textContent)).toEqual(expect.arrayContaining([
+      expect.stringContaining('Object·표준 API'),
+      expect.stringContaining('컬렉션 원리')
+    ]))
   })
 
   it('continues from the final Java foundation category into Java Bridge', async () => {

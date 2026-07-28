@@ -8,6 +8,8 @@ public final class JavaRunnerServerTest {
         validatesInsertionSortSourceContract();
         validatesMemberBadgeConstructorDelegationSourceContract();
         validatesCheckedPortExceptionSourceContract();
+        validatesTaskChainLinkedQueueSourceContract();
+        validatesDequeWorkshopArrayDequeSourceContract();
         enforcesSourceContractInIsolatedHelper();
         runsSafeCodeWithRestrictedPermissions();
         runsHarnessWithoutPrivilegedPermissions();
@@ -452,6 +454,125 @@ public final class JavaRunnerServerTest {
                         + result.status() + " / " + result.details());
         check(!result.details().contains("java.util.Arrays.sort(copy)"),
                 "소스 계약 안내에 제출 코드나 기준 구현이 노출되었습니다.");
+
+        assertIsolatedContractAccepted(
+                "task-chain-linked-queue",
+                """
+                        public class Solution {}
+                        final class TaskChain {
+                            private static final class Node {
+                                final String value;
+                                Node next;
+                                Node(String value) { this.value = value; }
+                            }
+                            private Node head;
+                            private Node tail;
+                            private int size;
+                            void addLast(String value) {
+                                Node node = new Node(value);
+                                if (tail == null) {
+                                    head = tail = node;
+                                } else {
+                                    tail.next = node;
+                                    tail = node;
+                                }
+                                size++;
+                            }
+                            String removeFirst() {
+                                if (head == null) {
+                                    throw new java.util.NoSuchElementException();
+                                }
+                                String value = head.value;
+                                head = head.next;
+                                size--;
+                                if (head == null) tail = null;
+                                return value;
+                            }
+                        }
+                        """);
+        assertIsolatedContractRejected(
+                "task-chain-linked-queue",
+                """
+                        public class Solution {}
+                        final class TaskChain {
+                            private static final class Node {
+                                final String value;
+                                Node next;
+                                Node(String value) { this.value = value; }
+                            }
+                            private Node head;
+                            private Node tail;
+                            private int size;
+                            void addLast(String value) {
+                                append(value);
+                            }
+                            private void append(String value) {
+                                Node node = new Node(value);
+                                if (tail == null) {
+                                    head = tail = node;
+                                } else {
+                                    tail.next = node;
+                                    tail = node;
+                                }
+                                size++;
+                            }
+                            String removeFirst() {
+                                if (head == null) {
+                                    throw new java.util.NoSuchElementException();
+                                }
+                                String value = head.value;
+                                head = head.next;
+                                size--;
+                                if (head == null) tail = null;
+                                return value;
+                            }
+                        }
+                        """);
+
+        assertIsolatedContractAccepted(
+                "deque-workshop-array-deque",
+                """
+                        import java.util.*;
+                        public class Solution {}
+                        final class DequeWorkshop {
+                            static List<String> reverse(List<String> values) {
+                                Deque<String> deque = new ArrayDeque<>(values);
+                                List<String> result = new ArrayList<>();
+                                while (!deque.isEmpty()) {
+                                    String value = deque.removeLast();
+                                    result.add(value);
+                                }
+                                return List.copyOf(result);
+                            }
+                            static List<String> serve(List<String> values) {
+                                Deque<String> deque = new ArrayDeque<>(values);
+                                List<String> result = new ArrayList<>();
+                                while (!deque.isEmpty()) {
+                                    String value = deque.removeFirst();
+                                    result.add(value);
+                                }
+                                return result;
+                            }
+                        }
+                        """);
+        assertIsolatedContractRejected(
+                "deque-workshop-array-deque",
+                """
+                        import java.util.*;
+                        public class Solution {}
+                        final class DequeWorkshop {
+                            static List<String> reverse(List<String> values) {
+                                Deque<String> ignored = new ArrayDeque<>();
+                                List<String> result = new ArrayList<>(values);
+                                Collections.reverse(result);
+                                return result;
+                            }
+                            static List<String> serve(List<String> values) {
+                                Deque<String> ignored = new ArrayDeque<>();
+                                return List.copyOf(values);
+                            }
+                        }
+                        """);
     }
 
     private static void runsSafeCodeWithRestrictedPermissions() throws Exception {
@@ -625,6 +746,542 @@ public final class JavaRunnerServerTest {
                         }
                         """);
         check(!missingThrows.matched(), "PortValueException throws 선언 누락을 허용했습니다.");
+    }
+
+    private static void validatesTaskChainLinkedQueueSourceContract() {
+        assertTaskChainContractAccepted("""
+                import java.util.*;
+                public class Solution {}
+                final class TaskChain {
+                    private static final class Node {
+                        final String value;
+                        Node next;
+                        Node(String value) {
+                            this.value = value;
+                        }
+                    }
+                    private Node head;
+                    private Node tail;
+                    private int size;
+
+                    void addLast(String value) {
+                        Node node = new Node(value);
+                        if (tail == null) {
+                            head = tail = node;
+                        } else {
+                            tail.next = node;
+                            tail = node;
+                        }
+                        size++;
+                    }
+
+                    String removeFirst() {
+                        if (head == null) throw new NoSuchElementException();
+                        String value = head.value;
+                        head = head.next;
+                        size--;
+                        if (head == null) tail = null;
+                        return value;
+                    }
+
+                    List<String> snapshot() {
+                        List<String> values = new ArrayList<>();
+                        for (Node current = head; current != null; current = current.next) {
+                            values.add(current.value);
+                        }
+                        return values;
+                    }
+                }
+                """, "기준 단일 연결 구현");
+
+        assertTaskChainContractAccepted("""
+                public class Solution {}
+                final class TaskChain {
+                    private static final class Node {
+                        final String value;
+                        Node next;
+                        Node(String value) {
+                            this.value = value;
+                        }
+                    }
+                    private Node head;
+                    private Node tail;
+                    private int size;
+
+                    void addLast(String value) {
+                        Node node = new Node(value);
+                        if (this.tail == null) {
+                            this.head = node;
+                            this.tail = node;
+                        } else {
+                            this.tail.next = node;
+                            this.tail = node;
+                        }
+                        this.size++;
+                    }
+
+                    String removeFirst() {
+                        if (this.head == null) {
+                            throw new java.util.NoSuchElementException();
+                        }
+                        Node first = this.head;
+                        String removed = first.value;
+                        this.head = first.next;
+                        this.size--;
+                        if (this.head == null) {
+                            this.tail = this.head;
+                        }
+                        return removed;
+                    }
+                }
+                """, "this 필드와 한 단계 head 별칭을 사용한 동등 구현");
+
+        assertTaskChainContractRejected("""
+                import java.util.*;
+                public class Solution {}
+                final class TaskChain {
+                    private static final class Node {
+                        final String value;
+                        Node next;
+                        Node(String value) {
+                            this.value = value;
+                        }
+                    }
+                    private Node head;
+                    private Node tail;
+                    private int size;
+                    private final Deque<String> queue = new ArrayDeque<>();
+
+                    void addLast(String value) {
+                        queue.addLast(value);
+                        size++;
+                    }
+
+                    String removeFirst() {
+                        String value = queue.removeFirst();
+                        size--;
+                        return value;
+                    }
+                }
+                """, "Node 필드를 decoy로 둔 ArrayDeque 위임");
+
+        assertTaskChainContractRejected("""
+                public class Solution {}
+                final class TaskChain {
+                    private static final class Node {
+                        final String value;
+                        Node next;
+                        Node(String value) {
+                            this.value = value;
+                        }
+                    }
+                    private Node head;
+                    private Node tail;
+                    private int size;
+
+                    void addLast(String value) {
+                        Node node = new Node(value);
+                        Node cursor = head;
+                        while (cursor != null && cursor.next != null) {
+                            cursor = cursor.next;
+                        }
+                        if (tail == null) {
+                            head = tail = node;
+                        } else {
+                            tail.next = node;
+                            tail = node;
+                        }
+                        size++;
+                    }
+
+                    String removeFirst() {
+                        if (head == null) throw new java.util.NoSuchElementException();
+                        String value = head.value;
+                        head = head.next;
+                        if (head == null) tail = null;
+                        size--;
+                        return value;
+                    }
+                }
+                """, "정상 대입 앞에서 전체 연결을 순회하는 구현");
+
+        assertTaskChainContractRejected("""
+                public class Solution {}
+                final class TaskChain {
+                    private static final class Node {
+                        final String value;
+                        Node next;
+                        Node(String value) {
+                            this.value = value;
+                        }
+                    }
+                    private Node head;
+                    private Node tail;
+                    private int size;
+
+                    void addLast(String value) {
+                        append(value);
+                    }
+
+                    private void append(String value) {
+                        Node node = new Node(value);
+                        if (tail == null) {
+                            head = tail = node;
+                        } else {
+                            tail.next = node;
+                            tail = node;
+                        }
+                        size++;
+                    }
+
+                    String removeFirst() {
+                        if (head == null) throw new java.util.NoSuchElementException();
+                        String value = head.value;
+                        head = head.next;
+                        if (head == null) tail = null;
+                        size--;
+                        return value;
+                    }
+                }
+                """, "핵심 연결을 helper로 위임한 구현");
+    }
+
+    private static void validatesDequeWorkshopArrayDequeSourceContract() {
+        assertDequeWorkshopContractAccepted("""
+                import java.util.*;
+                public class Solution {}
+                final class DequeWorkshop {
+                    static List<String> reverse(List<String> values) {
+                        Deque<String> deque = new ArrayDeque<>();
+                        for (String value : values) deque.addLast(value);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) {
+                            result.add(deque.removeLast());
+                        }
+                        return List.copyOf(result);
+                    }
+
+                    static List<String> serve(List<String> values) {
+                        Deque<String> deque = new ArrayDeque<>();
+                        for (String value : values) deque.addLast(value);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) {
+                            result.add(deque.removeFirst());
+                        }
+                        return List.copyOf(result);
+                    }
+                }
+                """, "기준 addLast/removeLast·removeFirst 구현");
+
+        assertDequeWorkshopContractAccepted("""
+                import java.util.*;
+                public class Solution {}
+                final class DequeWorkshop {
+                    static List<String> reverse(List<String> values) {
+                        Deque<String> deque = new ArrayDeque<>();
+                        for (String value : values) deque.push(value);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) {
+                            String removed = deque.pop();
+                            result.add(removed);
+                        }
+                        return result;
+                    }
+
+                    static List<String> serve(List<String> values) {
+                        var deque = new java.util.ArrayDeque<String>(values);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) {
+                            String removed = deque.pollFirst();
+                            result.add(removed);
+                        }
+                        return result;
+                    }
+                }
+                """, "제거값 지역 변수, push/pop과 var 생성자를 사용한 동등 구현");
+
+        assertDequeWorkshopContractAccepted("""
+                import java.util.*;
+                public class Solution {}
+                final class DequeWorkshop {
+                    static List<String> reverse(List<String> values) {
+                        Deque<String> deque = new ArrayDeque<>(values);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) result.add(deque.removeLast());
+                        return Collections.unmodifiableList(result);
+                    }
+
+                    static List<String> serve(List<String> values) {
+                        Deque<String> deque = new ArrayDeque<>(values);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) result.add(deque.removeFirst());
+                        return new ArrayList<>(result);
+                    }
+                }
+                """, "Collections 불변 래퍼와 ArrayList 복사 반환");
+
+        assertDequeWorkshopContractRejected("""
+                import java.util.*;
+                public class Solution {}
+                final class DequeWorkshop {
+                    static List<String> reverse(List<String> values) {
+                        Deque<String> ignored = new ArrayDeque<>();
+                        List<String> result = new ArrayList<>(values);
+                        Collections.reverse(result);
+                        return result;
+                    }
+
+                    static List<String> serve(List<String> values) {
+                        Deque<String> deque = new ArrayDeque<>(values);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) result.add(deque.removeFirst());
+                        return result;
+                    }
+                }
+                """, "미사용 ArrayDeque decoy와 Collections.reverse");
+
+        assertDequeWorkshopContractRejected("""
+                import java.util.*;
+                public class Solution {}
+                final class DequeWorkshop {
+                    static List<String> reverse(List<String> values) {
+                        List<String> result = new ArrayList<>(values);
+                        Collections.reverse(result);
+                        if (false) {
+                            Deque<String> deque = new ArrayDeque<>();
+                            for (String value : values) deque.addLast(value);
+                            result.clear();
+                            while (!deque.isEmpty()) result.add(deque.removeLast());
+                        }
+                        return result;
+                    }
+
+                    static List<String> serve(List<String> values) {
+                        Deque<String> deque = new ArrayDeque<>(values);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) result.add(deque.removeFirst());
+                        return result;
+                    }
+                }
+                """, "리터럴 false 분기에 숨긴 ArrayDeque decoy");
+
+        assertDequeWorkshopContractRejected("""
+                import java.util.*;
+                public class Solution {}
+                final class DequeWorkshop {
+                    static List<String> reverse(List<String> values) {
+                        List<String> result = new ArrayList<>(values);
+                        Collections.reverse(result);
+                        if (values.size() < 0) {
+                            Deque<String> deque = new ArrayDeque<>(values);
+                            result.clear();
+                            while (!deque.isEmpty()) result.add(deque.removeLast());
+                        }
+                        return result;
+                    }
+
+                    static List<String> serve(List<String> values) {
+                        Deque<String> deque = new ArrayDeque<>(values);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) result.add(deque.removeFirst());
+                        return result;
+                    }
+                }
+                """, "List.size()의 불가능한 음수 분기에 숨긴 decoy");
+
+        assertDequeWorkshopContractRejected("""
+                import java.util.*;
+                public class Solution {}
+                final class DequeWorkshop {
+                    static List<String> reverse(List<String> values) {
+                        Deque<String> deque = new ArrayDeque<>(values);
+                        List<String> dequeResult = new ArrayList<>();
+                        while (!deque.isEmpty()) dequeResult.add(deque.removeLast());
+                        List<String> shortcut = new ArrayList<>(values);
+                        Collections.reverse(shortcut);
+                        return Objects.requireNonNullElse(shortcut, dequeResult);
+                    }
+
+                    static List<String> serve(List<String> values) {
+                        Deque<String> deque = new ArrayDeque<>(values);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) result.add(deque.removeFirst());
+                        return result;
+                    }
+                }
+                """, "임의 반환식의 식별자만으로 연결한 결과 decoy");
+
+        assertDequeWorkshopContractRejected("""
+                import java.util.*;
+                public class Solution {}
+                final class DequeWorkshop {
+                    static List<String> reverse(List<String> values) {
+                        Deque<String> deque = new ArrayDeque<>(values);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) result.add(deque.removeLast());
+                        result = new ArrayList<>(values);
+                        Collections.reverse(result);
+                        return result;
+                    }
+
+                    static List<String> serve(List<String> values) {
+                        Deque<String> deque = new ArrayDeque<>(values);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) result.add(deque.removeFirst());
+                        return result;
+                    }
+                }
+                """, "Deque 결과 증거 뒤 result를 shortcut으로 재대입");
+
+        assertDequeWorkshopContractRejected("""
+                import java.util.*;
+                public class Solution {}
+                final class DequeWorkshop {
+                    static List<String> reverse(List<String> values) {
+                        Deque<String> deque = new ArrayDeque<>(values);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) result.add(deque.removeLast());
+                        return result;
+                    }
+
+                    static List<String> serve(List<String> values) {
+                        Deque<String> deque = new ArrayDeque<>(values);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) result.add(deque.removeFirst());
+                        result.clear();
+                        result.addAll(values);
+                        return result;
+                    }
+                }
+                """, "clear 후 shortcut 값으로 다시 채운 result");
+
+        assertDequeWorkshopContractRejected("""
+                import java.util.*;
+                public class Solution {}
+                final class DequeWorkshop {
+                    static List<String> reverse(List<String> values) {
+                        Deque<String> deque = new LinkedList<>();
+                        deque.addAll(values);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) result.add(deque.removeLast());
+                        return result;
+                    }
+
+                    static List<String> serve(List<String> values) {
+                        Deque<String> deque = new LinkedList<>();
+                        deque.addAll(values);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) result.add(deque.removeFirst());
+                        return result;
+                    }
+                }
+                """, "ArrayDeque가 아닌 LinkedList 구현");
+
+        assertDequeWorkshopContractRejected("""
+                import java.util.*;
+                public class Solution {}
+                final class DequeWorkshop {
+                    static List<String> reverse(List<String> values) {
+                        Deque<String> deque = new ArrayDeque<>();
+                        for (String value : values) deque.addLast(value);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) result.add(deque.removeFirst());
+                        return result;
+                    }
+
+                    static List<String> serve(List<String> values) {
+                        Deque<String> deque = new ArrayDeque<>();
+                        for (String value : values) deque.addLast(value);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) result.add(deque.removeLast());
+                        return result;
+                    }
+                }
+                """, "reverse와 serve의 제거 끝을 뒤바꾼 구현");
+
+        assertDequeWorkshopContractRejected("""
+                import java.util.*;
+                public class Solution {}
+                final class CustomDeque<E> extends ArrayDeque<E> {}
+                final class DequeWorkshop {
+                    static List<String> reverse(List<String> values) {
+                        Deque<String> deque = new CustomDeque<>();
+                        deque.addAll(values);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) result.add(deque.removeLast());
+                        return result;
+                    }
+
+                    static List<String> serve(List<String> values) {
+                        Deque<String> deque = new CustomDeque<>();
+                        deque.addAll(values);
+                        List<String> result = new ArrayList<>();
+                        while (!deque.isEmpty()) result.add(deque.removeFirst());
+                        return result;
+                    }
+                }
+                """, "ArrayDeque 하위 타입으로 직접 생성 계약을 우회한 구현");
+    }
+
+    private static void assertTaskChainContractAccepted(String source, String description) {
+        SourceContractChecker.Result result =
+                SourceContractChecker.check("task-chain-linked-queue", source);
+        check(result.matched(),
+                "동등한 TaskChain 구현을 거부했습니다: "
+                        + description + " / " + result.guidance());
+    }
+
+    private static void assertTaskChainContractRejected(String source, String description) {
+        SourceContractChecker.Result result =
+                SourceContractChecker.check("task-chain-linked-queue", source);
+        check(!result.matched(), "TaskChain 의도 위반 구현을 허용했습니다: " + description);
+    }
+
+    private static void assertDequeWorkshopContractAccepted(String source, String description) {
+        SourceContractChecker.Result result =
+                SourceContractChecker.check("deque-workshop-array-deque", source);
+        check(result.matched(),
+                "동등한 DequeWorkshop 구현을 거부했습니다: "
+                        + description + " / " + result.guidance());
+    }
+
+    private static void assertDequeWorkshopContractRejected(String source, String description) {
+        SourceContractChecker.Result result =
+                SourceContractChecker.check("deque-workshop-array-deque", source);
+        check(!result.matched(),
+                "DequeWorkshop 의도 위반 구현을 허용했습니다: " + description);
+    }
+
+    private static void assertIsolatedContractAccepted(
+            String sourceContract, String source) throws Exception {
+        String token = "ISOLATED_" + sourceContract.replace('-', '_').toUpperCase();
+        String harness = """
+                public final class QuestHarness {
+                    public static void main(String[] args) {
+                        System.out.println("%s\\tCASE\\tPUBLIC\\t1\\tPASSED");
+                        System.out.println("%s\\tSUMMARY\\t1\\t1\\t1\\t1\\t0\\t0");
+                    }
+                }
+                """.formatted(token, token);
+        JavaRunnerServer.Evaluation result = JavaRunnerServer.evaluate(
+                "Solution", source, harness, sourceContract, token);
+        check("PASSED".equals(result.status()),
+                "격리된 sourceContract 정상 경로가 실패했습니다: "
+                        + sourceContract + " / " + result.status() + " / " + result.details());
+    }
+
+    private static void assertIsolatedContractRejected(
+            String sourceContract, String source) throws Exception {
+        JavaRunnerServer.Evaluation result = JavaRunnerServer.evaluate(
+                "Solution",
+                source,
+                "this harness must not be compiled",
+                sourceContract,
+                "REJECTED_" + sourceContract.replace('-', '_').toUpperCase()
+        );
+        check("SOURCE_CONTRACT_FAILED".equals(result.status()),
+                "격리된 sourceContract 위반 경로가 우회되었습니다: "
+                        + sourceContract + " / " + result.status() + " / " + result.details());
     }
 
     private static void assertForbidden(String source) {

@@ -1,0 +1,512 @@
+{
+  "id": "java-standard-library",
+  "name": "Java Applied · Object와 표준 라이브러리",
+  "description": "Object 계약, 날짜·시간과 자원 정리를 경계값으로 익히는 5문제",
+  "problems": [
+    {
+      "id": 1,
+      "mode": "java",
+      "stage": "Object 계약",
+      "title": "좌표의 값 동등성과 해시 코드",
+      "question": "GridPoint가 row와 column 값이 모두 같으면 같은 값으로 비교되도록 equals와 hashCode를 구현하세요. 서로 다른 인스턴스도 HashSet과 HashMap에서 같은 키로 동작해야 합니다.",
+      "html": "",
+      "starterCode": "import java.util.*;\n\npublic class Solution {}\n\nfinal class GridPoint {\n    private final int row;\n    private final int column;\n\n    GridPoint(int row, int column) {\n        this.row = row;\n        this.column = column;\n    }\n\n    @Override\n    public boolean equals(Object other) {\n        return this == other;\n    }\n\n    @Override\n    public int hashCode() {\n        return System.identityHashCode(this);\n    }\n}",
+      "answer": "import java.util.*;\n\npublic class Solution {}\n\nfinal class GridPoint {\n    private final int row;\n    private final int column;\n\n    GridPoint(int row, int column) {\n        this.row = row;\n        this.column = column;\n    }\n\n    @Override\n    public boolean equals(Object other) {\n        if (this == other) return true;\n        if (!(other instanceof GridPoint point)) return false;\n        return row == point.row && column == point.column;\n    }\n\n    @Override\n    public int hashCode() {\n        return Objects.hash(row, column);\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new GridPoint(2, 3), new GridPoint(2, 3)",
+          "output": "equals = true"
+        }
+      ],
+      "constraints": [
+        "row와 column은 int 범위입니다.",
+        "equals는 null과 다른 타입에 false를 반환합니다.",
+        "equals가 true인 두 객체는 반드시 같은 hashCode를 반환해야 합니다."
+      ],
+      "hints": [
+        "==는 참조값을, equals는 객체가 정의한 값 동등성을 비교합니다.",
+        "비슷한 코드 예시: if (!(other instanceof ColorKey key)) return false;",
+        "equals에 사용하는 모든 필드를 같은 순서로 hashCode 계산에도 포함하세요."
+      ],
+      "learning": {
+        "keywords": ["equals", "hashCode", "값 동등성", "해시 키"],
+        "summary": "서로 다른 객체가 같은 값을 나타낼 때 equals와 hashCode 계약을 함께 구현해야 해시 기반 컬렉션에서도 하나의 키로 취급됩니다.",
+        "example": {
+          "code": "@Override\npublic boolean equals(Object other) {\n  return other instanceof ColorKey key\n      && red == key.red && green == key.green;\n}\n\n@Override\npublic int hashCode() {\n  return Objects.hash(red, green);\n}",
+          "explanation": "동등성에 사용한 red와 green을 hashCode에도 동일하게 포함해 같은 값이 같은 해시를 갖게 합니다."
+        },
+        "principles": [
+          "동일성은 같은 인스턴스인지 확인하고 동등성은 객체가 정의한 값이 같은지 확인합니다.",
+          "equals가 true인 객체는 같은 hashCode를 반환해야 합니다.",
+          "HashSet과 HashMap은 먼저 해시를 사용해 후보를 좁힌 뒤 equals로 값을 확인합니다."
+        ],
+        "applications": [
+          {
+            "title": "복합 키 중복 제거",
+            "description": "행과 열, 날짜와 코드처럼 여러 값이 한 식별자를 이룰 때 값 객체를 Set이나 Map 키로 사용할 수 있습니다.",
+            "code": "Set<ColorKey> uniqueColors = new HashSet<>();"
+          }
+        ],
+        "pitfalls": [
+          "equals만 재정의하고 hashCode를 identity 기반으로 남겨두지 않습니다.",
+          "동등성 계산에 변경 가능한 필드를 사용한 객체를 해시 컬렉션 안에서 변경하지 않습니다."
+        ]
+      },
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "같은 좌표의 동등성",
+            "expression": "new GridPoint(2, 3).equals(new GridPoint(2, 3))",
+            "expected": "true"
+          },
+          {
+            "id": "case-2",
+            "label": "다른 행",
+            "expression": "new GridPoint(2, 3).equals(new GridPoint(4, 3))",
+            "expected": "false"
+          },
+          {
+            "id": "case-3",
+            "label": "null과 다른 타입",
+            "expression": "!new GridPoint(1, 1).equals(null) && !new GridPoint(1, 1).equals(\"1,1\")",
+            "expected": "true"
+          },
+          {
+            "id": "case-4",
+            "label": "HashSet 중복 제거",
+            "expression": "new java.util.HashSet<>(java.util.List.of(new GridPoint(1, 2), new GridPoint(1, 2), new GridPoint(2, 1))).size()",
+            "expected": "2"
+          },
+          {
+            "id": "case-5",
+            "label": "HashMap 키 조회",
+            "expression": "((java.util.function.Supplier<String>) () -> { java.util.Map<GridPoint, String> map = new java.util.HashMap<>(); map.put(new GridPoint(-1, 5), \"도착\"); return map.get(new GridPoint(-1, 5)); }).get()",
+            "expected": "\"도착\""
+          },
+          {
+            "id": "case-6",
+            "label": "동등 객체의 같은 해시",
+            "expression": "new GridPoint(Integer.MIN_VALUE, Integer.MAX_VALUE).hashCode() == new GridPoint(Integer.MIN_VALUE, Integer.MAX_VALUE).hashCode()",
+            "expected": "true"
+          },
+          {
+            "id": "case-7",
+            "label": "같은 행의 다른 열",
+            "expression": "!new GridPoint(2, 3).equals(new GridPoint(2, 4))",
+            "expected": "true"
+          },
+          {
+            "id": "case-8",
+            "label": "행과 열 모두 구분",
+            "expression": "new java.util.HashSet<>(java.util.List.of(new GridPoint(1, 2), new GridPoint(1, 3), new GridPoint(2, 1))).size()",
+            "expected": "3"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "row와 column을 기준으로 equals를 구현하고 같은 두 필드로 hashCode를 계산합니다.",
+        "keyPoints": [
+          "instanceof 패턴으로 null과 다른 타입을 함께 거릅니다.",
+          "equals와 hashCode가 같은 필드 집합을 사용해야 해시 컬렉션 계약이 유지됩니다."
+        ],
+        "alternative": "값 자체가 정체성인 단순 모델이라면 record GridPoint(int row, int column)로 같은 계약을 자동 생성할 수 있습니다.",
+        "complexity": "equals와 hashCode 모두 시간 O(1), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 2,
+      "mode": "java",
+      "stage": "Object 계약",
+      "title": "로그에서 읽히는 객체 문자열",
+      "question": "BuildReport의 toString을 재정의해 'module=모듈명, passed=통과수/전체수' 형식으로 반환하게 하세요. Object 타입으로 참조해도 같은 문자열이 나와야 합니다.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\nfinal class BuildReport {\n    private final String module;\n    private final int passed;\n    private final int total;\n\n    BuildReport(String module, int passed, int total) {\n        this.module = module;\n        this.passed = passed;\n        this.total = total;\n    }\n}",
+      "answer": "public class Solution {}\n\nfinal class BuildReport {\n    private final String module;\n    private final int passed;\n    private final int total;\n\n    BuildReport(String module, int passed, int total) {\n        this.module = module;\n        this.passed = passed;\n        this.total = total;\n    }\n\n    @Override\n    public String toString() {\n        return \"module=\" + module + \", passed=\" + passed + \"/\" + total;\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "new BuildReport(\"api\", 8, 10).toString()",
+          "output": "module=api, passed=8/10"
+        }
+      ],
+      "constraints": [
+        "module은 null이 아닌 비어 있지 않은 문자열입니다.",
+        "0 ≤ passed ≤ total입니다.",
+        "toString은 public으로 Object.toString을 오버라이딩합니다."
+      ],
+      "hints": [
+        "Object의 toString은 기본적으로 클래스명과 해시 형태라 객체 상태를 읽기 어렵습니다.",
+        "비슷한 코드 예시: return \"name=\" + name + \", count=\" + count;",
+        "@Override를 붙이면 메서드 시그니처 실수를 컴파일러가 확인합니다."
+      ],
+      "learning": {
+        "keywords": ["Object", "toString", "@Override", "동적 디스패치"],
+        "summary": "모든 객체가 상속하는 toString을 도메인 상태가 드러나는 문자열로 재정의하고 부모 타입 참조에서도 실제 객체의 메서드가 호출됨을 확인합니다.",
+        "example": {
+          "code": "@Override\npublic String toString() {\n  return \"sensor=\" + name + \", value=\" + value;\n}",
+          "explanation": "Object가 선언한 메서드를 같은 시그니처로 재정의하면 로깅과 디버깅에서 객체의 핵심 상태를 읽을 수 있습니다."
+        },
+        "principles": [
+          "모든 클래스는 명시적으로 상속하지 않아도 Object의 메서드를 사용할 수 있습니다.",
+          "오버라이딩된 인스턴스 메서드는 참조 변수 타입이 아니라 실제 객체 타입을 기준으로 호출됩니다.",
+          "toString은 디버깅 표현이며 민감한 값이나 매우 큰 전체 데이터는 포함하지 않는 편이 안전합니다."
+        ],
+        "applications": [
+          {
+            "title": "관측 가능한 상태 표현",
+            "description": "작업 상태나 값 객체의 핵심 필드를 짧게 표현하면 로그와 테스트 실패를 이해하기 쉬워집니다.",
+            "code": "logger.debug(\"report={}\", report);"
+          }
+        ],
+        "pitfalls": [
+          "toString에 비밀번호, 토큰이나 개인정보를 포함하지 않습니다.",
+          "표시 문자열을 영구 저장 형식이나 API 계약으로 사용하지 않습니다."
+        ]
+      },
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "일부 통과 보고서",
+            "expression": "new BuildReport(\"api\", 8, 10).toString()",
+            "expected": "\"module=api, passed=8/10\""
+          },
+          {
+            "id": "case-2",
+            "label": "전체 통과",
+            "expression": "new BuildReport(\"frontend\", 12, 12).toString()",
+            "expected": "\"module=frontend, passed=12/12\""
+          },
+          {
+            "id": "case-3",
+            "label": "통과 없음",
+            "expression": "new BuildReport(\"worker\", 0, 4).toString()",
+            "expected": "\"module=worker, passed=0/4\""
+          },
+          {
+            "id": "case-4",
+            "label": "Object 참조 동적 호출",
+            "expression": "((Object) new BuildReport(\"core\", 3, 5)).toString()",
+            "expected": "\"module=core, passed=3/5\""
+          },
+          {
+            "id": "case-5",
+            "label": "Object 메서드 오버라이딩",
+            "expression": "BuildReport.class.getDeclaredMethod(\"toString\").getReturnType() == String.class",
+            "expected": "true"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "Object.toString과 같은 public String toString() 시그니처를 재정의해 필드 상태를 읽기 좋은 형식으로 조합합니다.",
+        "keyPoints": [
+          "@Override는 잘못된 메서드 이름이나 시그니처를 컴파일 단계에서 발견하게 합니다.",
+          "Object 타입으로 업캐스팅해도 실제 BuildReport의 toString이 호출됩니다."
+        ],
+        "alternative": "단순 값 객체의 record는 구성 요소를 포함한 toString을 자동 생성하지만 필요한 표시 형식이 있으면 재정의할 수 있습니다.",
+        "complexity": "출력 문자열 길이를 n이라 할 때 시간·공간 O(n)"
+      }
+    },
+    {
+      "id": 3,
+      "mode": "java",
+      "stage": "날짜·시간",
+      "title": "두 시각 사이의 경과 분",
+      "question": "Timeline.minutesBetween이 ISO-8601 시각 문자열 두 개를 Instant로 파싱하고 Duration으로 두 시각 사이의 완전한 분 수를 반환하게 하세요.",
+      "html": "",
+      "starterCode": "import java.time.*;\n\npublic class Solution {}\n\nfinal class Timeline {\n    static long minutesBetween(String start, String end) {\n        return 0L;\n    }\n}",
+      "answer": "import java.time.*;\n\npublic class Solution {}\n\nfinal class Timeline {\n    static long minutesBetween(String start, String end) {\n        Instant startInstant = Instant.parse(start);\n        Instant endInstant = Instant.parse(end);\n        return Duration.between(startInstant, endInstant).toMinutes();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "2026-01-01T09:00:00Z → 2026-01-01T10:30:00Z",
+          "output": "90"
+        }
+      ],
+      "constraints": [
+        "start와 end는 Instant.parse가 해석할 수 있는 유효한 ISO-8601 문자열입니다.",
+        "end는 start보다 빠르지 않습니다.",
+        "완전한 60초 단위만 분으로 계산하며 남은 초는 버립니다."
+      ],
+      "hints": [
+        "Instant는 UTC 타임라인의 한 시점을 나타내고 Duration은 두 시점 사이의 시간 기반 간격입니다.",
+        "비슷한 코드 예시: Duration.between(Instant.parse(from), Instant.parse(to)).toSeconds();",
+        "시스템 기본 시간대를 읽지 말고 입력 문자열이 나타내는 절대 시각을 그대로 비교하세요."
+      ],
+      "learning": {
+        "keywords": ["Instant", "Duration", "ISO-8601", "toMinutes"],
+        "summary": "절대 시각은 Instant로, 두 시각 사이의 시간 기반 간격은 Duration으로 표현해 실행 환경의 기본 시간대와 분리합니다.",
+        "example": {
+          "code": "Instant opened = Instant.parse(\"2025-05-01T00:00:00Z\");\nInstant closed = Instant.parse(\"2025-05-01T00:00:45Z\");\nlong seconds = Duration.between(opened, closed).toSeconds();",
+          "explanation": "두 Instant 사이의 45초를 Duration으로 만든 뒤 필요한 단위로 변환합니다."
+        },
+        "principles": [
+          "Instant는 UTC 기준 타임라인의 한 점을 나타냅니다.",
+          "Duration은 초와 나노초 기반의 시간 간격이며 시계 시간 차이에 적합합니다.",
+          "시스템 기본 시간대를 암묵적으로 사용하면 실행 환경마다 결과가 달라질 수 있습니다."
+        ],
+        "applications": [
+          {
+            "title": "작업 처리 시간",
+            "description": "서버가 기록한 시작·종료 Instant를 사용해 지역 시간대와 무관한 처리 시간을 계산합니다.",
+            "code": "Duration elapsed = Duration.between(startedAt, finishedAt);"
+          }
+        ],
+        "pitfalls": [
+          "경과 시간을 달력 날짜 단위의 Period로 계산하지 않습니다.",
+          "초가 남은 Duration.toMinutes 결과는 완전한 분만 반환한다는 점을 놓치지 않습니다."
+        ]
+      },
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "90분 경과",
+            "expression": "Timeline.minutesBetween(\"2026-01-01T09:00:00Z\", \"2026-01-01T10:30:00Z\")",
+            "expected": "90L"
+          },
+          {
+            "id": "case-2",
+            "label": "날짜 경계 통과",
+            "expression": "Timeline.minutesBetween(\"2026-06-30T23:50:00Z\", \"2026-07-01T00:10:00Z\")",
+            "expected": "20L"
+          },
+          {
+            "id": "case-3",
+            "label": "같은 시각",
+            "expression": "Timeline.minutesBetween(\"2026-03-01T00:00:00Z\", \"2026-03-01T00:00:00Z\")",
+            "expected": "0L"
+          },
+          {
+            "id": "case-4",
+            "label": "남은 초 버림",
+            "expression": "Timeline.minutesBetween(\"2026-03-01T00:00:00Z\", \"2026-03-01T00:01:59Z\")",
+            "expected": "1L"
+          },
+          {
+            "id": "case-5",
+            "label": "하루 경과",
+            "expression": "Timeline.minutesBetween(\"2024-02-28T12:00:00Z\", \"2024-02-29T12:00:00Z\")",
+            "expected": "1440L"
+          },
+          {
+            "id": "case-6",
+            "label": "서로 다른 오프셋의 같은 시각",
+            "expression": "Timeline.minutesBetween(\"2026-01-01T09:00:00+09:00\", \"2026-01-01T00:00:00Z\")",
+            "expected": "0L"
+          },
+          {
+            "id": "case-7",
+            "label": "서로 다른 오프셋 사이의 경과",
+            "expression": "Timeline.minutesBetween(\"2026-01-01T10:00:00+09:00\", \"2026-01-01T02:30:00+01:00\")",
+            "expected": "30L"
+          }
+        ]
+      },
+      "solution": {
+        "summary": "두 문자열을 Instant로 파싱한 뒤 Duration.between(...).toMinutes()로 완전한 경과 분을 구합니다.",
+        "keyPoints": [
+          "Instant 사용으로 시스템 기본 시간대 의존성을 제거합니다.",
+          "Duration은 시간 기반 간격을 필요한 단위로 안전하게 변환합니다."
+        ],
+        "alternative": "입력이 이미 Instant라면 문자열 파싱 없이 Duration.between(start, end)를 바로 사용할 수 있습니다.",
+        "complexity": "고정 길이 ISO 문자열 기준 시간 O(1), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 4,
+      "mode": "java",
+      "stage": "날짜·시간",
+      "title": "달력 규칙을 따르는 갱신일",
+      "question": "RenewalDate.calculate가 시작일 문자열을 LocalDate로 파싱하고 months개월과 days일을 Period로 더한 갱신일을 ISO 날짜 문자열로 반환하게 하세요.",
+      "html": "",
+      "starterCode": "import java.time.*;\n\npublic class Solution {}\n\nfinal class RenewalDate {\n    static String calculate(String start, int months, int days) {\n        return \"\";\n    }\n}",
+      "answer": "import java.time.*;\n\npublic class Solution {}\n\nfinal class RenewalDate {\n    static String calculate(String start, int months, int days) {\n        LocalDate startDate = LocalDate.parse(start);\n        Period period = Period.of(0, months, days);\n        return startDate.plus(period).toString();\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "start=2025-01-15, months=2, days=3",
+          "output": "2025-03-18"
+        }
+      ],
+      "constraints": [
+        "start는 YYYY-MM-DD 형식의 실제 날짜입니다.",
+        "0 ≤ months ≤ 120, 0 ≤ days ≤ 365입니다.",
+        "결과는 LocalDate 범위를 넘지 않습니다."
+      ],
+      "hints": [
+        "Period는 연·월·일처럼 달력 기반의 날짜 간격을 표현합니다.",
+        "비슷한 코드 예시: date.plus(Period.of(1, 0, 2));",
+        "말일에 개월을 더하면 LocalDate가 결과 월의 유효한 마지막 날짜로 조정합니다."
+      ],
+      "learning": {
+        "keywords": ["LocalDate", "Period", "달력 간격", "말일 보정"],
+        "summary": "시간대가 없는 날짜는 LocalDate로, 개월과 일처럼 달력 규칙을 따르는 간격은 Period로 표현합니다.",
+        "example": {
+          "code": "LocalDate published = LocalDate.parse(\"2024-11-30\");\nLocalDate review = published.plus(Period.ofMonths(3));",
+          "explanation": "개월 단위 이동은 각 월의 길이와 윤년을 LocalDate가 처리하도록 맡깁니다."
+        },
+        "principles": [
+          "LocalDate는 시각이나 시간대가 없는 달력 날짜를 나타냅니다.",
+          "Period는 연·월·일 기반 간격이므로 월 길이와 윤년 규칙에 맞게 날짜를 계산합니다.",
+          "Duration은 초 기반 경과 시간에, Period는 달력 기반 날짜 이동에 사용합니다."
+        ],
+        "applications": [
+          {
+            "title": "구독 갱신일",
+            "description": "개월 단위 계약이나 검토 주기는 고정 초 수보다 달력 간격으로 표현하는 편이 의도에 가깝습니다.",
+            "code": "LocalDate next = current.plus(Period.ofMonths(termMonths));"
+          }
+        ],
+        "pitfalls": [
+          "한 달을 항상 30일 또는 고정 초로 환산하지 않습니다.",
+          "날짜만 필요한 값에 시스템 기본 시간대를 끼워 넣지 않습니다."
+        ]
+      },
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "개월과 일 추가",
+            "expression": "RenewalDate.calculate(\"2025-01-15\", 2, 3)",
+            "expected": "\"2025-03-18\""
+          },
+          {
+            "id": "case-2",
+            "label": "평년 1월 말일",
+            "expression": "RenewalDate.calculate(\"2025-01-31\", 1, 0)",
+            "expected": "\"2025-02-28\""
+          },
+          {
+            "id": "case-3",
+            "label": "윤년 1월 말일",
+            "expression": "RenewalDate.calculate(\"2024-01-31\", 1, 0)",
+            "expected": "\"2024-02-29\""
+          },
+          {
+            "id": "case-4",
+            "label": "말일 보정 뒤 하루",
+            "expression": "RenewalDate.calculate(\"2025-01-31\", 1, 1)",
+            "expected": "\"2025-03-01\""
+          },
+          {
+            "id": "case-5",
+            "label": "간격 없음",
+            "expression": "RenewalDate.calculate(\"2026-12-31\", 0, 0)",
+            "expected": "\"2026-12-31\""
+          }
+        ]
+      },
+      "solution": {
+        "summary": "LocalDate에 Period.of(0, months, days)를 더해 월 길이와 윤년을 포함한 달력 규칙을 적용합니다.",
+        "keyPoints": [
+          "개월 이동 중 존재하지 않는 일자는 해당 월의 마지막 유효 날짜로 조정됩니다.",
+          "Period는 달력 기반이고 Duration은 시간 기반입니다."
+        ],
+        "alternative": "date.plusMonths(months).plusDays(days)도 이 문제의 입력 범위에서 같은 순서의 결과를 만듭니다.",
+        "complexity": "시간 O(1), 추가 공간 O(1)"
+      }
+    },
+    {
+      "id": 5,
+      "mode": "java",
+      "stage": "예외·자원 정리",
+      "title": "성공과 실패 모두 닫히는 채널",
+      "question": "ChannelService.read가 try-with-resources로 AuditChannel을 사용하게 하세요. fail이 true면 IllegalStateException을 던지고, 그렇지 않으면 채널의 값을 대문자로 반환합니다. 두 경로 모두 채널이 닫혀야 합니다.",
+      "html": "",
+      "starterCode": "public class Solution {}\n\nfinal class AuditChannel implements AutoCloseable {\n    private final String value;\n    private boolean closed;\n\n    AuditChannel(String value) {\n        this.value = value;\n    }\n\n    String read() {\n        if (closed) throw new IllegalStateException(\"이미 닫힌 채널\");\n        return value;\n    }\n\n    boolean closed() {\n        return closed;\n    }\n\n    @Override\n    public void close() {\n        closed = true;\n    }\n}\n\nfinal class ChannelService {\n    static String read(AuditChannel channel, boolean fail) {\n        if (fail) throw new IllegalStateException(\"읽기 실패\");\n        return channel.read().toUpperCase();\n    }\n}",
+      "answer": "public class Solution {}\n\nfinal class AuditChannel implements AutoCloseable {\n    private final String value;\n    private boolean closed;\n\n    AuditChannel(String value) {\n        this.value = value;\n    }\n\n    String read() {\n        if (closed) throw new IllegalStateException(\"이미 닫힌 채널\");\n        return value;\n    }\n\n    boolean closed() {\n        return closed;\n    }\n\n    @Override\n    public void close() {\n        closed = true;\n    }\n}\n\nfinal class ChannelService {\n    static String read(AuditChannel channel, boolean fail) {\n        try (channel) {\n            if (fail) throw new IllegalStateException(\"읽기 실패\");\n            return channel.read().toUpperCase();\n        }\n    }\n}",
+      "examples": [
+        {
+          "testId": "case-1",
+          "input": "channel.value=\"ready\", fail=false",
+          "output": "READY"
+        }
+      ],
+      "constraints": [
+        "channel과 channel.value는 null이 아닙니다.",
+        "try-with-resources 구문으로 전달받은 channel을 관리합니다.",
+        "정상 반환과 예외 발생 양쪽에서 close가 호출되어야 합니다."
+      ],
+      "hints": [
+        "AutoCloseable을 구현한 자원은 try 괄호 안에 두면 블록을 벗어날 때 자동으로 close됩니다.",
+        "비슷한 코드 예시: try (Door door = new Door()) { return door.open(); }",
+        "return이나 예외로 블록을 빠져나가도 자원 정리가 수행됩니다."
+      ],
+      "learning": {
+        "keywords": ["AutoCloseable", "try-with-resources", "예외 경로", "close"],
+        "summary": "정상 반환과 예외 발생처럼 여러 종료 경로가 있어도 자원 정리를 빠뜨리지 않도록 try-with-resources를 사용합니다.",
+        "example": {
+          "code": "try (Lease lease = pool.borrow()) {\n  return lease.use();\n}",
+          "explanation": "use가 값을 반환하거나 예외를 던져도 try 블록을 벗어날 때 lease.close가 호출됩니다."
+        },
+        "principles": [
+          "try-with-resources는 AutoCloseable 자원을 선언의 역순으로 닫습니다.",
+          "정상 경로뿐 아니라 예외 경로에서도 close가 실행됩니다.",
+          "본문 예외와 close 예외가 함께 발생하면 close 예외는 suppressed exception으로 보존됩니다."
+        ],
+        "applications": [
+          {
+            "title": "세션·잠금 반환",
+            "description": "파일뿐 아니라 닫기 계약이 있는 세션이나 임대 객체도 같은 구조로 정리할 수 있습니다.",
+            "code": "try (Session session = sessions.open()) { return session.fetch(); }"
+          }
+        ],
+        "pitfalls": [
+          "성공 경로에서만 close를 호출해 예외가 발생할 때 자원이 남게 하지 않습니다.",
+          "close가 필요한 자원의 생명주기를 필요 이상으로 넓게 잡지 않습니다."
+        ]
+      },
+      "required": {
+        "className": "Solution",
+        "tests": [
+          {
+            "id": "case-1",
+            "label": "정상 읽기",
+            "expression": "ChannelService.read(new AuditChannel(\"ready\"), false)",
+            "expected": "\"READY\""
+          },
+          {
+            "id": "case-2",
+            "label": "정상 경로 닫기",
+            "expression": "((java.util.function.BooleanSupplier) () -> { AuditChannel channel = new AuditChannel(\"ok\"); ChannelService.read(channel, false); return channel.closed(); }).getAsBoolean()",
+            "expected": "true"
+          },
+          {
+            "id": "case-3",
+            "label": "실패 예외 전달",
+            "expression": "ChannelService.read(new AuditChannel(\"bad\"), true)",
+            "expectedException": "IllegalStateException"
+          },
+          {
+            "id": "case-4",
+            "label": "실패 경로 닫기",
+            "expression": "((java.util.function.BooleanSupplier) () -> { AuditChannel channel = new AuditChannel(\"bad\"); try { ChannelService.read(channel, true); } catch (IllegalStateException expected) { } return channel.closed(); }).getAsBoolean()",
+            "expected": "true"
+          },
+          {
+            "id": "case-5",
+            "label": "빈 문자열 읽기",
+            "expression": "ChannelService.read(new AuditChannel(\"\"), false)",
+            "expected": "\"\""
+          }
+        ]
+      },
+      "solution": {
+        "summary": "try (channel) 블록 안에 읽기와 실패 처리를 두어 모든 종료 경로에서 close가 호출되게 합니다.",
+        "keyPoints": [
+          "매개변수도 effectively final이면 try-with-resources에서 직접 사용할 수 있습니다.",
+          "return과 예외 모두 자원 정리 이후에 호출자에게 전달됩니다."
+        ],
+        "alternative": "finally에서 직접 close를 호출할 수도 있지만 예외 우선순위와 누락 가능성을 try-with-resources가 더 안전하게 처리합니다.",
+        "complexity": "문자열 길이를 n이라 할 때 대문자 변환 시간·공간 O(n)"
+      }
+    }
+  ]
+}
