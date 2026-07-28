@@ -4,6 +4,9 @@
 `AGENTS.md` 또는 `AGENTS.override.md`가 있으면 그 지침을 함께 따르고, 충돌할 때는 더 가까운
 지침을 우선한다.
 
+작업을 시작할 때 `AI_RULES.md`의 미션·원칙·작업 절차와 `BRANCH_RULES.md`의 브랜치·커밋·PR
+규칙을 함께 읽고 따른다.
+
 ## Project priorities
 
 Code Quest는 HTML, CSS, JavaScript, Java와 알고리즘을 직접 실행하며 학습하는 로컬 우선
@@ -45,24 +48,23 @@ Code Quest는 HTML, CSS, JavaScript, Java와 알고리즘을 직접 실행하며
 - Node 패키지의 정확한 버전과 lockfile, Docker 이미지 digest, GitHub Actions commit SHA
   고정 방식을 유지한다. 의도적인 업데이트가 아니면 고정을 완화하지 않는다.
 - 시작 스크립트를 변경하면 Unix와 Windows 흐름의 의미가 계속 일치하는지 확인한다.
-- 커밋, push, PR 생성, merge와 릴리스 발행은 사용자가 요청했을 때만 수행한다.
+- 커밋과 Draft PR 생성, Ready for Review 전환은 `AI_RULES.md`의 작업 절차를 따른다.
+  merge와 릴리스 발행은 사용자가 명시적으로 요청했을 때만 수행한다.
 
 ## Git publishing
 
 - `main`은 PR merge 결과만 받는 통합 브랜치다. `main`에 직접 커밋하거나 직접 push하지
   않는다.
-- 모든 변경은 최신 `origin/main`에서 분기한 `dev/<짧은-설명>` 기능 브랜치에서 작업하고
-  커밋한다.
-- 커밋 메시지는 한글로 작성하고 변경 의도를 짧고 분명하게 표현한다. 코드 식별자, 파일명과
-  고유 기술명은 필요한 경우 원문을 유지할 수 있다.
-- 커밋 요청은 push 권한까지 의미하지 않는다. 사용자가 push를 명시한 경우에만 원격 저장소를
-  변경한다.
+- 모든 변경은 최신 `origin/main`에서 분기한 작업 브랜치에서 수행하고, 브랜치 이름은
+  `BRANCH_RULES.md`의 규칙을 따른다.
+- 커밋 메시지와 PR 제목은 `BRANCH_RULES.md`의 형식을 따른다.
+- Draft PR은 사용자의 승인을 받은 뒤에만 Ready for Review로 변경한다.
 - 변경이 섞인 작업 트리에서는 관련 파일만 명시적으로 stage하고 `.env`, 생성물, 사용자 로컬
   지침처럼 범위 밖 파일을 함께 커밋하지 않는다.
 - push 전에 현재 브랜치, tracking 원격과 원격 변경 여부를 확인한다.
-- `main` 반영은 기능 브랜치를 원격에 push한 뒤 만든 GitHub PR을 통해서만 수행한다.
-- 필수 CI 검사가 모두 통과한 뒤 PR을 merge한다. 검사가 실패했거나 진행 중이면 merge하지
-  않는다.
+- `main` 반영은 작업 브랜치를 원격에 push한 뒤 만든 GitHub PR을 통해서만 수행한다.
+- `BRANCH_RULES.md`에 정의된 필수 CI 검사가 모두 통과한 뒤 PR을 merge한다. 검사가
+  실패했거나 진행 중이면 merge하지 않는다.
 - push 후 CI가 시작되면 가능할 때 완료 상태까지 확인하고, 실패하거나 확인하지 못한 검증을
   성공한 것처럼 보고하지 않는다.
 
