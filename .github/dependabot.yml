@@ -7,14 +7,18 @@ updates:
     groups:
       frontend:
         patterns: ["*"]
+    allow:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
 
   - package-ecosystem: npm
     directory: /renderer
     schedule:
       interval: weekly
-    groups:
-      renderer:
-        patterns: ["*"]
+    # Playwright package and Docker image updates must stay synchronized.
+    open-pull-requests-limit: 0
 
   - package-ecosystem: maven
     directory: /backend
@@ -23,31 +27,42 @@ updates:
     groups:
       backend:
         patterns: ["*"]
+    allow:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
 
+  # Runtime image updates require coordinated compatibility and digest checks.
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: weekly
+    open-pull-requests-limit: 0
 
   - package-ecosystem: docker
     directory: /backend
     schedule:
       interval: weekly
+    open-pull-requests-limit: 0
 
   - package-ecosystem: docker
     directory: /frontend
     schedule:
       interval: weekly
+    open-pull-requests-limit: 0
 
   - package-ecosystem: docker
     directory: /renderer
     schedule:
       interval: weekly
+    open-pull-requests-limit: 0
 
   - package-ecosystem: docker
     directory: /java-runner
     schedule:
       interval: weekly
+    open-pull-requests-limit: 0
 
   - package-ecosystem: github-actions
     directory: /
