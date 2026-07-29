@@ -141,7 +141,7 @@ Java와 JavaScript 문제 모두 기준 답안과 전체 JSON 테스트 정의�
 - Frontend: React 19.2.8, TypeScript 7.0.2, Vite 8.1.5, CodeMirror 6
 - Backend: Java 21, Spring Boot 3.5.14, Spring Data JPA, Flyway
 - Database: PostgreSQL 16
-- Judges: Playwright 1.61.0 + Chromium, 별도 Java 21 runner, Deno 2.9.4 JavaScript runner
+- Judges: Playwright 1.62.0 + Chromium, 별도 Java 21 runner, Deno 2.9.4 JavaScript runner
 - Runtime: Docker Compose, Nginx
 - CI: GitHub Actions
 
