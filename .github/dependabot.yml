@@ -1,4 +1,11 @@
 version: 2
+
+# Playwright package and Docker image updates must stay synchronized.
+multi-ecosystem-groups:
+  renderer-playwright:
+    schedule:
+      interval: weekly
+
 updates:
   - package-ecosystem: npm
     directory: /frontend
@@ -15,10 +22,13 @@ updates:
 
   - package-ecosystem: npm
     directory: /renderer
-    schedule:
-      interval: weekly
-    # Playwright package and Docker image updates must stay synchronized.
-    open-pull-requests-limit: 0
+    patterns: ["playwright"]
+    multi-ecosystem-group: renderer-playwright
+    allow:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
 
   - package-ecosystem: maven
     directory: /backend
@@ -33,7 +43,7 @@ updates:
           - version-update:semver-minor
           - version-update:semver-patch
 
-  # Runtime image updates require coordinated compatibility and digest checks.
+  # Other runtime image updates require coordinated compatibility and digest checks.
   - package-ecosystem: docker
     directory: /
     schedule:
@@ -54,9 +64,13 @@ updates:
 
   - package-ecosystem: docker
     directory: /renderer
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 0
+    patterns: ["playwright"]
+    multi-ecosystem-group: renderer-playwright
+    allow:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
 
   - package-ecosystem: docker
     directory: /java-runner
