@@ -74,16 +74,14 @@ jobs:
   renderer:
     name: Chromium judge
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.61.0-noble@sha256:57b65fdc9ceabe0ef613124c7bbe2babcf9362c4d85e382fe3b03604e84b428a
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - working-directory: renderer
-        run: npm ci --no-audit --no-fund
-      - working-directory: renderer
-        run: npm audit --audit-level=high
-      - working-directory: renderer
-        run: npm test
+      - name: Build the renderer image
+        run: docker build --tag code-quest-renderer:test renderer
+      - name: Audit renderer dependencies in the image
+        run: docker run --rm code-quest-renderer:test npm audit --audit-level=high
+      - name: Test the renderer image
+        run: docker run --rm --init --shm-size=1gb code-quest-renderer:test npm test
 
   java-runner:
     name: Java sandbox
