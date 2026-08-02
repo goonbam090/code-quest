@@ -109,11 +109,35 @@ jobs:
           node-version: "22.22.0"
       - name: Build a reproducible release ZIP from HEAD
         run: |
-          tools/build-release-zip.sh
-          first_hash="$(sha256sum code-quest.zip | awk '{ print $1 }')"
-          tools/build-release-zip.sh
-          second_hash="$(sha256sum code-quest.zip | awk '{ print $1 }')"
-          test "$first_hash" = "$second_hash"
+          timezone_build="$RUNNER_TEMP/timezone-build"
+          mkdir -p "$timezone_build"
+
+          TZ=UTC tools/build-release-zip.sh
+          TZ=Asia/Seoul tools/build-release-zip.sh \
+            "$timezone_build/code-quest.zip"
+
+          cmp code-quest.zip "$timezone_build/code-quest.zip"
+          cmp code-quest.zip.sha256 \
+            "$timezone_build/code-quest.zip.sha256"
+          cmp code-quest.zip.manifest.json \
+            "$timezone_build/code-quest.zip.manifest.json"
+          sha256sum --check code-quest.zip.sha256
+
+          source_commit="$(git rev-parse HEAD)"
+          release_manifest="$(
+            unzip -p code-quest.zip code-quest/RELEASE_MANIFEST.json
+          )"
+          node -e '
+            const manifest = JSON.parse(process.argv[1]);
+            if (
+              manifest.schemaVersion !== 1
+              || manifest.product !== "code-quest"
+              || manifest.sourceCommit !== process.argv[2]
+            ) process.exit(1);
+          ' "$release_manifest" "$source_commit"
+          test "$release_manifest" = "$(cat code-quest.zip.manifest.json)"
+          test "$(unzip -z code-quest.zip | tail -n 1)" = \
+            "$source_commit"
       - name: Extract the release into a path containing spaces
         run: |
           release_root="$RUNNER_TEMP/Code Quest release/code-quest"
@@ -282,3 +306,18 @@ jobs:
         env:
           REQUIRED_JOB_RESULTS: ${{ toJSON(needs) }}
         run: node tools/verify-ci-results.mjs
+      - name: Build verified release files
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: tools/build-release-zip.sh
+      - name: Publish verified release files
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: code-quest-release-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            code-quest.zip
+            code-quest.zip.manifest.json
+            code-quest.zip.sha256
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 0
