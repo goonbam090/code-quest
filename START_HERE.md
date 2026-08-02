@@ -9,6 +9,10 @@ Code Quest가 요구하는 비밀번호, token과 `.env` 설정 파일은 시작
 만듭니다. 사용자가 값을 찾아서 입력하거나 Java, Node.js, PostgreSQL을 따로 설치할 필요가
 없습니다.
 
+> **이미 Code Quest를 사용 중인가요?** 새 ZIP을 기존 폴더 위에 덮어쓰지 마세요. 기존
+> 설정과 학습 데이터의 손실 위험을 줄이려면 [`UPDATE.md`](UPDATE.md)의 안전 업데이트 절차를 먼저
+> 확인하세요.
+
 ## 1. Docker가 무엇인가요?
 
 Code Quest는 화면, 서버, 데이터베이스와 여러 코드 채점기로 구성되어 있습니다. Docker는 이
