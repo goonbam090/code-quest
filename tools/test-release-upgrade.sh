@@ -111,7 +111,7 @@ unzip -tqq "$baseline_zip" || fail "the baseline ZIP failed its integrity check"
 "$repository_dir/tools/build-release-zip.sh" "$current_zip"
 unzip -tqq "$current_zip" || fail "the current ZIP failed its integrity check"
 
-unzip -q "$baseline_zip" -d "$installation_parent"
+(umask 022 && unzip -q "$baseline_zip" -d "$installation_parent")
 active_install="$installation_parent/code-quest"
 [ -x "$active_install/start.sh" ] || fail "the baseline start.sh is not executable"
 [ ! -e "$active_install/.env" ] || fail "the baseline ZIP unexpectedly contains .env"
@@ -187,7 +187,7 @@ docker volume inspect "$DATA_VOLUME" >/dev/null 2>&1 ||
 
 mv "$active_install" "$old_install"
 active_install="$old_install"
-unzip -q "$current_zip" -d "$installation_parent"
+(umask 022 && unzip -q "$current_zip" -d "$installation_parent")
 [ -x "$new_install/start.sh" ] || fail "the current start.sh is not executable"
 [ ! -e "$new_install/.env" ] || fail "the current ZIP unexpectedly contains .env"
 cp -p -- "$old_install/.env" "$new_install/.env"
