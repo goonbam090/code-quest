@@ -375,6 +375,21 @@ docker compose config --quiet
 tools/build-release-zip.sh
 ```
 
+릴리스 스크립트는 실행을 시작할 때 고정한 Git `HEAD`의 추적 파일과 해당 커밋을 식별하는
+`RELEASE_MANIFEST.json`만 ZIP에 포함합니다. 같은 위치에 외부 manifest와 SHA-256 sidecar도
+생성합니다.
+
+```text
+code-quest.zip
+code-quest.zip.manifest.json
+code-quest.zip.sha256
+```
+
+`main` 반영 후 push CI가 성공하면 세 파일은 커밋 SHA가 포함된 GitHub Actions artifact로
+최대 90일 동안 게시됩니다. 이 artifact는 로그인이 필요할 수 있고 만료되므로 영구적인 GitHub
+Release가 아닙니다. ZIP과 SHA-256을 다른 경로에서 임의로 다시 만들지 말고 같은 CI artifact의
+파일을 함께 전달하세요.
+
 Maven 3.9.9와 JDK 21이 로컬에 설치되어 있다면 CI의 Backend 검증을
 `(cd backend && mvn --batch-mode --no-transfer-progress verify)`로 직접 실행할 수도 있습니다.
 

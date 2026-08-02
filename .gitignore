@@ -8,6 +8,8 @@ coverage/
 .vscode/
 .DS_Store
 /code-quest.zip
+/code-quest.zip.manifest.json
+/code-quest.zip.sha256
 .env
 .env.*
 !.env.example
