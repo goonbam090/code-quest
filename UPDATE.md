@@ -43,10 +43,11 @@ Docker volume에 진도가 남아 있어도 브라우저의 학습자 식별값�
 경우에만 진행하세요.
 
 새 자동 생성 배포본은 압축을 풀면 루트의 `RELEASE_MANIFEST.json`에서 전체 source commit을
-확인할 수 있습니다. 원본 ZIP과 함께 전달된 `code-quest.zip.manifest.json`에는 같은 값이 있고,
-`code-quest.zip.sha256`은 원본 ZIP의 무결성을 확인합니다. 세 파일은 같은 공식 CI artifact에서
-받아 함께 보관하세요. SHA-256은 파일 손상을 탐지하지만 배포자의 신원을 증명하는 전자서명은
-아닙니다.
+확인할 수 있습니다. 원본 ZIP과 함께 게시된 `code-quest.zip.manifest.json`에는 같은 값이 있고,
+`code-quest.zip.sha256`은 원본 ZIP의 무결성을 확인합니다. 정식 버전은 같은 GitHub Release에
+첨부된 세 파일을 함께 받고, GitHub가 자동으로 제공하는 `Source code` 압축 파일을 배포본으로
+사용하지 마세요. SHA-256은 파일 손상을 탐지하고 provenance attestation은 생성 workflow의
+신원을 검증하지만, 어느 쪽도 실제 구버전의 진도·데이터 호환성을 대신 증명하지는 않습니다.
 
 이 표식이 없는 기존 설치 폴더는 원본 ZIP이나 배포 정보가 없으면 버전을 확정할 수 없습니다.
 파일 수정 시각으로 추측하지 말고 배포자에게 먼저 확인하세요. 확인이 막히는 경우는 안전을 위한

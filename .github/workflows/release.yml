@@ -1,0 +1,143 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      attestations: read
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22.22.0"
+      - name: Validate the release tag and source commit
+        id: source
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          source_commit="$(git rev-parse 'HEAD^{commit}')"
+          test "$(git rev-parse "${GITHUB_REF}^{commit}")" = \
+            "$source_commit"
+          git rev-parse --verify 'origin/main^{commit}' >/dev/null
+          git merge-base --is-ancestor "$source_commit" origin/main
+
+          node tools/release-automation.mjs validate-tag \
+            "$RELEASE_TAG" >>"$GITHUB_OUTPUT"
+          printf 'source-commit=%s\n' "$source_commit" >>"$GITHUB_OUTPUT"
+      - name: Validate the release version order
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.source.outputs.tag }}
+        run: |
+          releases_json="$RUNNER_TEMP/releases.json"
+          gh release list --limit 1000 \
+            --json isDraft,isPrerelease,tagName \
+            --repo "$GITHUB_REPOSITORY" >"$releases_json"
+          node tools/release-automation.mjs validate-version \
+            "$RELEASE_TAG" "$releases_json" >>"$GITHUB_OUTPUT"
+      - name: Verify the previous release is an ancestor
+        if: steps.version.outputs.previous-tag != ''
+        env:
+          PREVIOUS_TAG: ${{ steps.version.outputs.previous-tag }}
+          SOURCE_COMMIT: ${{ steps.source.outputs.source-commit }}
+        run: |
+          previous_commit="$(git rev-parse "refs/tags/$PREVIOUS_TAG^{commit}")"
+          git merge-base --is-ancestor "$previous_commit" "$SOURCE_COMMIT"
+      - name: Find the successful main CI run
+        id: ci-run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_COMMIT: ${{ steps.source.outputs.source-commit }}
+        run: |
+          runs_json="$RUNNER_TEMP/source-ci-runs.json"
+          gh api --method GET \
+            "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs" \
+            -f branch=main \
+            -f event=push \
+            -f head_sha="$SOURCE_COMMIT" \
+            -f per_page=100 \
+            -f status=success >"$runs_json"
+          node tools/release-automation.mjs resolve-run \
+            "$runs_json" "$SOURCE_COMMIT" >>"$GITHUB_OUTPUT"
+      - name: Download the exact verified CI artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.ci-run.outputs.run-id }}
+          name: ${{ steps.ci-run.outputs.artifact-name }}
+          path: release
+      - name: Verify release files and source identity
+        env:
+          SOURCE_COMMIT: ${{ steps.source.outputs.source-commit }}
+        run: |
+          node tools/release-automation.mjs verify-files \
+            release/code-quest.zip "$SOURCE_COMMIT"
+      - name: Verify release file provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_COMMIT: ${{ steps.source.outputs.source-commit }}
+        run: |
+          for release_file in \
+            release/code-quest.zip \
+            release/code-quest.zip.manifest.json \
+            release/code-quest.zip.sha256; do
+            gh attestation verify "$release_file" \
+              --repo "$GITHUB_REPOSITORY" \
+              --signer-workflow \
+                "github.com/$GITHUB_REPOSITORY/.github/workflows/ci.yml" \
+              --signer-digest "$SOURCE_COMMIT" \
+              --source-digest "$SOURCE_COMMIT" \
+              --source-ref refs/heads/main \
+              --deny-self-hosted-runners
+          done
+      - name: Publish the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.source.outputs.tag }}
+          SOURCE_COMMIT: ${{ steps.source.outputs.source-commit }}
+          RELEASE_NOTES: |
+            설치할 때는 아래 첨부된 `code-quest.zip`을 사용하세요.
+            GitHub가 자동으로 제공하는 Source code 압축 파일은 Code Quest 배포본이 아닙니다.
+
+            기존 사용자는 기존 폴더에 덮어쓰지 말고 `UPDATE.md`의 안전 업데이트 절차를 먼저 확인하세요.
+            이 릴리스의 실제 구버전 데이터 호환성은 별도 업그레이드 검증 결과가 명시된 경우에만 보장됩니다.
+        run: |
+          remote_commit="$(
+            gh api \
+              "repos/$GITHUB_REPOSITORY/commits/$RELEASE_TAG" \
+              --jq .sha
+          )"
+          if [ "$remote_commit" != "$SOURCE_COMMIT" ]; then
+            echo "Release tag moved after validation: $RELEASE_TAG" >&2
+            exit 1
+          fi
+
+          gh release create "$RELEASE_TAG" \
+            release/code-quest.zip \
+            release/code-quest.zip.manifest.json \
+            release/code-quest.zip.sha256 \
+            --fail-on-no-commits \
+            --generate-notes \
+            --notes "$RELEASE_NOTES" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Code Quest $RELEASE_TAG" \
+            --verify-tag

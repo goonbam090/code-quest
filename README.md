@@ -386,9 +386,12 @@ code-quest.zip.sha256
 ```
 
 `main` 반영 후 push CI가 성공하면 세 파일은 커밋 SHA가 포함된 GitHub Actions artifact로
-최대 90일 동안 게시됩니다. 이 artifact는 로그인이 필요할 수 있고 만료되므로 영구적인 GitHub
-Release가 아닙니다. ZIP과 SHA-256을 다른 경로에서 임의로 다시 만들지 말고 같은 CI artifact의
-파일을 함께 전달하세요.
+최대 90일 동안 게시되고 세 파일을 함께 식별하는 build provenance attestation이 생성됩니다.
+`vMAJOR.MINOR.PATCH` tag를 push하면 Release workflow가 같은 CI artifact의 manifest,
+SHA-256과 provenance를 검증한 뒤 버전이 있는 GitHub Release로 게시합니다. ZIP과 sidecar를
+다른 경로에서 임의로 다시 만들거나 GitHub의 자동 `Source code` 압축 파일과 혼동하지 마세요.
+버전 선택과 게시 절차는
+[`RELEASING.md`](RELEASING.md), 기존 사용자 업데이트는 [`UPDATE.md`](UPDATE.md)를 따릅니다.
 
 Maven 3.9.9와 JDK 21이 로컬에 설치되어 있다면 CI의 Backend 검증을
 `(cd backend && mvn --batch-mode --no-transfer-progress verify)`로 직접 실행할 수도 있습니다.
