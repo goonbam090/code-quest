@@ -1,10 +1,14 @@
+import { readFile, writeFile } from 'node:fs/promises'
+
 const apiRoot = (process.env.CODE_QUEST_API_URL ?? 'http://localhost:8080').replace(/\/+$/, '')
 const mode = process.argv[2]
 const allowedModes = new Set([
   'cases',
   'concurrency',
   'renderer-outage',
-  'javascript-runner-outage'
+  'javascript-runner-outage',
+  'upgrade-seed',
+  'upgrade-verify'
 ])
 const requestTimeoutMs = 60_000
 const runId = `${Date.now().toString(36)}-${process.pid.toString(36)}`
@@ -21,7 +25,8 @@ const privateProblemFields = new Set([
 if (!allowedModes.has(mode)) {
   console.error(
     '사용법: node tools/audit-grading-contracts.mjs '
-    + '<cases|concurrency|renderer-outage|javascript-runner-outage>'
+    + '<cases|concurrency|renderer-outage|javascript-runner-outage'
+    + '|upgrade-seed|upgrade-verify> [state-file]'
   )
   process.exit(2)
 }
@@ -747,12 +752,165 @@ async function runJavaScriptRunnerOutage() {
   console.log('JavaScript runner 장애가 ERROR/JUDGE_UNAVAILABLE이며 시도 횟수에 반영되지 않음을 검증했습니다.')
 }
 
+function upgradeStatePath() {
+  const statePath = process.argv[3]
+  assert(typeof statePath === 'string' && statePath.length > 0,
+    '업그레이드 검증에는 state-file 경로가 필요합니다.')
+  return statePath
+}
+
+async function assertUpgradeHealth(expectedProblemCount) {
+  const health = await requestJson('/api/health')
+  assert(health?.status === 'UP',
+    `업그레이드 대상 API readiness가 UP이 아닙니다: ${JSON.stringify(health)}`)
+  assert(health.problemCount === expectedProblemCount,
+    `문제 수 예상 ${expectedProblemCount}, 실제 ${health.problemCount}`)
+  assert(health.expectedProblemCount === expectedProblemCount,
+    `기대 문제 수 예상 ${expectedProblemCount}, 실제 ${health.expectedProblemCount}`)
+}
+
+async function upgradeProblem(number, expectLearning) {
+  const result = await requestJson(`/api/problems/selector/${number}`)
+  assert(result.category === 'selector' && result.number === number,
+    `업그레이드 문제 식별자가 다릅니다: ${JSON.stringify(result)}`)
+  assert(Number.isInteger(result.id) && result.id > 0,
+    `업그레이드 문제 id가 양의 정수가 아닙니다: ${JSON.stringify(result)}`)
+  for (const privateField of privateProblemFields) {
+    assert(!Object.hasOwn(result, privateField),
+      `selector#${number}: 공개 API에 ${privateField} 필드가 노출됐습니다.`)
+  }
+  if (expectLearning) {
+    assert(result.learning && typeof result.learning === 'object'
+        && !Array.isArray(result.learning),
+    `selector#${number}: 업그레이드 후 learning 교안이 없습니다.`)
+  }
+  return result
+}
+
+function assertUpgradeSubmission(result, expected, label) {
+  assert(result.correct === expected.correct,
+    `${label}: correct 예상 ${expected.correct}, 실제 ${result.correct}`)
+  assert(result.firstSolve === expected.firstSolve,
+    `${label}: firstSolve 예상 ${expected.firstSolve}, 실제 ${result.firstSolve}`)
+  assert(result.status === expected.status,
+    `${label}: status 예상 ${expected.status}, 실제 ${result.status}`)
+  assert(result.diagnosticCode === expected.diagnosticCode,
+    `${label}: diagnosticCode 예상 ${expected.diagnosticCode}, 실제 ${result.diagnosticCode}`)
+}
+
+function assertUpgradeProgress(result, expected, label) {
+  assert(result.attempts === expected.attempts,
+    `${label}: attempts 예상 ${expected.attempts}, 실제 ${result.attempts}`)
+  assert(result.solved === expected.solved,
+    `${label}: solved 예상 ${expected.solved}, 실제 ${result.solved}`)
+  const actualIds = [...result.solvedProblemIds].sort((left, right) => left - right)
+  const expectedIds = [...expected.solvedProblemIds].sort((left, right) => left - right)
+  assert(JSON.stringify(actualIds) === JSON.stringify(expectedIds),
+    `${label}: solvedProblemIds 예상 ${JSON.stringify(expectedIds)}, 실제 ${JSON.stringify(actualIds)}`)
+}
+
+async function runUpgradeSeed() {
+  await assertUpgradeHealth(343)
+  const statePath = upgradeStatePath()
+  const key = learnerKey('release-upgrade')
+  const stableProblem = await upgradeProblem(1, false)
+  const resetProblem = await upgradeProblem(2, false)
+  const initial = await progress(key)
+  assertUpgradeProgress(initial, { attempts: 0, solved: 0, solvedProblemIds: [] },
+    '구버전 초기 진도')
+
+  const wrong = await submit('selector', 1, key, 'h2')
+  assertUpgradeSubmission(wrong, {
+    correct: false,
+    firstSolve: false,
+    status: 'INCORRECT',
+    diagnosticCode: 'SELECTOR_MISMATCH'
+  }, '구버전 유지 문제 오답')
+  assertUpgradeProgress(await progress(key), {
+    attempts: 1,
+    solved: 0,
+    solvedProblemIds: []
+  }, '구버전 유지 문제 오답 후 진도')
+
+  const stableCorrect = await submit('selector', 1, key, 'p')
+  assertUpgradeSubmission(stableCorrect, {
+    correct: true,
+    firstSolve: true,
+    status: 'CORRECT',
+    diagnosticCode: 'NONE'
+  }, '구버전 유지 문제 정답')
+
+  const resetCorrect = await submit('selector', 2, key, '.note')
+  assertUpgradeSubmission(resetCorrect, {
+    correct: true,
+    firstSolve: true,
+    status: 'CORRECT',
+    diagnosticCode: 'NONE'
+  }, '구버전 변경 문제 정답')
+  assertUpgradeProgress(await progress(key), {
+    attempts: 3,
+    solved: 2,
+    solvedProblemIds: [stableProblem.id, resetProblem.id]
+  }, '구버전 최종 진도')
+
+  await writeFile(statePath, `${JSON.stringify({
+    schemaVersion: 1,
+    learnerKey: key,
+    stableProblemId: stableProblem.id,
+    resetProblemId: resetProblem.id
+  }, null, 2)}\n`, { mode: 0o600 })
+  console.log('실제 구버전 API에 업그레이드 기준 진도를 생성했습니다.')
+}
+
+async function runUpgradeVerify() {
+  await assertUpgradeHealth(288)
+  const statePath = upgradeStatePath()
+  const state = JSON.parse(await readFile(statePath, 'utf8'))
+  assert(state.schemaVersion === 1,
+    `업그레이드 상태 schemaVersion이 올바르지 않습니다: ${state.schemaVersion}`)
+  assert(typeof state.learnerKey === 'string' && state.learnerKey.length > 0,
+    '업그레이드 상태 learnerKey가 올바르지 않습니다.')
+  assert(Number.isInteger(state.stableProblemId) && state.stableProblemId > 0,
+    '업그레이드 상태 stableProblemId가 올바르지 않습니다.')
+  assert(Number.isInteger(state.resetProblemId) && state.resetProblemId > 0,
+    '업그레이드 상태 resetProblemId가 올바르지 않습니다.')
+
+  const stableProblem = await upgradeProblem(1, true)
+  const resetProblem = await upgradeProblem(2, true)
+  assert(stableProblem.id === state.stableProblemId,
+    `유지 문제의 DB id가 ${state.stableProblemId}에서 ${stableProblem.id}(으)로 바뀌었습니다.`)
+  assert(resetProblem.id === state.resetProblemId,
+    `변경 문제의 DB id가 ${state.resetProblemId}에서 ${resetProblem.id}(으)로 바뀌었습니다.`)
+
+  assertUpgradeProgress(await progress(state.learnerKey), {
+    attempts: 2,
+    solved: 1,
+    solvedProblemIds: [state.stableProblemId]
+  }, '업그레이드 직후 진도')
+
+  const resubmission = await submit('selector', 1, state.learnerKey, 'p')
+  assertUpgradeSubmission(resubmission, {
+    correct: true,
+    firstSolve: false,
+    status: 'CORRECT',
+    diagnosticCode: 'NONE'
+  }, '업그레이드 후 기존 정답 재제출')
+  assertUpgradeProgress(await progress(state.learnerKey), {
+    attempts: 3,
+    solved: 1,
+    solvedProblemIds: [state.stableProblemId]
+  }, '업그레이드 후 재제출 진도')
+  console.log('업그레이드 후 유지 대상 진도와 변경 문제 초기화 정책을 검증했습니다.')
+}
+
 try {
   await assertApiReady()
   if (mode === 'cases') await runCases()
   if (mode === 'concurrency') await runConcurrency()
   if (mode === 'renderer-outage') await runRendererOutage()
   if (mode === 'javascript-runner-outage') await runJavaScriptRunnerOutage()
+  if (mode === 'upgrade-seed') await runUpgradeSeed()
+  if (mode === 'upgrade-verify') await runUpgradeVerify()
 } catch (error) {
   console.error(error instanceof Error ? error.stack ?? error.message : String(error))
   process.exitCode = 1
