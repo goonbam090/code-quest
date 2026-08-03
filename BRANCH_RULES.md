@@ -99,4 +99,5 @@ Ready for Review 전환은 merge 승인이 아니다. merge는 두 필수 검사
 명시적으로 요청한 경우에만 수행한다.
 
 동일 저장소의 `dependabot[bot]`이 만든 `dependabot/*` 브랜치는 자동 업데이트를 위해
-예외를 적용한다. 이 경우 PR 제목은 `Bump ` 또는 `[Chore] `로 시작해야 한다.
+예외를 적용한다. 이 경우 PR 제목은 `Bump `, `[Chore] ` 또는 Dependabot이 생성하는
+`chore(deps): bump `로 시작해야 한다.
