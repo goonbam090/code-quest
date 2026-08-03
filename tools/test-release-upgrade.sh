@@ -3,8 +3,6 @@
 set -euo pipefail
 umask 077
 
-readonly BASELINE_COMMIT="62fca297b58fb68c3a82925a16374f2405633b8e"
-readonly BASELINE_ZIP_SHA256="e9a71b81a4c412c993e7d1d032b6e1d78a9c60c20f68c4980a4b6f1d713df3eb"
 readonly COMPOSE_PROJECT="code-quest"
 readonly DATA_VOLUME="code-quest_codequest-data"
 
@@ -33,6 +31,26 @@ for required_command in docker git node sha256sum stat unzip; do
 done
 docker compose version >/dev/null 2>&1 || fail "Docker Compose is required"
 docker info >/dev/null 2>&1 || fail "Docker is not available"
+
+baseline_outputs="$(
+  node "$repository_dir/tools/release-automation.mjs" upgrade-baseline \
+    "$repository_dir/tools/release-upgrade-baseline.json"
+)" || fail "the release upgrade baseline could not be read"
+BASELINE_COMMIT=""
+BASELINE_ZIP_SHA256=""
+while IFS='=' read -r output_name output_value; do
+  case "$output_name" in
+    baseline-commit)
+      BASELINE_COMMIT="$output_value"
+      ;;
+    baseline-zip-sha256)
+      BASELINE_ZIP_SHA256="$output_value"
+      ;;
+  esac
+done <<<"$baseline_outputs"
+[ -n "$BASELINE_COMMIT" ] || fail "the baseline source commit is missing"
+[ -n "$BASELINE_ZIP_SHA256" ] || fail "the baseline ZIP SHA-256 is missing"
+readonly BASELINE_COMMIT BASELINE_ZIP_SHA256
 
 existing_containers="$(
   docker ps --all --quiet --filter "label=com.docker.compose.project=$COMPOSE_PROJECT"
