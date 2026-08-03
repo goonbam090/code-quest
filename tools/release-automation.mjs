@@ -5,13 +5,17 @@ import path from 'node:path'
 
 const RELEASE_TAG_PATTERN = /^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/
 const SOURCE_COMMIT_PATTERN = /^[0-9a-f]{40}$/
+const SHA256_PATTERN = /^[0-9a-f]{64}$/
 
 function fail(message) {
   throw new Error(message)
 }
 
 function requireSourceCommit(sourceCommit) {
-  if (!SOURCE_COMMIT_PATTERN.test(sourceCommit)) {
+  if (
+    typeof sourceCommit !== 'string'
+    || !SOURCE_COMMIT_PATTERN.test(sourceCommit)
+  ) {
     fail('source commit must be a full lowercase 40-character Git commit ID')
   }
 
@@ -30,6 +34,39 @@ function requireRegularFile(filePath) {
   if (!fileStat.isFile()) {
     fail(`required release path is not a regular file: ${filePath}`)
   }
+}
+
+export function readUpgradeBaseline(filePath) {
+  requireRegularFile(filePath)
+
+  let baseline
+  try {
+    baseline = JSON.parse(readFileSync(filePath, 'utf8'))
+  } catch {
+    fail(`upgrade baseline is not valid JSON: ${filePath}`)
+  }
+
+  const expectedKeys = ['schemaVersion', 'sourceCommit', 'zipSha256']
+  if (
+    baseline === null
+    || Array.isArray(baseline)
+    || typeof baseline !== 'object'
+    || JSON.stringify(Object.keys(baseline).sort())
+      !== JSON.stringify(expectedKeys)
+    || baseline.schemaVersion !== 1
+  ) {
+    fail('upgrade baseline must use schema version 1 and only the supported fields')
+  }
+
+  requireSourceCommit(baseline.sourceCommit)
+  if (
+    typeof baseline.zipSha256 !== 'string'
+    || !SHA256_PATTERN.test(baseline.zipSha256)
+  ) {
+    fail('upgrade baseline ZIP SHA-256 must be 64 lowercase hexadecimal characters')
+  }
+
+  return baseline
 }
 
 function readZipEntry(zipPath, entryPath) {
@@ -295,10 +332,20 @@ function runCli() {
     return
   }
 
+  if (command === 'upgrade-baseline' && args.length === 1) {
+    const baseline = readUpgradeBaseline(args[0])
+    printOutputs({
+      'baseline-commit': baseline.sourceCommit,
+      'baseline-zip-sha256': baseline.zipSha256
+    })
+    return
+  }
+
   fail(
     'usage: release-automation.mjs '
     + '<validate-tag TAG | validate-version TAG RELEASES_JSON '
-    + '| resolve-run RUNS_JSON COMMIT | verify-files ZIP COMMIT>'
+    + '| resolve-run RUNS_JSON COMMIT | verify-files ZIP COMMIT '
+    + '| upgrade-baseline BASELINE_JSON>'
   )
 }
 

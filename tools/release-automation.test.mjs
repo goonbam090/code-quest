@@ -14,12 +14,15 @@ import { fileURLToPath } from 'node:url'
 
 import {
   parseReleaseTag,
+  readUpgradeBaseline,
   selectSuccessfulMainCiRun,
   validateReleaseOrder,
   verifyReleaseFiles
 } from './release-automation.mjs'
 
 const SOURCE_COMMIT = '0123456789abcdef0123456789abcdef01234567'
+const BASELINE_SOURCE_COMMIT = '62fca297b58fb68c3a82925a16374f2405633b8e'
+const BASELINE_ZIP_SHA256 = 'e9a71b81a4c412c993e7d1d032b6e1d78a9c60c20f68c4980a4b6f1d713df3eb'
 const PROJECT_DIR = fileURLToPath(new URL('..', import.meta.url))
 
 function successfulRun(overrides = {}) {
@@ -95,6 +98,72 @@ test('rejects malformed GitHub Releases responses', () => {
     () => validateReleaseOrder('v1.0.0', [{ tagName: 'v0.1.0' }]),
     /invalid release/
   )
+})
+
+test('publishes the validated release upgrade baseline as workflow outputs', () => {
+  const baselinePath = path.join(
+    PROJECT_DIR,
+    'tools/release-upgrade-baseline.json'
+  )
+
+  assert.deepEqual(readUpgradeBaseline(baselinePath), {
+    schemaVersion: 1,
+    sourceCommit: BASELINE_SOURCE_COMMIT,
+    zipSha256: BASELINE_ZIP_SHA256
+  })
+
+  const output = execFileSync(
+    process.execPath,
+    [
+      path.join(PROJECT_DIR, 'tools/release-automation.mjs'),
+      'upgrade-baseline',
+      baselinePath
+    ],
+    { encoding: 'utf8' }
+  )
+
+  assert.equal(
+    output,
+    `baseline-commit=${BASELINE_SOURCE_COMMIT}\n`
+      + `baseline-zip-sha256=${BASELINE_ZIP_SHA256}\n`
+  )
+})
+
+test('rejects malformed release upgrade baselines', () => {
+  const fixtureDirectory = mkdtempSync(
+    path.join(tmpdir(), 'code-quest-upgrade-baseline-test-')
+  )
+  const baselinePath = path.join(fixtureDirectory, 'baseline.json')
+
+  try {
+    writeFileSync(baselinePath, '{}\n')
+    assert.throws(
+      () => readUpgradeBaseline(baselinePath),
+      /schema version 1/
+    )
+
+    writeFileSync(baselinePath, JSON.stringify({
+      schemaVersion: 1,
+      sourceCommit: [SOURCE_COMMIT],
+      zipSha256: '0'.repeat(64)
+    }))
+    assert.throws(
+      () => readUpgradeBaseline(baselinePath),
+      /full lowercase 40-character/
+    )
+
+    writeFileSync(baselinePath, JSON.stringify({
+      schemaVersion: 1,
+      sourceCommit: SOURCE_COMMIT,
+      zipSha256: '0'.repeat(63)
+    }))
+    assert.throws(
+      () => readUpgradeBaseline(baselinePath),
+      /ZIP SHA-256/
+    )
+  } finally {
+    rmSync(fixtureDirectory, { recursive: true, force: true })
+  }
 })
 
 test('verifies release files and rejects missing or modified sidecars', () => {
