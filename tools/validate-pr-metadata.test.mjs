@@ -96,6 +96,11 @@ test('accepts existing Dependabot branch and title conventions', () => {
     branch: 'dependabot/github_actions/actions-checkout-7',
     title: '[Chore] Bump actions/checkout from 6 to 7'
   }), [])
+  assert.deepEqual(validate({
+    author: 'dependabot[bot]',
+    branch: 'dependabot/maven/backend/backend-dependencies',
+    title: 'chore(deps): bump org.jsoup:jsoup from 1.22.2 to 1.23.1'
+  }), [])
 })
 
 test('rejects unexpected titles on Dependabot branches', () => {
@@ -109,7 +114,7 @@ test('rejects unexpected titles on Dependabot branches', () => {
 test('does not exempt collaborators using the Dependabot branch namespace', () => {
   assert.match(validate({
     branch: 'dependabot/npm_and_yarn/frontend/vite-9',
-    title: '[Chore] Update Vite'
+    title: 'chore(deps): bump vite from 8 to 9'
   })[0], /Branch name must match/)
 })
 

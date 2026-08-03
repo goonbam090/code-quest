@@ -1,5 +1,6 @@
 const branchPattern = /^(feature|refactor|fix|docs|chore|test)\/[a-z0-9]+(?:-[a-z0-9]+)*$/
 const titlePattern = /^\[(Feature|Refactor|Fix|Docs|Chore|Test)\] \S(?:.*\S)?$/
+const dependabotTitlePattern = /^(?:Bump |\[Chore\] |chore\(deps\): bump )\S/
 const titleTypeByBranchType = new Map([
   ['feature', 'Feature'],
   ['refactor', 'Refactor'],
@@ -24,8 +25,10 @@ export function validatePullRequestMetadata({
     && author === 'dependabot[bot]'
     && branch.startsWith('dependabot/')
   ) {
-    if (!/^(?:Bump \S|\[Chore\] \S)/.test(title)) {
-      failures.push('Dependabot PR titles must start with "Bump " or "[Chore] ".')
+    if (!dependabotTitlePattern.test(title)) {
+      failures.push(
+        'Dependabot PR titles must start with "Bump ", "[Chore] ", or "chore(deps): bump ".'
+      )
     }
     return failures
   }
