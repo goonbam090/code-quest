@@ -1,0 +1,106 @@
+[
+  {
+    "ruleId": "catalog.metadata",
+    "mutation": {
+      "type": "set",
+      "category": "selector",
+      "path": ["name"],
+      "value": ""
+    },
+    "message": "카테고리 이름과 설명이 필요합니다."
+  },
+  {
+    "ruleId": "catalog.counts",
+    "mutation": {
+      "type": "set",
+      "category": "selector",
+      "path": ["description"],
+      "value": "기초 선택자 20문제"
+    },
+    "message": "설명에는 20문제지만 실제로는 19문제입니다."
+  },
+  {
+    "ruleId": "catalog.learning",
+    "mutation": {
+      "type": "set",
+      "category": "selector",
+      "path": ["learning", "999"],
+      "value": {}
+    },
+    "message": "선택자 learning은 모든 문제 번호와 정확히 일치해야 합니다."
+  },
+  {
+    "ruleId": "catalog.categories",
+    "mutation": {
+      "type": "remove-catalog",
+      "category": "ui"
+    },
+    "message": "카테고리 파일 구성이 기대 목록과 다릅니다."
+  },
+  {
+    "ruleId": "problem.base",
+    "mutation": {
+      "type": "set",
+      "category": "selector",
+      "problem": 1,
+      "path": ["title"],
+      "value": ""
+    },
+    "message": "title가 비어 있습니다."
+  },
+  {
+    "ruleId": "problem.selector",
+    "mutation": {
+      "type": "set",
+      "category": "selector",
+      "problem": 1,
+      "path": ["html"],
+      "value": "<p>대상</p>"
+    },
+    "message": "선택자 문제 HTML에는 data-target 정답 대상이 필요합니다."
+  },
+  {
+    "ruleId": "problem.declaration",
+    "mutation": {
+      "type": "set",
+      "category": "property",
+      "problem": 1,
+      "path": ["accept"],
+      "value": []
+    },
+    "message": "사용되지 않는 accept 필드는 declaration 문제 계약에 포함할 수 없습니다."
+  },
+  {
+    "ruleId": "problem.stylesheet",
+    "mutation": {
+      "type": "set",
+      "category": "responsive",
+      "problem": 1,
+      "path": ["required"],
+      "value": null
+    },
+    "message": "stylesheet 문제에는 viewport와 상태 채점을 위한 required 객체가 필요합니다."
+  },
+  {
+    "ruleId": "problem.html",
+    "mutation": {
+      "type": "set",
+      "category": "html",
+      "problem": 1,
+      "path": ["required", "rules"],
+      "value": []
+    },
+    "message": "HTML 문제에는 DOM 채점 규칙이 필요합니다."
+  },
+  {
+    "ruleId": "problem.code",
+    "mutation": {
+      "type": "set",
+      "category": "java",
+      "problem": 1,
+      "path": ["required", "tests"],
+      "value": []
+    },
+    "message": "코드 문제에는 숨은 테스트를 포함해 최소 3개 테스트가 필요합니다."
+  }
+]
